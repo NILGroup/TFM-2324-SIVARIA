@@ -1,6 +1,32 @@
 # Classifiers
 NAIVE_BAYES = 'naive_bayes'
 
+# Model Types
+MODEL_TYPES = [
+    'autoinforme',
+    'familia',
+    'profesional'
+]
+
+SCORE_OPTIONS = [
+    'accuracy',
+    'precision',
+    'recall',
+    'f1_score'
+]
+
+ACTION_MODES = [
+    'prod',
+    'train'
+]
+
+FILEPATH = 'configFiles/'
+CONFIG_FILENAME = 'configModel'
+CONFIG_FILETYPE = '.sav'
+MODEL_FILETYPE = '.sav'
+
+TESTING_DATASET_SIZE = 0.75
+
 # Scores
 PRECISION_SCORE = 'precision'
 ACCURACY_SCORE = 'accuracy'

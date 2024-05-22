@@ -1,26 +1,155 @@
+import checker
+
 import sys
-from classifierController import ClassifierController
-from sklearn.datasets import load_iris
 import pandas as pd
+import os
+import pickle
+# Own created classes and modules
+from expertSystem import ExpertSystem
 from exceptions.ClassifierNotFoundException import ClassifierNotFoundException
 from exceptions.ApplicationException import ApplicationException
 from exceptions.CommandLineException import CommandLineException
 from exceptions.ScoreNotFoundException import ScoreNotFoundException
 from exceptions.FormatException import FormatException
-import checker
 import constants
+import decoder
 
 def main():
     try:
         if(len(sys.argv) <= 1):
-            raise CommandLineException('Not enough parameters.\n\n' + getHelpMessage())
-             
+            raise CommandLineException('Parámetros insuficientes.\n\n' + getHelpMessage())
+        
         option = sys.argv[1]
+        expertSystem = ExpertSystem()
+        config = getConfig()
 
         if option == '-h':
             print(getHelpMessage())
-        elif option =='-l':
-            printAvailableClassifiers()
+        elif option =='-mt':
+            
+            if len(sys.argv) <= 2:
+                modelType = getModelType(config)
+                if modelType is None:
+                    modelType = 'Ninguno'
+
+                print('Modelo del sistema experto: ' + str(modelType))
+            else:
+                modelType = sys.argv[2]
+                setModelType(modelType)
+        elif option =='-st':
+
+            if len(sys.argv) <= 2:
+                scoreType = getScoreType(config)
+                if scoreType is None:
+                    scoreType = 'Ninguno'
+
+                print('Tipo de puntuación del sistema experto: ' + str(scoreType))
+            else:
+                scoreType = sys.argv[2]
+                setScoreType(scoreType)
+        elif option =='-t':
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Dataset no especificado.\n\n' + getHelpMessage())
+            
+            modelType = getModelType(config)
+            scoreType = getScoreType(config)
+
+            if modelType is None or scoreType is None:
+                checkErrors(config)
+            
+            expertSystem.setModelType(modelType)
+            expertSystem.setScoreOption(scoreType)
+
+            expertSystem.buildModel()
+
+            dataset = sys.argv[2]
+
+            if os.path.exists(dataset) == False:
+                raise FileNotFoundError('Dataset no encontrado. Escriba el path completo correctamente.\n\n' + getHelpMessage())
+
+            df = pd.read_csv(dataset)
+            newDF = decoder.codeDataset(df)
+
+            expertSystem.trainModel(newDF)
+        
+        elif option =='-p':
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Dataset no especificado.\n\n' + getHelpMessage())
+            
+            modelType = getModelType(config)
+
+            if modelType is None:
+                checkErrors(config)
+
+            expertSystem.setModelType(modelType)
+            
+            expertSystem.buildModel()
+
+            dataset = sys.argv[2]
+
+            if os.path.exists(dataset) == False:
+                raise FileNotFoundError('Dataset no encontrado. Escriba el path completo correctamente.\n\n' + getHelpMessage())
+            
+            df = pd.read_csv(dataset)
+            newDF = decoder.codeDataset(df)
+
+            if 'Desenlace' in newDF.columns:
+                newDF = newDF.drop('Desenlace', axis=1)
+
+            y_pred = expertSystem.predict(newDF)
+            return y_pred
+        
+        else:
+            raise CommandLineException('Se han introducido parámetros que no existen.\n\n' + getHelpMessage())
+        '''
+        elif option =='-ptst':
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
+            
+            modelType = getModelType(config)
+            
+            expertSystem.setModel(modelType)
+
+            dataset = sys.argv[2]
+
+            if os.path.exists(dataset) == False:
+                raise FileNotFoundError('Dataset not found. Type the whole path correctly.')
+            
+            df = pd.read_csv(dataset)
+            newDF = codeDataset(df)
+
+            X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
+
+            y_pred = expertSystem.predict(X_test)
+            return y_pred
+        elif option =='-pm':
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
+            
+            dataset = sys.argv[2]
+
+            if os.path.exists(dataset) == False:
+                raise FileNotFoundError('Dataset not found. Type the whole path correctly.')
+
+            df = pd.read_csv(dataset)
+            newDF = codeDataset(df)
+            y_pred = expertSystem.predict(newDF)
+            print(expertSystem.plotConfusionMatrix(newDF['Desenlace'], y_pred))
+        elif option =='-tst':
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
+            
+            dataset = sys.argv[2]
+
+            if os.path.exists(dataset) == False:
+                raise FileNotFoundError('Dataset not found. Type the whole path correctly.')
+
+            df = pd.read_csv(dataset)
+            newDF = codeDataset(df)
+            y_pred = expertSystem.predict(newDF)
+            
+            (p_valor, Cont) = expertSystem.testModel()
+            print('('+ str(p_valor) + ',' + str(Cont) +')')
         elif option == '-ls':
             printAvailableScores()
         elif option == '-ld':
@@ -48,16 +177,6 @@ def main():
                 else:
                     raise CommandLineException('Action not found')
 
-
-                '''
-                controller.divideData(dataframe=df, xCols=charIndex, yCols=tagIndex, testSize=testSize, randomState=1)
-                controller.fitData()
-                controller.createConfusionMatrix(classNames)
-
-                y_pred = controller.predict()
-                controller.getPScore(selectedScore, y_pred, numSamples)
-                '''
-
                 configData = {
                     'df': df,
                     'charIndex': charIndex,
@@ -66,14 +185,14 @@ def main():
                 }
                 
                 action(controller, sys.argv[8], configData, actionData)
+                
             
             except ApplicationException as ie:
                 raise CommandLineException('Error with config parameters.\n'+ ie.message +'\nFor any doubt, check help command.')
-        else:
-            raise CommandLineException('Non-existing parameter(s) inserted.\n\n' + getHelpMessage())
+            '''
 
     except (ApplicationException) as e:
-        return 'Error in the script! ' + str(e.message)
+        return 'Error en el script! ' + str(e.message)
 
 def loadFile():
     pass
@@ -82,7 +201,7 @@ def loadFile():
 def config(argv):
     try:
         checker.checkClassifierParameter(argv[0])
-        controller = ClassifierController()       
+        controller = ExpertSystem()       
         setClassifierOption(controller, argv[0])
         checker.checkDatasetParameter(argv[1])
         df = pd.read_csv(argv[1])
@@ -196,26 +315,81 @@ def getHelpMessage():
 
     return helpMessage
 
-def printAvailableClassifiers():
-    availableClassifiersStr = '\tShortcut\tClassifier\n\n'
+def getConfig():
 
-    availableClassifiers = {
-        '-nv': 'GaussianNB'
+    config = None
+    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+
+    if os.path.exists(filename):
+        config = pickle.load(open(filename, 'rb'))
+
+    return config
+
+def getModelType(config):
+    try:
+        return config['modelType']
+    except Exception:
+        return None
+
+def setModelType(modelType):
+    
+    if modelType not in constants.MODEL_TYPES:
+        raise ValueError('El tipo de modelo dado no es válido.Posibles valores:\n\n' + '\n'.join(constants.MODEL_TYPES))
+
+    if os.path.exists(constants.FILEPATH) == False:
+        os.mkdir(constants.FILEPATH)
+
+    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+
+    config = {
+        'modelType' : modelType
     }
 
-    for shortcut in availableClassifiers:
-        availableClassifiersStr += '\t'+ str(shortcut) +'\t\t'+ str(availableClassifiers[shortcut]) +'\n'
-    '''
-    from sklearn.utils import all_estimators
+    if os.path.exists(filename):
+        configLoaded = pickle.load(open(filename, 'rb'))
+        config.update(configLoaded)
 
-    estimators = all_estimators()
+    pickle.dump(config, open(filename, 'wb'))
 
-    for name, class_ in estimators:
-        if hasattr(class_, 'predict_proba'):
-            print(name)
-            '''
+    print('Tipo de modelo establecido correctamente: ' + modelType)
 
-    print(availableClassifiersStr)
+def getScoreType(config):
+    try:
+        return config['scoreType']
+    except Exception:
+        return None
+
+def checkErrors(config):
+    if config is None:
+        raise CommandLineException('No existe configuración del sistema.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+
+    if 'modelType' not in config:
+        raise CommandLineException('El tipo de modelo no ha sido especificado previamente en la configuración. Posibles valores:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+
+    if 'scoreType' not in config:
+        raise CommandLineException('El tipo de puntuación no se ha especificado previamente en la configuración. Posibles valores:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
+
+
+def setScoreType(scoreType):
+    if scoreType not in constants.SCORE_OPTIONS:
+        raise ValueError('Given score type is not valid')
+
+    if os.path.exists(constants.FILEPATH) == False:
+        os.mkdir(constants.FILEPATH)
+
+    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+
+    config = {
+        'scoreType' : scoreType
+    }
+
+    if os.path.exists(filename):
+        configLoaded = pickle.load(open(filename, 'rb'))
+        config = config.update(configLoaded)
+
+    pickle.dump(config, open(filename, 'wb'))
+
+    print('Tipo de puntuación establecido correctamente: ' + scoreType)
 
 def printAvailableScores():
     availableScoresStr = '\tShortcut\tScore\n\n'
