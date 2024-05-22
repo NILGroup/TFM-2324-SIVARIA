@@ -13,11 +13,12 @@ from exceptions.ScoreNotFoundException import ScoreNotFoundException
 from exceptions.FormatException import FormatException
 import constants
 import decoder
+from datetime import datetime, timedelta
 
 def main():
     try:
         if(len(sys.argv) <= 1):
-            raise CommandLineException('Parámetros insuficientes.\n\n' + getHelpMessage())
+            raise CommandLineException('Not enough parameters.\n\n' + getHelpMessage())
         
         option = sys.argv[1]
         expertSystem = ExpertSystem()
@@ -30,9 +31,9 @@ def main():
             if len(sys.argv) <= 2:
                 modelType = getModelType(config)
                 if modelType is None:
-                    modelType = 'Ninguno'
+                    modelType = 'None'
 
-                print('Modelo del sistema experto: ' + str(modelType))
+                print('Model type of the Expert System: ' + str(modelType))
             else:
                 modelType = sys.argv[2]
                 setModelType(modelType)
@@ -41,15 +42,15 @@ def main():
             if len(sys.argv) <= 2:
                 scoreType = getScoreType(config)
                 if scoreType is None:
-                    scoreType = 'Ninguno'
+                    scoreType = 'None'
 
-                print('Tipo de puntuación del sistema experto: ' + str(scoreType))
+                print('Score type of the Expert System: ' + str(scoreType))
             else:
                 scoreType = sys.argv[2]
                 setScoreType(scoreType)
         elif option =='-t':
             if len(sys.argv) <= 2:
-                raise CommandLineException('Dataset no especificado.\n\n' + getHelpMessage())
+                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
             
             modelType = getModelType(config)
             scoreType = getScoreType(config)
@@ -57,50 +58,80 @@ def main():
             if modelType is None or scoreType is None:
                 checkErrors(config)
             
-            expertSystem.setModelType(modelType)
-            expertSystem.setScoreOption(scoreType)
-
-            expertSystem.buildModel()
-
             dataset = sys.argv[2]
 
             if os.path.exists(dataset) == False:
-                raise FileNotFoundError('Dataset no encontrado. Escriba el path completo correctamente.\n\n' + getHelpMessage())
+                raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + getHelpMessage())
 
+            # Code Dataset
             df = pd.read_csv(dataset)
             newDF = decoder.codeDataset(df)
 
-            expertSystem.trainModel(newDF)
+            expertSystem.setModelType(modelType)
+            expertSystem.setScoreOption(scoreType)
+
+            mostRecentFilename = getMostRecentFile(modelType)
+            
+            if mostRecentFilename is not None:
+                print(getFileStats(mostRecentFilename))
+
+            # Building the model
+            expertSystem.buildModel(mostRecentFilename)
+            
+            # Training Model
+            X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
+
+            modelForTest = expertSystem.trainModel(X_train, y_train)
+
+            # Saving model
+            filePath, filename = getConfigModelFilename(expertSystem.getModelType())
+
+            expertSystem.saveModel(filePath, filename)
+
+            print(getFileStats(filename))
+
+            print('Testing trained model ...')
+
+            (p_valor, Cont) = expertSystem.testModel(modelForTest, X_train, y_train, X_test, y_test)
+            print('Model tested successfully')
+            print('('+ str(p_valor) + ',' + str(Cont) +')')
+
+
         
         elif option =='-p':
             if len(sys.argv) <= 2:
-                raise CommandLineException('Dataset no especificado.\n\n' + getHelpMessage())
+                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
             
             modelType = getModelType(config)
 
             if modelType is None:
                 checkErrors(config)
 
-            expertSystem.setModelType(modelType)
-            
-            expertSystem.buildModel()
-
             dataset = sys.argv[2]
 
             if os.path.exists(dataset) == False:
-                raise FileNotFoundError('Dataset no encontrado. Escriba el path completo correctamente.\n\n' + getHelpMessage())
+                raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + getHelpMessage())
             
             df = pd.read_csv(dataset)
             newDF = decoder.codeDataset(df)
 
+            expertSystem.setModelType(modelType)
+            
+            mostRecentFilename = getMostRecentFile(modelType)
+            
+            if mostRecentFilename is not None:
+                print(getFileStats(mostRecentFilename))
+
+            expertSystem.buildModel(mostRecentFilename)
+
             if 'Desenlace' in newDF.columns:
                 newDF = newDF.drop('Desenlace', axis=1)
 
-            y_pred = expertSystem.predict(newDF)
+            y_pred = expertSystem.predict(newDF.values)
             return y_pred
         
         else:
-            raise CommandLineException('Se han introducido parámetros que no existen.\n\n' + getHelpMessage())
+            raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + getHelpMessage())
         '''
         elif option =='-ptst':
             if len(sys.argv) <= 2:
@@ -192,7 +223,7 @@ def main():
             '''
 
     except (ApplicationException) as e:
-        return 'Error en el script! ' + str(e.message)
+        return 'Script error: ' + str(e.message)
 
 def loadFile():
     pass
@@ -334,7 +365,7 @@ def getModelType(config):
 def setModelType(modelType):
     
     if modelType not in constants.MODEL_TYPES:
-        raise ValueError('El tipo de modelo dado no es válido.Posibles valores:\n\n' + '\n'.join(constants.MODEL_TYPES))
+        raise ValueError('Given model type is not valid. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
 
     if os.path.exists(constants.FILEPATH) == False:
         os.mkdir(constants.FILEPATH)
@@ -351,7 +382,7 @@ def setModelType(modelType):
 
     pickle.dump(config, open(filename, 'wb'))
 
-    print('Tipo de modelo establecido correctamente: ' + modelType)
+    print('Model type correctly set: ' + modelType)
 
 def getScoreType(config):
     try:
@@ -361,13 +392,13 @@ def getScoreType(config):
 
 def checkErrors(config):
     if config is None:
-        raise CommandLineException('No existe configuración del sistema.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+        raise CommandLineException('System configuration not found.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
 
     if 'modelType' not in config:
-        raise CommandLineException('El tipo de modelo no ha sido especificado previamente en la configuración. Posibles valores:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+        raise CommandLineException('Model type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
 
     if 'scoreType' not in config:
-        raise CommandLineException('El tipo de puntuación no se ha especificado previamente en la configuración. Posibles valores:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
+        raise CommandLineException('Score type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
 
 def setScoreType(scoreType):
@@ -389,7 +420,42 @@ def setScoreType(scoreType):
 
     pickle.dump(config, open(filename, 'wb'))
 
-    print('Tipo de puntuación establecido correctamente: ' + scoreType)
+    print('Score type correctly set: ' + scoreType)
+
+def getConfigModelFilename(modelType):
+    now = datetime.now()
+    versionDateTime = now.strftime("%Y%m%d%H%M%S")
+    filePath = constants.FILEPATH + modelType
+    filename = filePath + '/' + 'model_' + modelType + '_' + versionDateTime + constants.MODEL_FILETYPE
+
+    return (filePath, filename)
+
+def getFileStats(filename):
+    fileInfoStr = 'File: ' + filename + '\n'
+
+    fileStats = os.stat(filename)
+    mostRecentAccess = str(timedelta(seconds = fileStats.st_atime))
+    mostRecentContentChange = str(timedelta(seconds = fileStats.st_atime))
+    mostRecentMetadataChange = str(timedelta(seconds = fileStats.st_atime))
+
+    fileInfoStr += 'File size (Bytes): ' + str(fileStats.st_size) + ' bytes\n'
+    fileInfoStr += 'Most recent access: ' + str(mostRecentAccess) + '\n'
+    fileInfoStr += 'Most recent content change: ' + str(mostRecentContentChange) + '\n'
+    fileInfoStr += 'Most recent metadata change: ' + str(mostRecentMetadataChange) + '\n'
+
+    return fileInfoStr
+
+def getMostRecentFile(modelType):
+
+    try:
+        filePath = constants.FILEPATH + modelType + '/'
+        listFiles = os.listdir(filePath)
+        listFiles.sort(reverse=True)    
+
+        return (filePath + listFiles[0])
+    except Exception:
+        return None
+    
 
 def printAvailableScores():
     availableScoresStr = '\tShortcut\tScore\n\n'

@@ -1,5 +1,5 @@
 #from naiveBayesClassifier import NaiveBayesClassifier
-from exceptions.ClassifierNotFoundException import ClassifierNotFoundException
+
 import constants
 from sklearn.naive_bayes import GaussianNB
 import os
@@ -9,8 +9,6 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import numpy as np
 
-
-
 class ExpertSystem():
     __model = None
     __modelType = None
@@ -19,8 +17,8 @@ class ExpertSystem():
     def __init__(self):
         pass
 
-    def buildModel(self):
-        self.__model = self.__buildModel()
+    def buildModel(self, filename):
+        self.__model = self.__buildModel(filename)
 
     def getModelType(self):
         return self.__modelType
@@ -33,44 +31,6 @@ class ExpertSystem():
 
     def setScoreOption(self, scoreOption):
         self.__scoreOption = scoreOption
-    '''
-    def setClassifier(self, classifier):
-        if classifier.lower() == constants.NAIVE_BAYES:
-            self._classifier = NaiveBayesClassifier()
-        else:
-            raise ClassifierNotFoundException()
-        pass
-
-    def divideData(self, dataframe, xCols, yCols, testSize, randomState):
-        X, y = dataframe.values[:,0:xCols], dataframe.values[:,yCols]
-        self._classifier.divideData(X, y, testSize, randomState)
-        pass
-
-    def fitData(self):
-        self._classifier.fitData()
-        pass
-
-    def createConfusionMatrix(self, classNames):
-        return self._classifier.createConfusionMatrix(classNames)
-        
-    def predict(self):
-        return self._classifier.predict()
-    
-    def getPrecisionScore(self, y_pred):
-        return self._classifier.getPrecisionScore(y_pred)
-
-    def getRecallScore(self, y_pred):
-        return self._classifier.getRecallScore(y_pred)
-
-    def getAccuracyScore(self, y_pred):
-        return self._classifier.getAccuracyScore(y_pred)
-
-    def getF1Score(self, y_pred):
-        return self._classifier.getF1Score(y_pred)
-
-    def getPScore(self, selectedScore, y_pred, numRepetitions):
-        return self._classifier.getPScore(selectedScore, y_pred, numRepetitions)
-    '''
 
     def divideDatasetTrainingTesting(self, dataframe):
         numberColumns = len(dataframe.columns) 
@@ -83,7 +43,7 @@ class ExpertSystem():
                                                             stratify=y)   
         return (X_train, X_test, y_train, y_test)
 
-    def trainModel(self, dataframe):
+    def trainModel(self, X_train, y_train):
 
         if self.__modelType is None:
             raise ValueError('Training process error: Model type not specified.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
@@ -91,45 +51,39 @@ class ExpertSystem():
         if self.__scoreOption is None:
             raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
-        print('Entrenando el modelo...') 
-
-        X_train, X_test, y_train, y_test = self.divideDatasetTrainingTesting(dataframe)
+        print('Training the model...') 
 
         modelForTest = self.__model
 
         self.__model.fit(X_train, y_train)
 
-        print('Modelo entrenado exitosamente\n')
+        print('Model trained successfully\n')
 
-        self.saveModel()
-
-        print('Testeando entrenamiento realizado...')
-        #y_pred = self.predict(X_test)
-
-        (p_valor, Cont) = self.testModel(modelForTest, X_train, y_train, X_test, y_test)
-        print('Testeo realizado con éxito')
-        print('('+ str(p_valor) + ',' + str(Cont) +')')
-
+        return modelForTest
+    
     def predict(self, X_data):
         return self.__model.predict(X_data)
     
     def plotConfusionMatrix(self, y_test, y_pred, classNames):
-        #classNames = df['Desenlace']
 
         cm = confusion_matrix(y_test, y_pred, labels=classNames)
         disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                       display_labels=classNames)
         return disp
 
-    def saveModel(self):
-        print('Guardando modelo...')
-        filename = self.__getConfigModelFilename()
+    def saveModel(self, filePathByModelType, filename):
+        print('Saving model...')
+
         if os.path.exists(constants.FILEPATH) == False:
             os.mkdir(constants.FILEPATH)
 
-        # Guardamos el modelo en un archivo .pickle
+        if os.path.exists(filePathByModelType) == False:
+            os.mkdir(filePathByModelType)
+
+        # We save the file in a .pickle file
+        
         pickle.dump(self.__model, open(filename, 'wb'))
-        print('Modelo guardado\n')
+        print('Model saved\n')
 
     def testModel(self, modelForTest, X_train, y_train, X_test, y_test):
         if self.__modelType is None:
@@ -145,7 +99,7 @@ class ExpertSystem():
         clf_NB.fit(X_train, y_train)
         y_pred = clf_NB.predict(X_test)
         ACC_Ini = self.getScore(y_test, y_pred)
-        print('Score elegido: ' + self.__scoreOption + ' = %.3f' % ACC_Ini)
+        print('Selected score: ' + self.__scoreOption + ' = %.3f' % ACC_Ini)
 
         NumRepeticiones = 100 # hacemos 100 muestras con bootstrap
         NumMuestras = X_train.shape[0] # el número de muestras totales en X_train
@@ -193,23 +147,43 @@ class ExpertSystem():
              
         return score
 
-    def __buildModel(self):
-        filename = self.__getConfigModelFilename()
+    def __buildModel(self, filename):
 
         # Si existe un modelo previamente guardado, se carga, sino, se crea uno nuevo
-        if os.path.exists(filename):
-            print('Existe un modelo anterior')
+        if filename is not None and os.path.exists(filename):
+            print('There exists a previously created model')
+            print('Loading the model...')
             clf_NB = pickle.load(open(filename, 'rb'))
-            print('Modelo cargado\n')
+            print('Model loaded\n')
         else:
-            print('No existe un modelo anterior.\n Creando nuevo modelo\n')
+            print('It does not exist a previous model.\nCreating a new model\n')
             clf_NB = GaussianNB()
 
         return clf_NB
+    '''
+    def __getFileStats(filename):
+        fileInfoStr = 'Archivo: ' + filename + '\n'
 
-    def __getConfigModelFilename(self):
-        return constants.FILEPATH + 'model_' + self.__modelType + constants.MODEL_FILETYPE
+        fileStats = os.stat(filename)
+        mostRecentAccess = str(datetime.timedelta(seconds = fileStats.st_atime))
+        mostRecentContentChange = str(datetime.timedelta(seconds = fileStats.st_atime))
+        mostRecentMetadataChange = str(datetime.timedelta(seconds = fileStats.st_atime))
 
-    pass
+        fileInfoStr += 'Tamaño del archivo (Bytes): ' + str(fileStats.st_size) + '\n'
+        fileInfoStr += 'Último acceso: ' + str(mostRecentAccess) + '\n'
+        fileInfoStr += 'Última modificación del contenido del archivo: ' + str(mostRecentContentChange) + '\n'
+        fileInfoStr += 'Última modificación de los metadatos del archivo: ' + str(mostRecentMetadataChange) + '\n'
+
+        return fileInfoStr
+
+    def __getConfigModelFilename(self, filename = None):
+        #filename = 'error.sav'
+           
+        now = datetime.now()
+        versionDateTime = now.strftime("%Y%m%d%H%M%S")
+        filename = constants.FILEPATH + self.__modelType + '/' + 'model_' + self.__modelType + '_' + versionDateTime + constants.MODEL_FILETYPE
+
+        return filename
+    '''
 
 
