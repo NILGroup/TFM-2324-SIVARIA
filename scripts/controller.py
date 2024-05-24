@@ -4,6 +4,7 @@ import os
 import pickle
 from datetime import datetime
 import math
+import numpy as np
 # Own created classes and modules
 import constants
 import decoder
@@ -21,7 +22,7 @@ def main():
         config = getConfig()
 
         if option == '-h':
-            print(getHelpMessage())
+            return getHelpMessage()
         elif option =='-mt':
             
             if len(sys.argv) <= 2:
@@ -32,8 +33,11 @@ def main():
                 modelType = sys.argv[2]
                 setModelType(modelType)
 
-            print('Model type of the Expert System: ' + str(modelType))
-            print('Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
+            output = 'Model type of the Expert System: ' + str(modelType) + '\n'
+            output += 'Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n'
+
+            return output
+        
         elif option =='-st':
 
             if len(sys.argv) <= 2:
@@ -43,9 +47,11 @@ def main():
             else:
                 scoreType = sys.argv[2]
                 setScoreType(scoreType)
-                
-            print('Score type of the Expert System: ' + str(scoreType))
-            print('Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS))
+            
+            output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
+            output += 'Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n'
+
+            return output
         elif option =='-t':
             if len(sys.argv) <= 2:
                 raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
@@ -73,26 +79,70 @@ def main():
             if mostRecentFilename is not None:
                 print(getFileStats(mostRecentFilename))
 
-            # Building the model
+            # Building Model
             expertSystem.buildModel(mostRecentFilename)
             
             # Training Model
+            print('Training the model...') 
             X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
 
             modelForTest = expertSystem.trainModel(X_train, y_train)
+            print('Model trained successfully\n')
 
-            # Saving model
-            filePath, filename = getConfigModelFilename(expertSystem.getModelType())
-
-            expertSystem.saveModel(filePath, filename)
-
-            print(getFileStats(filename))
-
+            # Testing Model
             print('Testing trained model ...')
+
+            y_pred = expertSystem.predict(X_test)
+            classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
+            cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
 
             (p_valor, Cont) = expertSystem.testModel(modelForTest, X_train, y_train, X_test, y_test)
             print('Model tested successfully')
-            print('('+ str(p_valor) + ',' + str(Cont) +')')
+            #print('('+ str(p_valor) + ',' + str(Cont) +')')
+
+            # Saving model
+            print('Saving model...')
+            filePath, filename = getConfigModelFilename(expertSystem.getModelType())
+
+            expertSystem.saveModel(filePath, filename)
+            print('Model saved\n')
+
+            print(getFileStats(filename))
+
+            # Preparing data to return 
+
+            FP = cm.sum(axis=0) - np.diag(cm)  
+            FN = cm.sum(axis=1) - np.diag(cm)
+            TP = np.diag(cm)
+            TN = cm.sum() - (FP + FN + TP)
+            
+            result = {
+                'positive_negative_data': {
+                    'total': {
+                        'TP': sum(TP),
+                        'TN': sum(TN),
+                        'FP': sum(FP),
+                        'FN': sum(FN)
+                    }
+                },
+                'p_value_testing': {
+                    'p_valor':p_valor,
+                    'Cont': Cont
+                }
+            }
+            
+            index = 0
+            for className in classNames:
+                classNameLower = className.lower()
+                predictionResults = {}
+                predictionResults['TP'] = TP[index]
+                predictionResults['TN'] = TN[index]
+                predictionResults['FP'] = FP[index]
+                predictionResults['FN'] = FN[index]
+                result['positive_negative_data'][classNameLower] = predictionResults
+                index += 1 
+
+            return result
 
         elif option =='-p':
             if len(sys.argv) <= 2:
@@ -131,6 +181,8 @@ def main():
 
     except (ApplicationException) as e:
         return 'Script error: ' + str(e.message)
+
+
 
 
 def getHelpMessage():

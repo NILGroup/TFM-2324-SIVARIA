@@ -50,28 +50,23 @@ class ExpertSystem():
         if self.__scoreOption is None:
             raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
-        print('Training the model...') 
-
         modelForTest = self.__model
 
         self.__model.fit(X_train, y_train)
-
-        print('Model trained successfully\n')
 
         return modelForTest
     
     def predict(self, X_data):
         return self.__model.predict(X_data)
     
-    def plotConfusionMatrix(self, y_test, y_pred, classNames):
+    def getConfusionMatrix(self, y_test, y_pred, classNames):
 
-        cm = confusion_matrix(y_test, y_pred, labels=classNames)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                                      display_labels=classNames)
-        return disp
+        return confusion_matrix(y_test, y_pred, labels=classNames)
+        #disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                                      #display_labels=classNames)
+        #return disp
 
     def saveModel(self, filePathByModelType, filename):
-        print('Saving model...')
 
         if os.path.exists(constants.FILEPATH) == False:
             os.mkdir(constants.FILEPATH)
@@ -82,7 +77,6 @@ class ExpertSystem():
         # We save the file in a .pickle file
         
         pickle.dump(self.__model, open(filename, 'wb'))
-        print('Model saved\n')
 
     def testModel(self, modelForTest, X_train, y_train, X_test, y_test):
         if self.__modelType is None:
