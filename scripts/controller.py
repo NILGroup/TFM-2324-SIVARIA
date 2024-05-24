@@ -189,7 +189,7 @@ def getHelpMessage():
     helpMessage = 'controller.py [OPTION] [DATASET|TYPE]\n\n'
 
     helpMessage += 'OPTION\n'
-    helpMessage += '\t-h\tPrints the help message.n\n'
+    helpMessage += '\t-h\tPrints the help message.\n\n'
     helpMessage += '\t-mt\tPrint the current model type selected.\n'
     helpMessage += '\t\tIf the following parameter [TYPE] is a model type, \n'
     helpMessage += '\t\tthe configuration will be modified to this new model type.\n'
