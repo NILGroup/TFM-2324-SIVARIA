@@ -52,6 +52,52 @@ def main():
             output += 'Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n'
 
             return output
+        elif option == '-lst':
+            output = {}
+            total = 0
+            if len(sys.argv) <= 2:
+                for modelType in constants.MODEL_TYPES:
+                    filePath = constants.FILEPATH + modelType
+                    files = os.listdir(filePath)
+                    total += len(files)
+                    output[modelType] = files
+                    
+            else:
+                modelType = sys.argv[2]
+                filePath = constants.FILEPATH + modelType
+                files = os.listdir(filePath)
+                output[modelType] = files
+                total = len(files)
+
+            output['total'] = total
+            return output
+        elif option == '-fs':
+
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Filename not provided.\n\n' + getHelpMessage())
+            
+            output = {}
+
+            filename = sys.argv[2]
+
+            modelType = filename.split('_')[1]
+            output[modelType] = []
+            output[modelType].append(getFileStats(constants.FILEPATH + modelType + '/' + filename))
+
+            return output
+        elif option == '-rm':
+
+            if len(sys.argv) <= 2:
+                raise CommandLineException('Filename not provided.\n\n' + getHelpMessage())
+            
+            filename = sys.argv[2]
+
+            filePath = constants.FILEPATH + modelType + '/' + filename
+            if os.path.exists(filePath) == False:
+                raise FileNotFoundError('Filename not found. Type the name correctly.\n\n' + getHelpMessage())
+
+            os.remove(filePath)
+            return 'File removed successfully'
         elif option =='-t':
             if len(sys.argv) <= 2:
                 raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
@@ -77,7 +123,7 @@ def main():
             mostRecentFilename = getMostRecentFile(modelType)
             
             if mostRecentFilename is not None:
-                print(getFileStats(mostRecentFilename))
+                print(getFileInfo(mostRecentFilename))
 
             # Building Model
             expertSystem.buildModel(mostRecentFilename)
@@ -107,7 +153,7 @@ def main():
             expertSystem.saveModel(filePath, filename)
             print('Model saved\n')
 
-            print(getFileStats(filename))
+            print(getFileInfo(filename))
 
             # Preparing data to return 
 
@@ -166,7 +212,7 @@ def main():
             mostRecentFilename = getMostRecentFile(modelType)
             
             if mostRecentFilename is not None:
-                print(getFileStats(mostRecentFilename))
+                print(getFileInfo(mostRecentFilename))
 
             expertSystem.buildModel(mostRecentFilename)
 
@@ -179,27 +225,31 @@ def main():
         else:
             raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + getHelpMessage())
 
-    except (ApplicationException) as e:
+    except (Exception) as e:
         return 'Script error: ' + str(e.message)
 
 
-
-
 def getHelpMessage():
-    helpMessage = 'controller.py [OPTION] [DATASET|TYPE]\n\n'
+    helpMessage = 'controller.py [OPTION] [DATASET|MODEL TYPE|MODEL SAVE FILENAME]\n\n'
 
     helpMessage += 'OPTION\n'
     helpMessage += '\t-h\tPrints the help message.\n\n'
     helpMessage += '\t-mt\tPrint the current model type selected.\n'
-    helpMessage += '\t\tIf the following parameter [TYPE] is a model type, \n'
+    helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a model type, \n'
     helpMessage += '\t\tthe configuration will be modified to this new model type.\n'
     helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.MODEL_TYPES) + '\n\n'
     helpMessage += '\t\tExample: python controller.py -mt autoinforme\n\n'
     helpMessage += '\t-st\tPrint the current score type selected. \n'
-    helpMessage += '\t\tIf the following parameter [TYPE] is a score type, \n'
+    helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a score type, \n'
     helpMessage += '\t\tthe configuration will be modified to this new score type.\n'
     helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.SCORE_OPTIONS) + '\n\n'
     helpMessage += '\t\tExample: python controller.py -st accuracy\n\n'
+    helpMessage += '\t-lst\tReturn an object of list of save files. If a model type [MODEL TYPE] is provided,\n'
+    helpMessage += '\t\tit returns all the save files of that model.\n'
+    helpMessage += '\t\tOtherwise, it returns an object with all the save files of all model types.\n\n'
+    helpMessage += '\t\tExample: python controller.py -lst autoinforme\n\n'
+    helpMessage += '\t-fs\tReturn an object with the stats of a given save file name in [MODEL SAVE FILENAME].\n\n'
+    helpMessage += '\t-rm\tRemove a save filename of a model given its name in [MODEL SAVE FILENAME].\n\n'
     helpMessage += '\t-t\tTrain a model, that can be "autoinforme", "familia" and "profesional" given a dataset [DATASET].\n'
     helpMessage += '\t\tIn order to train the model correctly, a model type and a score type previously.\n'
     helpMessage += '\t\tIf not, the training will not work.\n\n'
@@ -289,18 +339,15 @@ def getConfigModelFilename(modelType):
 
     return (filePath, filename)
 
-def getFileStats(filename):
+def getFileInfo(filename):
+    fileStats = getFileStats(filename)
+
     fileInfoStr = 'File: ' + filename + '\n'
 
-    fileStats = os.stat(filename)
-    mostRecentAccess = datetime.fromtimestamp(fileStats.st_atime).strftime('%d-%m-%Y %H:%M:%S')
-    mostRecentContentChange = datetime.fromtimestamp(fileStats.st_mtime).strftime("%d-%m-%Y %H:%M:%S")
-    mostRecentMetadataChange = datetime.fromtimestamp(fileStats.st_ctime).strftime("%d-%m-%Y %H:%M:%S")
-
-    fileInfoStr += 'File size (Bytes): ' + str(convertSize(fileStats.st_size)) + '\n'
-    fileInfoStr += 'Most recent access: ' + str(mostRecentAccess) + '\n'
-    fileInfoStr += 'Most recent content change: ' + str(mostRecentContentChange) + '\n'
-    fileInfoStr += 'Most recent metadata change: ' + str(mostRecentMetadataChange) + '\n'
+    fileInfoStr += 'File size: ' + str(fileStats['st_size']) + '\n'
+    fileInfoStr += 'Most recent access: ' + str(fileStats['st_atime']) + '\n'
+    fileInfoStr += 'Most recent content change: ' + str(fileStats['st_mtime']) + '\n'
+    fileInfoStr += 'Most recent metadata change: ' + str(fileStats['st_ctime']) + '\n'
 
     return fileInfoStr
 
@@ -315,7 +362,6 @@ def getMostRecentFile(modelType):
     except Exception:
         return None
     
-
 def convertSize(size_bytes):
    if size_bytes == 0:
        return "0B"
@@ -324,6 +370,20 @@ def convertSize(size_bytes):
    p = math.pow(1024, i)
    s = round(size_bytes / p, 2)
    return "%s %s" % (s, size_name[i])
+
+def convertSecondsToDatetime(st_time):
+    return datetime.fromtimestamp(st_time).strftime('%d-%m-%Y %H:%M:%S')
+
+def getFileStats(filename):
+    fileStats = os.stat(filename)
+
+    return {
+        'filename': filename,
+        'st_atime': convertSecondsToDatetime(fileStats.st_atime),
+        'st_mtime': convertSecondsToDatetime(fileStats.st_mtime),
+        'st_ctime': convertSecondsToDatetime(fileStats.st_ctime),
+        'st_size': convertSize(fileStats.st_size),
+    }
 
 if __name__ == "__main__":
     sys.exit(main())
