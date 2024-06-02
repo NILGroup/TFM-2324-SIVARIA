@@ -143,7 +143,7 @@ def main():
             classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
             cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
 
-            (p_valor, Cont) = expertSystem.testModel(modelForTest, X_train, y_train, X_test, y_test)
+            (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
             print('Model tested successfully')
             #print('('+ str(p_valor) + ',' + str(Cont) +')')
 

@@ -5,6 +5,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import copy
 # Own created modules
 import constants
 
@@ -37,7 +38,7 @@ class ExpertSystem():
         X, y = dataframe.values[:,0:(numberColumns - 1)], dataframe.values[:,(numberColumns - 1)]
         X_train, X_test, y_train, y_test = train_test_split(X, 
                                                             y, 
-                                                            test_size=constants.TESTING_DATASET_SIZE, 
+                                                            test_size=(1-constants.TESTING_DATASET_SIZE), 
                                                             random_state=1, 
                                                             stratify=y)   
         return (X_train, X_test, y_train, y_test)
@@ -50,9 +51,9 @@ class ExpertSystem():
         if self.__scoreOption is None:
             raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
-        modelForTest = self.__model
+        modelForTest = copy.deepcopy(self.__model)
 
-        self.__model.fit(X_train, y_train)
+        self.__model.partial_fit(X_train, y_train, classes=np.unique(y_train))
 
         return modelForTest
     
@@ -78,7 +79,7 @@ class ExpertSystem():
         
         pickle.dump(self.__model, open(filename, 'wb'))
 
-    def testModel(self, modelForTest, X_train, y_train, X_test, y_test):
+    def testModel(self, modelForTest, y_pred, X_train, y_train, X_test, y_test):
         if self.__modelType is None:
             raise ValueError('Model type not specified.')
         
@@ -88,11 +89,11 @@ class ExpertSystem():
         if self.__scoreOption is None:
             raise ValueError('Score type not set.')
 
-        clf_NB = modelForTest
-        clf_NB.fit(X_train, y_train)
-        y_pred = clf_NB.predict(X_test)
-        ACC_Ini = self.getScore(y_test, y_pred)
-        print('Selected score: ' + self.__scoreOption + ' = %.3f' % ACC_Ini)
+        #clf_NB = modelForTest
+        #clf_NB.fit(X_train, y_train)
+        #y_pred = clf_NB.predict(X_test)
+        Score_Ini = self.getScore(y_test, y_pred)
+        print('Selected score: ' + self.__scoreOption + ' = %.3f' % Score_Ini)
 
         NumRepeticiones = 100 # hacemos 100 muestras con bootstrap
         NumMuestras = X_train.shape[0] # el número de muestras totales en X_train
@@ -119,7 +120,7 @@ class ExpertSystem():
             
             #i+=1
             
-            if self.getScore(y_test_Boot, y_pred_Boot) > ACC_Ini:
+            if self.getScore(y_test_Boot, y_pred_Boot) > Score_Ini:
                 Cont +=1
 
         p_valor = (Cont+1)/(NumRepeticiones + 1)
