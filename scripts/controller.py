@@ -92,6 +92,7 @@ def main():
             
             filename = sys.argv[2]
 
+            modelType = filename.split('_')[1]
             filePath = constants.FILEPATH + modelType + '/' + filename
             if os.path.exists(filePath) == False:
                 raise FileNotFoundError('Filename not found. Type the name correctly.\n\n' + getHelpMessage())
@@ -225,7 +226,7 @@ def main():
         else:
             raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + getHelpMessage())
 
-    except (Exception) as e:
+    except (ApplicationException) as e:
         return 'Script error: ' + str(e.message)
 
 
