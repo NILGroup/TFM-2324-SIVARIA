@@ -7,7 +7,8 @@ import math
 import numpy as np
 # Own created classes and modules
 import constants
-import decoder
+from decoder import Decoder
+from checker import Checker
 from expertSystem import ExpertSystem
 from exceptions.ApplicationException import ApplicationException
 from exceptions.CommandLineException import CommandLineException
@@ -109,16 +110,18 @@ class Controller():
                 scoreType = self.getScoreType(config)
 
                 if modelType is None or scoreType is None:
-                    self.checkErrors(config)
+                    Checker.checkConfig(config)
                 
                 dataset = args[2]
+
+                Checker.checkDatasetParameter(dataset)
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
 
                 # Code Dataset
                 df = pd.read_csv(dataset)
-                newDF = decoder.codeDataset(df)
+                newDF = Decoder.codeDataset(df)
 
                 expertSystem.setModelType(modelType)
                 expertSystem.setScoreOption(scoreType)
@@ -200,15 +203,17 @@ class Controller():
                 modelType = self.getModelType(config)
 
                 if modelType is None:
-                    self.checkErrors(config)
+                    Checker.checkConfig(config)
 
                 dataset = args[2]
+                
+                Checker.checkDatasetParameter(dataset)
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
                 
                 df = pd.read_csv(dataset)
-                newDF = decoder.codeDataset(df)
+                newDF = Decoder.codeDataset(df)
 
                 expertSystem.setModelType(modelType)
                 
@@ -228,7 +233,7 @@ class Controller():
             else:
                 raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + self.getHelpMessage())
 
-        except (ApplicationException) as e:
+        except (ApplicationException, FileNotFoundError, ValueError) as e:
             return 'Script error: ' + str(e.message)
 
     def getHelpMessage(self):
@@ -321,16 +326,6 @@ class Controller():
             config = configLoaded
 
         pickle.dump(config, open(filename, 'wb'))
-
-    def checkErrors(self, config):
-        if config is None:
-            raise CommandLineException('System configuration not found.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
-
-        if 'modelType' not in config:
-            raise CommandLineException('Model type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
-
-        if 'scoreType' not in config:
-            raise CommandLineException('Score type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
     def getConfigModelFilename(self, modelType):
         now = datetime.now()
