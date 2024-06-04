@@ -7,384 +7,376 @@ import math
 import numpy as np
 # Own created classes and modules
 import constants
-import decoder
+from decoder import Decoder
+from checker import Checker
 from expertSystem import ExpertSystem
 from exceptions.ApplicationException import ApplicationException
 from exceptions.CommandLineException import CommandLineException
 
-def main():
-    try:
-        if(len(sys.argv) <= 1):
-            raise CommandLineException('Not enough parameters.\n\n' + getHelpMessage())
-        
-        option = sys.argv[1]
-        expertSystem = ExpertSystem()
-        config = getConfig()
-
-        if option == '-h':
-            return getHelpMessage()
-        elif option =='-mt':
+class Controller():
+    
+    def execute(self, args):
+        try:
+            if(len(args) <= 1):
+                raise CommandLineException('Not enough parameters.\n\n' + self.getHelpMessage())
             
-            if len(sys.argv) <= 2:
-                modelType = getModelType(config)
-                if modelType is None:
-                    modelType = 'None'
-            else:
-                modelType = sys.argv[2]
-                setModelType(modelType)
+            option = args[1]
+            expertSystem = ExpertSystem()
+            config = self.getConfig()
 
-            output = 'Model type of the Expert System: ' + str(modelType) + '\n'
-            output += 'Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n'
+            if option == '-h':
+                return self.getHelpMessage()
+            elif option =='-mt':
+                
+                if len(args) <= 2:
+                    modelType = self.getModelType(config)
+                    if modelType is None:
+                        modelType = 'None'
+                else:
+                    modelType = args[2]
+                    self.setModelType(modelType)
 
-            return output
-        
-        elif option =='-st':
+                output = 'Model type of the Expert System: ' + str(modelType) + '\n'
+                output += 'Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n'
 
-            if len(sys.argv) <= 2:
-                scoreType = getScoreType(config)
-                if scoreType is None:
-                    scoreType = 'None'
-            else:
-                scoreType = sys.argv[2]
-                setScoreType(scoreType)
+                return output
             
-            output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
-            output += 'Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n'
+            elif option =='-st':
 
-            return output
-        elif option == '-lst':
-            output = {}
-            total = 0
-            if len(sys.argv) <= 2:
-                for modelType in constants.MODEL_TYPES:
+                if len(args) <= 2:
+                    scoreType = self.getScoreType(config)
+                    if scoreType is None:
+                        scoreType = 'None'
+                else:
+                    scoreType = args[2]
+                    self.setScoreType(scoreType)
+                
+                output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
+                output += 'Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n'
+
+                return output
+            elif option == '-lst':
+                output = {}
+                total = 0
+                if len(args) <= 2:
+                    for modelType in constants.MODEL_TYPES:
+                        filePath = constants.FILEPATH + modelType
+                        files = os.listdir(filePath)
+                        total += len(files)
+                        output[modelType] = files
+                        
+                else:
+                    modelType = args[2]
                     filePath = constants.FILEPATH + modelType
                     files = os.listdir(filePath)
-                    total += len(files)
                     output[modelType] = files
-                    
-            else:
-                modelType = sys.argv[2]
-                filePath = constants.FILEPATH + modelType
-                files = os.listdir(filePath)
-                output[modelType] = files
-                total = len(files)
+                    total = len(files)
 
-            output['total'] = total
-            return output
-        elif option == '-fs':
+                output['total'] = total
+                return output
+            elif option == '-fs':
 
-            if len(sys.argv) <= 2:
-                raise CommandLineException('Filename not provided.\n\n' + getHelpMessage())
-            
-            output = {}
+                if len(args) <= 2:
+                    raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
+                
+                output = {}
 
-            filename = sys.argv[2]
+                filename = args[2]
 
-            modelType = filename.split('_')[1]
-            output[modelType] = []
-            output[modelType].append(getFileStats(constants.FILEPATH + modelType + '/' + filename))
+                modelType = filename.split('_')[1]
+                output[modelType] = []
+                output[modelType].append(self.getFileStats(constants.FILEPATH + modelType + '/' + filename))
 
-            return output
-        elif option == '-rm':
+                return output
+            elif option == '-rm':
 
-            if len(sys.argv) <= 2:
-                raise CommandLineException('Filename not provided.\n\n' + getHelpMessage())
-            
-            filename = sys.argv[2]
+                if len(args) <= 2:
+                    raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
+                
+                filename = args[2]
 
-            modelType = filename.split('_')[1]
-            filePath = constants.FILEPATH + modelType + '/' + filename
-            if os.path.exists(filePath) == False:
-                raise FileNotFoundError('Filename not found. Type the name correctly.\n\n' + getHelpMessage())
+                modelType = filename.split('_')[1]
+                filePath = constants.FILEPATH + modelType + '/' + filename
+                if os.path.exists(filePath) == False:
+                    raise FileNotFoundError('Filename not found. Type the name correctly.\n\n' + self.getHelpMessage())
 
-            os.remove(filePath)
-            return 'File removed successfully'
-        elif option =='-t':
-            if len(sys.argv) <= 2:
-                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
-            
-            modelType = getModelType(config)
-            scoreType = getScoreType(config)
+                os.remove(filePath)
+                return 'File removed successfully'
+            elif option =='-t':
+                if len(args) <= 2:
+                    raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
+                
+                modelType = self.getModelType(config)
+                scoreType = self.getScoreType(config)
 
-            if modelType is None or scoreType is None:
-                checkErrors(config)
-            
-            dataset = sys.argv[2]
+                if modelType is None or scoreType is None:
+                    Checker.checkConfig(config)
+                
+                dataset = args[2]
 
-            if os.path.exists(dataset) == False:
-                raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + getHelpMessage())
+                Checker.checkDatasetParameter(dataset)
 
-            # Code Dataset
-            df = pd.read_csv(dataset)
-            newDF = decoder.codeDataset(df)
+                if os.path.exists(dataset) == False:
+                    raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
 
-            expertSystem.setModelType(modelType)
-            expertSystem.setScoreOption(scoreType)
+                # Code Dataset
+                df = pd.read_csv(dataset)
+                newDF = Decoder.codeDataset(df)
 
-            mostRecentFilename = getMostRecentFile(modelType)
-            
-            if mostRecentFilename is not None:
-                print(getFileInfo(mostRecentFilename))
+                expertSystem.setModelType(modelType)
+                expertSystem.setScoreOption(scoreType)
 
-            # Building Model
-            expertSystem.buildModel(mostRecentFilename)
-            
-            # Training Model
-            print('Training the model...') 
-            X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
+                mostRecentFilename = self.getMostRecentFile(modelType)
+                
+                if mostRecentFilename is not None:
+                    print(self.getFileInfo(mostRecentFilename))
 
-            modelForTest = expertSystem.trainModel(X_train, y_train)
-            print('Model trained successfully\n')
+                # Building Model
+                expertSystem.buildModel(mostRecentFilename)
+                
+                # Training Model
+                print('Training the model...') 
+                X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
 
-            # Testing Model
-            print('Testing trained model ...')
+                modelForTest = expertSystem.trainModel(X_train, y_train)
+                print('Model trained successfully\n')
 
-            y_pred = expertSystem.predict(X_test)
-            classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
-            cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
+                # Testing Model
+                print('Testing trained model ...')
 
-            (p_valor, Cont) = expertSystem.testModel(modelForTest, X_train, y_train, X_test, y_test)
-            print('Model tested successfully')
-            #print('('+ str(p_valor) + ',' + str(Cont) +')')
+                y_pred = expertSystem.predict(X_test)
+                classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
+                cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
 
-            # Saving model
-            print('Saving model...')
-            filePath, filename = getConfigModelFilename(expertSystem.getModelType())
+                (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
+                print('Model tested successfully')
+                #print('('+ str(p_valor) + ',' + str(Cont) +')')
 
-            expertSystem.saveModel(filePath, filename)
-            print('Model saved\n')
+                # Saving model
+                print('Saving model...')
+                filePath, filename = self.getConfigModelFilename(expertSystem.getModelType())
 
-            print(getFileInfo(filename))
+                expertSystem.saveModel(filePath, filename)
+                print('Model saved\n')
 
-            # Preparing data to return 
+                print(self.getFileInfo(filename))
 
-            FP = cm.sum(axis=0) - np.diag(cm)  
-            FN = cm.sum(axis=1) - np.diag(cm)
-            TP = np.diag(cm)
-            TN = cm.sum() - (FP + FN + TP)
-            
-            result = {
-                'positive_negative_data': {
-                    'total': {
-                        'TP': sum(TP),
-                        'TN': sum(TN),
-                        'FP': sum(FP),
-                        'FN': sum(FN)
+                # Preparing data to return 
+
+                FP = cm.sum(axis=0) - np.diag(cm)  
+                FN = cm.sum(axis=1) - np.diag(cm)
+                TP = np.diag(cm)
+                TN = cm.sum() - (FP + FN + TP)
+                
+                result = {
+                    'positive_negative_data': {
+                        'total': {
+                            'TP': sum(TP),
+                            'TN': sum(TN),
+                            'FP': sum(FP),
+                            'FN': sum(FN)
+                        }
+                    },
+                    'p_value_testing': {
+                        'p_valor':p_valor,
+                        'Cont': Cont
                     }
-                },
-                'p_value_testing': {
-                    'p_valor':p_valor,
-                    'Cont': Cont
                 }
-            }
+                
+                index = 0
+                for className in classNames:
+                    classNameLower = className.lower()
+                    predictionResults = {}
+                    predictionResults['TP'] = TP[index]
+                    predictionResults['TN'] = TN[index]
+                    predictionResults['FP'] = FP[index]
+                    predictionResults['FN'] = FN[index]
+                    result['positive_negative_data'][classNameLower] = predictionResults
+                    index += 1 
+
+                return result
+
+            elif option =='-p':
+                if len(args) <= 2:
+                    raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
+                
+                modelType = self.getModelType(config)
+
+                if modelType is None:
+                    Checker.checkConfig(config)
+
+                dataset = args[2]
+                
+                Checker.checkDatasetParameter(dataset)
+
+                if os.path.exists(dataset) == False:
+                    raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
+                
+                df = pd.read_csv(dataset)
+                newDF = Decoder.codeDataset(df)
+
+                expertSystem.setModelType(modelType)
+                
+                mostRecentFilename = self.getMostRecentFile(modelType)
+                
+                if mostRecentFilename is not None:
+                    print(self.getFileInfo(mostRecentFilename))
+
+                expertSystem.buildModel(mostRecentFilename)
+
+                if 'Desenlace' in newDF.columns:
+                    newDF = newDF.drop('Desenlace', axis=1)
+
+                y_pred = expertSystem.predict(newDF.values)
+                return y_pred
             
-            index = 0
-            for className in classNames:
-                classNameLower = className.lower()
-                predictionResults = {}
-                predictionResults['TP'] = TP[index]
-                predictionResults['TN'] = TN[index]
-                predictionResults['FP'] = FP[index]
-                predictionResults['FN'] = FN[index]
-                result['positive_negative_data'][classNameLower] = predictionResults
-                index += 1 
+            else:
+                raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + self.getHelpMessage())
 
-            return result
+        except (ApplicationException, FileNotFoundError, ValueError) as e:
+            return 'Script error: ' + str(e.message)
 
-        elif option =='-p':
-            if len(sys.argv) <= 2:
-                raise CommandLineException('Dataset not specified.\n\n' + getHelpMessage())
-            
-            modelType = getModelType(config)
+    def getHelpMessage(self):
+        helpMessage = 'main.py [OPTION] [DATASET|MODEL TYPE|MODEL SAVE FILENAME]\n\n'
 
-            if modelType is None:
-                checkErrors(config)
+        helpMessage += 'OPTION\n'
+        helpMessage += '\t-h\tPrints the help message.\n\n'
+        helpMessage += '\t-mt\tPrint the current model type selected.\n'
+        helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a model type, \n'
+        helpMessage += '\t\tthe configuration will be modified to this new model type.\n'
+        helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.MODEL_TYPES) + '\n\n'
+        helpMessage += '\t\tExample: python main.py -mt autoinforme\n\n'
+        helpMessage += '\t-st\tPrint the current score type selected. \n'
+        helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a score type, \n'
+        helpMessage += '\t\tthe configuration will be modified to this new score type.\n'
+        helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.SCORE_OPTIONS) + '\n\n'
+        helpMessage += '\t\tExample: python main.py -st accuracy\n\n'
+        helpMessage += '\t-lst\tReturn an object of list of save files. If a model type [MODEL TYPE] is provided,\n'
+        helpMessage += '\t\tit returns all the save files of that model.\n'
+        helpMessage += '\t\tOtherwise, it returns an object with all the save files of all model types.\n\n'
+        helpMessage += '\t\tExample: python main.py -lst autoinforme\n\n'
+        helpMessage += '\t-fs\tReturn an object with the stats of a given save file name in [MODEL SAVE FILENAME].\n\n'
+        helpMessage += '\t-rm\tRemove a save filename of a model given its name in [MODEL SAVE FILENAME].\n\n'
+        helpMessage += '\t-t\tTrain a model, that can be "autoinforme", "familia" and "profesional" given a dataset [DATASET].\n'
+        helpMessage += '\t\tIn order to train the model correctly, a model type and a score type previously.\n'
+        helpMessage += '\t\tIf not, the training will not work.\n\n'
+        helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n'
 
-            dataset = sys.argv[2]
+        return helpMessage
 
-            if os.path.exists(dataset) == False:
-                raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + getHelpMessage())
-            
-            df = pd.read_csv(dataset)
-            newDF = decoder.codeDataset(df)
+    def getConfig(self):
 
-            expertSystem.setModelType(modelType)
-            
-            mostRecentFilename = getMostRecentFile(modelType)
-            
-            if mostRecentFilename is not None:
-                print(getFileInfo(mostRecentFilename))
+        config = None
+        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
 
-            expertSystem.buildModel(mostRecentFilename)
+        if os.path.exists(filename):
+            config = pickle.load(open(filename, 'rb'))
 
-            if 'Desenlace' in newDF.columns:
-                newDF = newDF.drop('Desenlace', axis=1)
+        return config
 
-            y_pred = expertSystem.predict(newDF.values)
-            return y_pred
+    def getModelType(self, config):
+        try:
+            return config['modelType']
+        except Exception:
+            return None
+
+    def setModelType(self, modelType):
         
-        else:
-            raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + getHelpMessage())
+        if modelType not in constants.MODEL_TYPES:
+            raise ValueError('Given model type is not valid. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
 
-    except (ApplicationException) as e:
-        return 'Script error: ' + str(e.message)
+        if os.path.exists(constants.FILEPATH) == False:
+            os.mkdir(constants.FILEPATH)
 
+        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
 
-def getHelpMessage():
-    helpMessage = 'controller.py [OPTION] [DATASET|MODEL TYPE|MODEL SAVE FILENAME]\n\n'
+        config = {
+            'modelType' : modelType
+        }
 
-    helpMessage += 'OPTION\n'
-    helpMessage += '\t-h\tPrints the help message.\n\n'
-    helpMessage += '\t-mt\tPrint the current model type selected.\n'
-    helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a model type, \n'
-    helpMessage += '\t\tthe configuration will be modified to this new model type.\n'
-    helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.MODEL_TYPES) + '\n\n'
-    helpMessage += '\t\tExample: python controller.py -mt autoinforme\n\n'
-    helpMessage += '\t-st\tPrint the current score type selected. \n'
-    helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a score type, \n'
-    helpMessage += '\t\tthe configuration will be modified to this new score type.\n'
-    helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.SCORE_OPTIONS) + '\n\n'
-    helpMessage += '\t\tExample: python controller.py -st accuracy\n\n'
-    helpMessage += '\t-lst\tReturn an object of list of save files. If a model type [MODEL TYPE] is provided,\n'
-    helpMessage += '\t\tit returns all the save files of that model.\n'
-    helpMessage += '\t\tOtherwise, it returns an object with all the save files of all model types.\n\n'
-    helpMessage += '\t\tExample: python controller.py -lst autoinforme\n\n'
-    helpMessage += '\t-fs\tReturn an object with the stats of a given save file name in [MODEL SAVE FILENAME].\n\n'
-    helpMessage += '\t-rm\tRemove a save filename of a model given its name in [MODEL SAVE FILENAME].\n\n'
-    helpMessage += '\t-t\tTrain a model, that can be "autoinforme", "familia" and "profesional" given a dataset [DATASET].\n'
-    helpMessage += '\t\tIn order to train the model correctly, a model type and a score type previously.\n'
-    helpMessage += '\t\tIf not, the training will not work.\n\n'
-    helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n'
+        if os.path.exists(filename):
+            configLoaded = pickle.load(open(filename, 'rb'))
+            configLoaded.update(config)
+            config = configLoaded
 
-    return helpMessage
+        pickle.dump(config, open(filename, 'wb'))
 
-def getConfig():
+    def getScoreType(self, config):
+        try:
+            return config['scoreType']
+        except Exception:
+            return None
 
-    config = None
-    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+    def setScoreType(self, scoreType):
+        if scoreType not in constants.SCORE_OPTIONS:
+            raise ValueError('Given score type is not valid')
 
-    if os.path.exists(filename):
-        config = pickle.load(open(filename, 'rb'))
+        if os.path.exists(constants.FILEPATH) == False:
+            os.mkdir(constants.FILEPATH)
 
-    return config
+        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
 
-def getModelType(config):
-    try:
-        return config['modelType']
-    except Exception:
-        return None
+        config = {
+            'scoreType' : scoreType
+        }
 
-def setModelType(modelType):
-    
-    if modelType not in constants.MODEL_TYPES:
-        raise ValueError('Given model type is not valid. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
+        if os.path.exists(filename):
+            configLoaded = pickle.load(open(filename, 'rb'))
+            configLoaded.update(config)
+            config = configLoaded
 
-    if os.path.exists(constants.FILEPATH) == False:
-        os.mkdir(constants.FILEPATH)
+        pickle.dump(config, open(filename, 'wb'))
 
-    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+    def getConfigModelFilename(self, modelType):
+        now = datetime.now()
+        versionDateTime = now.strftime("%Y%m%d%H%M%S")
+        filePath = constants.FILEPATH + modelType
+        filename = filePath + '/' + 'model_' + modelType + '_' + versionDateTime + constants.MODEL_FILETYPE
 
-    config = {
-        'modelType' : modelType
-    }
+        return (filePath, filename)
 
-    if os.path.exists(filename):
-        configLoaded = pickle.load(open(filename, 'rb'))
-        configLoaded.update(config)
-        config = configLoaded
+    def getFileInfo(self, filename):
+        fileStats = self.getFileStats(filename)
 
-    pickle.dump(config, open(filename, 'wb'))
+        fileInfoStr = 'File: ' + filename + '\n'
 
-def getScoreType(config):
-    try:
-        return config['scoreType']
-    except Exception:
-        return None
+        fileInfoStr += 'File size: ' + str(fileStats['st_size']) + '\n'
+        fileInfoStr += 'Most recent access: ' + str(fileStats['st_atime']) + '\n'
+        fileInfoStr += 'Most recent content change: ' + str(fileStats['st_mtime']) + '\n'
+        fileInfoStr += 'Most recent metadata change: ' + str(fileStats['st_ctime']) + '\n'
 
-def setScoreType(scoreType):
-    if scoreType not in constants.SCORE_OPTIONS:
-        raise ValueError('Given score type is not valid')
+        return fileInfoStr
 
-    if os.path.exists(constants.FILEPATH) == False:
-        os.mkdir(constants.FILEPATH)
+    def getMostRecentFile(self, modelType):
 
-    filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
+        try:
+            filePath = constants.FILEPATH + modelType + '/'
+            listFiles = os.listdir(filePath)
+            listFiles.sort(reverse=True)    
 
-    config = {
-        'scoreType' : scoreType
-    }
+            return (filePath + listFiles[0])
+        except Exception:
+            return None
+        
+    def convertSize(self, size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return "%s %s" % (s, size_name[i])
 
-    if os.path.exists(filename):
-        configLoaded = pickle.load(open(filename, 'rb'))
-        configLoaded.update(config)
-        config = configLoaded
+    def convertSecondsToDatetime(self, st_time):
+        return datetime.fromtimestamp(st_time).strftime('%d-%m-%Y %H:%M:%S')
 
-    pickle.dump(config, open(filename, 'wb'))
+    def getFileStats(self, filename):
+        fileStats = os.stat(filename)
 
-def checkErrors(config):
-    if config is None:
-        raise CommandLineException('System configuration not found.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
-
-    if 'modelType' not in config:
-        raise CommandLineException('Model type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
-
-    if 'scoreType' not in config:
-        raise CommandLineException('Score type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
-
-
-def getConfigModelFilename(modelType):
-    now = datetime.now()
-    versionDateTime = now.strftime("%Y%m%d%H%M%S")
-    filePath = constants.FILEPATH + modelType
-    filename = filePath + '/' + 'model_' + modelType + '_' + versionDateTime + constants.MODEL_FILETYPE
-
-    return (filePath, filename)
-
-def getFileInfo(filename):
-    fileStats = getFileStats(filename)
-
-    fileInfoStr = 'File: ' + filename + '\n'
-
-    fileInfoStr += 'File size: ' + str(fileStats['st_size']) + '\n'
-    fileInfoStr += 'Most recent access: ' + str(fileStats['st_atime']) + '\n'
-    fileInfoStr += 'Most recent content change: ' + str(fileStats['st_mtime']) + '\n'
-    fileInfoStr += 'Most recent metadata change: ' + str(fileStats['st_ctime']) + '\n'
-
-    return fileInfoStr
-
-def getMostRecentFile(modelType):
-
-    try:
-        filePath = constants.FILEPATH + modelType + '/'
-        listFiles = os.listdir(filePath)
-        listFiles.sort(reverse=True)    
-
-        return (filePath + listFiles[0])
-    except Exception:
-        return None
-    
-def convertSize(size_bytes):
-   if size_bytes == 0:
-       return "0B"
-   size_name = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB")
-   i = int(math.floor(math.log(size_bytes, 1024)))
-   p = math.pow(1024, i)
-   s = round(size_bytes / p, 2)
-   return "%s %s" % (s, size_name[i])
-
-def convertSecondsToDatetime(st_time):
-    return datetime.fromtimestamp(st_time).strftime('%d-%m-%Y %H:%M:%S')
-
-def getFileStats(filename):
-    fileStats = os.stat(filename)
-
-    return {
-        'filename': filename,
-        'st_atime': convertSecondsToDatetime(fileStats.st_atime),
-        'st_mtime': convertSecondsToDatetime(fileStats.st_mtime),
-        'st_ctime': convertSecondsToDatetime(fileStats.st_ctime),
-        'st_size': convertSize(fileStats.st_size),
-    }
-
-if __name__ == "__main__":
-    sys.exit(main())
+        return {
+            'filename': filename,
+            'st_atime': self.convertSecondsToDatetime(fileStats.st_atime),
+            'st_mtime': self.convertSecondsToDatetime(fileStats.st_mtime),
+            'st_ctime': self.convertSecondsToDatetime(fileStats.st_ctime),
+            'st_size': self.convertSize(fileStats.st_size),
+        }

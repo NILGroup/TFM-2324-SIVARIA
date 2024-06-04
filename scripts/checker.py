@@ -1,71 +1,97 @@
 from exceptions.FormatException import FormatException
+from exceptions.CommandLineException import CommandLineException
+import constants
 
-def checkIntValue(value):
-    if value is None:
-        return False
+class Checker(object):
     
-    try:
-        int_value = int(value)
-        return True
-    except ValueError:
-        return False
-    
-def checkStrValue(value):
-    return isinstance(value, str) and value is not None
-
-def checkFloatValue(value):
-    if value is None:
-        return False
-    
-    try:
-        float_value = float(value)
-        return True
-    except ValueError:
-        return False
-
-def checkCSVValue(value):
-    if value is None:
-        return False
-    if isinstance(value, str):
-        if value.endswith('.csv'):
+    @staticmethod
+    def checkIntValue(value):
+        if value is None:
+            return False
+        
+        try:
+            int_value = int(value)
             return True
-    return False
-
-
-def checkClassifierParameter(argument):
-    if checkStrValue(argument) == False:
-        raise FormatException('Format error in the classifier parameter. A string is expected.')
-
-def checkScoreParameter(argument):
-    if checkStrValue(argument) == False:
-        raise FormatException('Format error in the score parameter. A string is expected.')
-
-def checkDatasetParameter(argument):
-    if checkCSVValue(argument) == False:
-        raise FormatException('Format error in the dataset parameter. A csv file is expected.')
+        except ValueError:
+            return False
     
-def checkCharIndexParameter(argument):
-    if checkIntValue(argument) == False:
-        raise FormatException('Format error in the tagIndex parameter. An integer is expected.')
+    @staticmethod    
+    def checkStrValue(value):
+        return isinstance(value, str) and value is not None
     
-def checkTagIndexParameter(argument):
-    if checkStrValue(argument) == False:
-        raise FormatException('Format error in the score parameter. A string is expected.')
+    @staticmethod
+    def checkFloatValue(value):
+        if value is None:
+            return False
+        
+        try:
+            float_value = float(value)
+            return True
+        except ValueError:
+            return False
     
-def checkActionParameter(argument):
-    if checkStrValue(argument) == False:
-        raise FormatException('Format error in the action parameter. A string is expected.')
+    @staticmethod
+    def checkCSVValue(value):
+        if value is None:
+            return False
+        if isinstance(value, str):
+            if value.endswith('.csv'):
+                return True
+        return False
+    
+    @staticmethod
+    def checkClassifierParameter(argument):
+        if Checker.checkStrValue(argument) == False:
+            raise FormatException('Format error in the classifier parameter. A string is expected.')
+    
+    @staticmethod
+    def checkScoreParameter(argument):
+        if Checker.checkStrValue(argument) == False:
+            raise FormatException('Format error in the score parameter. A string is expected.')
+    
+    @staticmethod
+    def checkDatasetParameter(argument):
+        if Checker.checkCSVValue(argument) == False:
+            raise FormatException('Format error in the dataset parameter. A csv file is expected.')
+    
+    @staticmethod    
+    def checkCharIndexParameter(argument):
+        if Checker.checkIntValue(argument) == False:
+            raise FormatException('Format error in the tagIndex parameter. An integer is expected.')
+    
+    @staticmethod
+    def checkTagIndexParameter(argument):
+        if Checker.checkStrValue(argument) == False:
+            raise FormatException('Format error in the score parameter. A string is expected.')
+    
+    @staticmethod  
+    def checkActionParameter(argument):
+        if Checker.checkStrValue(argument) == False:
+            raise FormatException('Format error in the action parameter. A string is expected.')
+    
+    @staticmethod
+    def checkClassNamesParameter(argument):
+        if Checker.checkStrValue(argument) == False:
+            raise FormatException('Format error in the classNames parameter. A string is expected.')
+    
+    @staticmethod    
+    def checkTestSizeParameter(argument):
+        if Checker.checkFloatValue(argument) == False:
+            raise FormatException('Format error in the testsize parameter. An integer or decimal is expected.')
+    
+    @staticmethod
+    def checkNumSamplesParameter(argument):
+        if Checker.checkIntValue(argument) == False:
+            raise FormatException('Format error in the number of samples parameter. An integer or decimal is expected.')
 
-def checkClassNamesParameter(argument):
-    if checkStrValue(argument) == False:
-        raise FormatException('Format error in the classNames parameter. A string is expected.')
-    
-def checkTestSizeParameter(argument):
-    if checkFloatValue(argument) == False:
-        raise FormatException('Format error in the testsize parameter. An integer or decimal is expected.')
-    
-def checkNumSamplesParameter(argument):
-    if checkIntValue(argument) == False:
-        raise FormatException('Format error in the number of samples parameter. An integer or decimal is expected.')
+    @staticmethod
+    def checkConfig(config):
+        if config is None:
+            raise CommandLineException('System configuration not found.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
 
+        if 'modelType' not in config:
+            raise CommandLineException('Model type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+
+        if 'scoreType' not in config:
+            raise CommandLineException('Score type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
     
