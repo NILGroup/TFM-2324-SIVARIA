@@ -87,11 +87,11 @@ class Checker(object):
     @staticmethod
     def checkConfig(config):
         if config is None:
-            raise CommandLineException('System configuration not found.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+            raise CommandLineException('System configuration not found.\n')
 
-        if 'modelType' not in config:
-            raise CommandLineException('Model type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
+        if config.getModelType() is None:
+            raise CommandLineException('Model type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]')
 
-        if 'scoreType' not in config:
-            raise CommandLineException('Score type not found in the configuration. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
+        if config.getScoreType() is None:
+            raise CommandLineException('Score type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]')
     
