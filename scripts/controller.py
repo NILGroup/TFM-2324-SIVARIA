@@ -1,4 +1,3 @@
-import sys
 import pandas as pd
 import os
 import pickle
@@ -9,6 +8,7 @@ import numpy as np
 import constants
 from decoder import Decoder
 from checker import Checker
+from configurator import Configurator
 from expertSystem import ExpertSystem
 from exceptions.ApplicationException import ApplicationException
 from exceptions.CommandLineException import CommandLineException
@@ -22,37 +22,41 @@ class Controller():
             
             option = args[1]
             expertSystem = ExpertSystem()
-            config = self.getConfig()
+            config = Configurator()
 
             if option == '-h':
                 return self.getHelpMessage()
             elif option =='-mt':
                 
                 if len(args) <= 2:
-                    modelType = self.getModelType(config)
+                    modelType = config.getModelType()
                     if modelType is None:
                         modelType = 'None'
                 else:
                     modelType = args[2]
-                    self.setModelType(modelType)
+                    config.setModelType(modelType)
+
+                config.saveConfig()
 
                 output = 'Model type of the Expert System: ' + str(modelType) + '\n'
-                output += 'Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n'
+                output += 'Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]'
 
                 return output
             
             elif option =='-st':
 
                 if len(args) <= 2:
-                    scoreType = self.getScoreType(config)
+                    scoreType = config.getScoreType()
                     if scoreType is None:
                         scoreType = 'None'
                 else:
                     scoreType = args[2]
-                    self.setScoreType(scoreType)
+                    config.setScoreType(scoreType)
                 
+                config.saveConfig()
+
                 output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
-                output += 'Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n'
+                output += 'Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]'
 
                 return output
             elif option == '-lst':
@@ -105,13 +109,12 @@ class Controller():
             elif option =='-t':
                 if len(args) <= 2:
                     raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
-                
-                modelType = self.getModelType(config)
-                scoreType = self.getScoreType(config)
 
-                if modelType is None or scoreType is None:
-                    Checker.checkConfig(config)
+                Checker.checkConfig(config)
                 
+                modelType = config.getModelType()
+                scoreType = config.getScoreType()
+
                 dataset = args[2]
 
                 Checker.checkDatasetParameter(dataset)
@@ -200,10 +203,9 @@ class Controller():
                 if len(args) <= 2:
                     raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
                 
-                modelType = self.getModelType(config)
+                Checker.checkConfig(config)
 
-                if modelType is None:
-                    Checker.checkConfig(config)
+                modelType = config.getModelType()
 
                 dataset = args[2]
                 
@@ -263,69 +265,6 @@ class Controller():
         helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n'
 
         return helpMessage
-
-    def getConfig(self):
-
-        config = None
-        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
-
-        if os.path.exists(filename):
-            config = pickle.load(open(filename, 'rb'))
-
-        return config
-
-    def getModelType(self, config):
-        try:
-            return config['modelType']
-        except Exception:
-            return None
-
-    def setModelType(self, modelType):
-        
-        if modelType not in constants.MODEL_TYPES:
-            raise ValueError('Given model type is not valid. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
-
-        if os.path.exists(constants.FILEPATH) == False:
-            os.mkdir(constants.FILEPATH)
-
-        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
-
-        config = {
-            'modelType' : modelType
-        }
-
-        if os.path.exists(filename):
-            configLoaded = pickle.load(open(filename, 'rb'))
-            configLoaded.update(config)
-            config = configLoaded
-
-        pickle.dump(config, open(filename, 'wb'))
-
-    def getScoreType(self, config):
-        try:
-            return config['scoreType']
-        except Exception:
-            return None
-
-    def setScoreType(self, scoreType):
-        if scoreType not in constants.SCORE_OPTIONS:
-            raise ValueError('Given score type is not valid')
-
-        if os.path.exists(constants.FILEPATH) == False:
-            os.mkdir(constants.FILEPATH)
-
-        filename = constants.FILEPATH + constants.CONFIG_FILENAME + constants.CONFIG_FILETYPE
-
-        config = {
-            'scoreType' : scoreType
-        }
-
-        if os.path.exists(filename):
-            configLoaded = pickle.load(open(filename, 'rb'))
-            configLoaded.update(config)
-            config = configLoaded
-
-        pickle.dump(config, open(filename, 'wb'))
 
     def getConfigModelFilename(self, modelType):
         now = datetime.now()
