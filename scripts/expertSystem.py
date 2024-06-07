@@ -38,7 +38,7 @@ class ExpertSystem():
         X, y = dataframe.values[:,0:(numberColumns - 1)], dataframe.values[:,(numberColumns - 1)]
         X_train, X_test, y_train, y_test = train_test_split(X, 
                                                             y, 
-                                                            test_size=(1-constants.TESTING_DATASET_SIZE), 
+                                                            test_size=constants.TESTING_DATASET_SIZE, 
                                                             random_state=1, 
                                                             stratify=y)   
         return (X_train, X_test, y_train, y_test)
