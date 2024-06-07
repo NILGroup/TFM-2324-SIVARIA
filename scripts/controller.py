@@ -1,13 +1,12 @@
 import pandas as pd
 import os
-import pickle
-from datetime import datetime
-import math
 import numpy as np
+import matplotlib.pyplot as plt
 # Own created classes and modules
 import constants
 from decoder import Decoder
 from checker import Checker
+from fileManager import FileManager
 from configurator import Configurator
 from expertSystem import ExpertSystem
 from exceptions.ApplicationException import ApplicationException
@@ -23,6 +22,7 @@ class Controller():
             option = args[1]
             expertSystem = ExpertSystem()
             config = Configurator()
+            fileManager = FileManager()
 
             if option == '-h':
                 return self.getHelpMessage()
@@ -64,17 +64,14 @@ class Controller():
                 total = 0
                 if len(args) <= 2:
                     for modelType in constants.MODEL_TYPES:
-                        filePath = constants.FILEPATH + modelType
-                        files = os.listdir(filePath)
-                        total += len(files)
+                        totalFilesDir, files = fileManager.getFilesDir(modelType)
+                        total += totalFilesDir
                         output[modelType] = files
                         
                 else:
                     modelType = args[2]
-                    filePath = constants.FILEPATH + modelType
-                    files = os.listdir(filePath)
+                    total, files = fileManager.getFilesDir(modelType)
                     output[modelType] = files
-                    total = len(files)
 
                 output['total'] = total
                 return output
@@ -82,14 +79,14 @@ class Controller():
 
                 if len(args) <= 2:
                     raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
+
+                filename = args[2]
                 
                 output = {}
 
-                filename = args[2]
-
                 modelType = filename.split('_')[1]
                 output[modelType] = []
-                output[modelType].append(self.getFileStats(constants.FILEPATH + modelType + '/' + filename))
+                output[modelType].append(fileManager.getFileStats(constants.FILEPATH + modelType + '/' + filename))
 
                 return output
             elif option == '-rm':
@@ -99,12 +96,8 @@ class Controller():
                 
                 filename = args[2]
 
-                modelType = filename.split('_')[1]
-                filePath = constants.FILEPATH + modelType + '/' + filename
-                if os.path.exists(filePath) == False:
-                    raise FileNotFoundError('Filename not found. Type the name correctly.\n\n' + self.getHelpMessage())
+                fileManager.removeSaveFile(filename)
 
-                os.remove(filePath)
                 return 'File removed successfully'
             elif option =='-t':
                 if len(args) <= 2:
@@ -129,10 +122,10 @@ class Controller():
                 expertSystem.setModelType(modelType)
                 expertSystem.setScoreOption(scoreType)
 
-                mostRecentFilename = self.getMostRecentFile(modelType)
+                mostRecentFilename = fileManager.getMostRecentFile(modelType)
                 
                 if mostRecentFilename is not None:
-                    print(self.getFileInfo(mostRecentFilename))
+                    print(fileManager.getFileInfo(mostRecentFilename))
 
                 # Building Model
                 expertSystem.buildModel(mostRecentFilename)
@@ -140,29 +133,33 @@ class Controller():
                 # Training Model
                 print('Training the model...') 
                 X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
+                classNames = np.unique(newDF['Desenlace'].to_numpy())
 
-                modelForTest = expertSystem.trainModel(X_train, y_train)
+                modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
                 print('Model trained successfully\n')
 
-                # Testing Model
-                print('Testing trained model ...')
-
+                # Plot Confusion Matrix
+                print('Showing confusion matrix...')
                 y_pred = expertSystem.predict(X_test)
-                classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
                 cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
+                disp = expertSystem.getConfusionMatrixDisplay(cm, classNames)
+                disp.plot()
+                plt.show()
 
+                # Testing Model
+                print('Testing trained model...')
                 (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
                 print('Model tested successfully')
                 #print('('+ str(p_valor) + ',' + str(Cont) +')')
 
                 # Saving model
                 print('Saving model...')
-                filePath, filename = self.getConfigModelFilename(expertSystem.getModelType())
+                filePath, filename = fileManager.getConfigModelFilename(expertSystem.getModelType())
 
                 expertSystem.saveModel(filePath, filename)
                 print('Model saved\n')
 
-                print(self.getFileInfo(filename))
+                print(fileManager.getFileInfo(filename))
 
                 # Preparing data to return 
 
@@ -219,10 +216,10 @@ class Controller():
 
                 expertSystem.setModelType(modelType)
                 
-                mostRecentFilename = self.getMostRecentFile(modelType)
+                mostRecentFilename = fileManager.getMostRecentFile(modelType)
                 
                 if mostRecentFilename is not None:
-                    print(self.getFileInfo(mostRecentFilename))
+                    print(fileManager.getFileInfo(mostRecentFilename))
 
                 expertSystem.buildModel(mostRecentFilename)
 
@@ -265,7 +262,7 @@ class Controller():
         helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n'
 
         return helpMessage
-
+    '''
     def getConfigModelFilename(self, modelType):
         now = datetime.now()
         versionDateTime = now.strftime("%Y%m%d%H%M%S")
@@ -319,3 +316,4 @@ class Controller():
             'st_ctime': self.convertSecondsToDatetime(fileStats.st_ctime),
             'st_size': self.convertSize(fileStats.st_size),
         }
+        '''
