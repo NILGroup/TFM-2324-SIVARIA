@@ -1,9 +1,9 @@
 import pandas as pd
 import os
-import pickle
 from datetime import datetime
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 # Own created classes and modules
 import constants
 from decoder import Decoder
@@ -140,17 +140,21 @@ class Controller():
                 # Training Model
                 print('Training the model...') 
                 X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
+                classNames = np.unique(newDF['Desenlace'].to_numpy())
 
-                modelForTest = expertSystem.trainModel(X_train, y_train)
+                modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
                 print('Model trained successfully\n')
 
-                # Testing Model
-                print('Testing trained model ...')
-
+                # Plot Confusion Matrix
+                print('Showing confusion matrix...')
                 y_pred = expertSystem.predict(X_test)
-                classNames = ['COMUNICACION', 'DESEO','IDEACION','PLANIFICACION','INTENCION','FINALIDAD']
                 cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
+                disp = expertSystem.getConfusionMatrixDisplay(cm, classNames)
+                disp.plot()
+                plt.show()
 
+                # Testing Model
+                print('Testing trained model...')
                 (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
                 print('Model tested successfully')
                 #print('('+ str(p_valor) + ',' + str(Cont) +')')
