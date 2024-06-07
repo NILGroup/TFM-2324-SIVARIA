@@ -38,12 +38,12 @@ class ExpertSystem():
         X, y = dataframe.values[:,0:(numberColumns - 1)], dataframe.values[:,(numberColumns - 1)]
         X_train, X_test, y_train, y_test = train_test_split(X, 
                                                             y, 
-                                                            test_size=(1-constants.TESTING_DATASET_SIZE), 
+                                                            test_size=constants.TESTING_DATASET_SIZE, 
                                                             random_state=1, 
                                                             stratify=y)   
         return (X_train, X_test, y_train, y_test)
 
-    def trainModel(self, X_train, y_train):
+    def trainModel(self, X_train, y_train, classNames):
 
         if self.__modelType is None:
             raise ValueError('Training process error: Model type not specified.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
@@ -53,7 +53,7 @@ class ExpertSystem():
 
         modelForTest = copy.deepcopy(self.__model)
 
-        self.__model.partial_fit(X_train, y_train, classes=np.unique(y_train))
+        self.__model.partial_fit(X_train, y_train, classes=classNames)
 
         return modelForTest
     
@@ -61,11 +61,11 @@ class ExpertSystem():
         return self.__model.predict(X_data)
     
     def getConfusionMatrix(self, y_test, y_pred, classNames):
-
-        return confusion_matrix(y_test, y_pred, labels=classNames)
-        #disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                                      #display_labels=classNames)
-        #return disp
+        return confusion_matrix(y_test, y_pred, labels=classNames, normalize='all')
+    
+    def getConfusionMatrixDisplay(self, cm, classNames):
+        return ConfusionMatrixDisplay(confusion_matrix=cm,
+                                      display_labels=classNames)
 
     def saveModel(self, filePathByModelType, filename):
 
