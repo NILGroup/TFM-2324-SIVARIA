@@ -82,6 +82,8 @@ class Controller():
 
                 filename = args[2]
                 
+                Checker.checkSAVParameter(filename)
+                
                 output = {}
 
                 modelType = filename.split('_')[1]
@@ -95,6 +97,8 @@ class Controller():
                     raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
                 
                 filename = args[2]
+                
+                Checker.checkSAVParameter(filename)
 
                 fileManager.removeSaveFile(filename)
 
@@ -138,13 +142,15 @@ class Controller():
                 modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
                 print('Model trained successfully\n')
 
+                cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
                 # Plot Confusion Matrix
+                '''
                 print('Showing confusion matrix...')
                 y_pred = expertSystem.predict(X_test)
-                cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
                 disp = expertSystem.getConfusionMatrixDisplay(cm, classNames)
                 disp.plot()
                 plt.show()
+                '''
 
                 # Testing Model
                 print('Testing trained model...')
@@ -255,65 +261,14 @@ class Controller():
         helpMessage += '\t\tOtherwise, it returns an object with all the save files of all model types.\n\n'
         helpMessage += '\t\tExample: python main.py -lst autoinforme\n\n'
         helpMessage += '\t-fs\tReturn an object with the stats of a given save file name in [MODEL SAVE FILENAME].\n\n'
+        helpMessage += '\t\tExample: python main.py -fs model_autoinforme_20240607181100.sav\n\n'
         helpMessage += '\t-rm\tRemove a save filename of a model given its name in [MODEL SAVE FILENAME].\n\n'
+        helpMessage += '\t\tExample: python main.py -rm model_autoinforme_20240607181100.sav\n\n'
         helpMessage += '\t-t\tTrain a model, that can be "autoinforme", "familia" and "profesional" given a dataset [DATASET].\n'
         helpMessage += '\t\tIn order to train the model correctly, a model type and a score type previously.\n'
         helpMessage += '\t\tIf not, the training will not work.\n\n'
-        helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n'
+        helpMessage += '\t\tExample: python main.py -t datasets/autoinforme/dataset1.csv\n\n'
+        helpMessage += '\t-p\tReturn a list of predicted results given a dataset [DATASET].\n\n'
+        helpMessage += '\t\tExample: python main.py -p datasets/autoinforme/dataset5.csv\n\n'
 
         return helpMessage
-    '''
-    def getConfigModelFilename(self, modelType):
-        now = datetime.now()
-        versionDateTime = now.strftime("%Y%m%d%H%M%S")
-        filePath = constants.FILEPATH + modelType
-        filename = filePath + '/' + 'model_' + modelType + '_' + versionDateTime + constants.MODEL_FILETYPE
-
-        return (filePath, filename)
-
-    def getFileInfo(self, filename):
-        fileStats = self.getFileStats(filename)
-
-        fileInfoStr = 'File: ' + filename + '\n'
-
-        fileInfoStr += 'File size: ' + str(fileStats['st_size']) + '\n'
-        fileInfoStr += 'Most recent access: ' + str(fileStats['st_atime']) + '\n'
-        fileInfoStr += 'Most recent content change: ' + str(fileStats['st_mtime']) + '\n'
-        fileInfoStr += 'Most recent metadata change: ' + str(fileStats['st_ctime']) + '\n'
-
-        return fileInfoStr
-
-    def getMostRecentFile(self, modelType):
-
-        try:
-            filePath = constants.FILEPATH + modelType + '/'
-            listFiles = os.listdir(filePath)
-            listFiles.sort(reverse=True)    
-
-            return (filePath + listFiles[0])
-        except Exception:
-            return None
-        
-    def convertSize(self, size_bytes):
-        if size_bytes == 0:
-            return "0B"
-        size_name = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB")
-        i = int(math.floor(math.log(size_bytes, 1024)))
-        p = math.pow(1024, i)
-        s = round(size_bytes / p, 2)
-        return "%s %s" % (s, size_name[i])
-
-    def convertSecondsToDatetime(self, st_time):
-        return datetime.fromtimestamp(st_time).strftime('%d-%m-%Y %H:%M:%S')
-
-    def getFileStats(self, filename):
-        fileStats = os.stat(filename)
-
-        return {
-            'filename': filename,
-            'st_atime': self.convertSecondsToDatetime(fileStats.st_atime),
-            'st_mtime': self.convertSecondsToDatetime(fileStats.st_mtime),
-            'st_ctime': self.convertSecondsToDatetime(fileStats.st_ctime),
-            'st_size': self.convertSize(fileStats.st_size),
-        }
-        '''
