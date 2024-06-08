@@ -40,6 +40,15 @@ class Checker(object):
         return False
     
     @staticmethod
+    def checkSAVValue(value):
+        if value is None:
+            return False
+        if isinstance(value, str):
+            if value.endswith('.sav'):
+                return True
+        return False
+    
+    @staticmethod
     def checkClassifierParameter(argument):
         if Checker.checkStrValue(argument) == False:
             raise FormatException('Format error in the classifier parameter. A string is expected.')
@@ -53,6 +62,11 @@ class Checker(object):
     def checkDatasetParameter(argument):
         if Checker.checkCSVValue(argument) == False:
             raise FormatException('Format error in the dataset parameter. A csv file is expected.')
+        
+    @staticmethod
+    def checkSAVParameter(argument):
+        if Checker.checkSAVValue(argument) == False:
+            raise FormatException('Format error in the sav file parameter. A sav file is expected.')
     
     @staticmethod    
     def checkCharIndexParameter(argument):
