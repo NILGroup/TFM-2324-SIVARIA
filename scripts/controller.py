@@ -20,13 +20,11 @@ class Controller():
                 raise CommandLineException('Not enough parameters.\n\n' + self.getHelpMessage())
             
             option = args[1]
-            expertSystem = ExpertSystem()
-            config = Configurator()
-            fileManager = FileManager()
-
+            
             if option == '-h':
                 return self.getHelpMessage()
             elif option =='-mt':
+                config = Configurator()
                 
                 if len(args) <= 2:
                     modelType = config.getModelType()
@@ -44,6 +42,7 @@ class Controller():
                 return output
             
             elif option =='-st':
+                config = Configurator()
 
                 if len(args) <= 2:
                     scoreType = config.getScoreType()
@@ -60,6 +59,8 @@ class Controller():
 
                 return output
             elif option == '-lst':
+                fileManager = FileManager()
+
                 output = {}
                 total = 0
                 if len(args) <= 2:
@@ -76,6 +77,7 @@ class Controller():
                 output['total'] = total
                 return output
             elif option == '-fs':
+                fileManager = FileManager()
 
                 if len(args) <= 2:
                     raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
@@ -92,6 +94,7 @@ class Controller():
 
                 return output
             elif option == '-rm':
+                fileManager = FileManager()
 
                 if len(args) <= 2:
                     raise CommandLineException('Filename not provided.\n\n' + self.getHelpMessage())
@@ -104,17 +107,20 @@ class Controller():
 
                 return 'File removed successfully'
             elif option =='-t':
+                expertSystem = ExpertSystem()
+                config = Configurator()
+                fileManager = FileManager()
+
                 if len(args) <= 2:
                     raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
 
+                dataset = args[2]
+
                 Checker.checkConfig(config)
+                Checker.checkDatasetParameter(dataset)
                 
                 modelType = config.getModelType()
                 scoreType = config.getScoreType()
-
-                dataset = args[2]
-
-                Checker.checkDatasetParameter(dataset)
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
@@ -142,11 +148,11 @@ class Controller():
                 modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
                 print('Model trained successfully\n')
 
+                y_pred = expertSystem.predict(X_test)
                 cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
                 # Plot Confusion Matrix
                 '''
                 print('Showing confusion matrix...')
-                y_pred = expertSystem.predict(X_test)
                 disp = expertSystem.getConfusionMatrixDisplay(cm, classNames)
                 disp.plot()
                 plt.show()
@@ -168,7 +174,7 @@ class Controller():
                 print(fileManager.getFileInfo(filename))
 
                 # Preparing data to return 
-
+                cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames, False)
                 FP = cm.sum(axis=0) - np.diag(cm)  
                 FN = cm.sum(axis=1) - np.diag(cm)
                 TP = np.diag(cm)
@@ -203,16 +209,19 @@ class Controller():
                 return result
 
             elif option =='-p':
+                expertSystem = ExpertSystem()
+                config = Configurator()
+                fileManager = FileManager()
+                
                 if len(args) <= 2:
                     raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
                 
-                Checker.checkConfig(config)
-
-                modelType = config.getModelType()
-
                 dataset = args[2]
                 
+                Checker.checkConfig(config)
                 Checker.checkDatasetParameter(dataset)
+
+                modelType = config.getModelType()
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())

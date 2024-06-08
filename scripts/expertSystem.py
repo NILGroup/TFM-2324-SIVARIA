@@ -60,8 +60,13 @@ class ExpertSystem():
     def predict(self, X_data):
         return self.__model.predict(X_data)
     
-    def getConfusionMatrix(self, y_test, y_pred, classNames):
-        return confusion_matrix(y_test, y_pred, labels=classNames, normalize='all')
+    def getConfusionMatrix(self, y_test, y_pred, classNames, toNormalize = True):
+        if toNormalize == True:
+            cm = confusion_matrix(y_test, y_pred, labels=classNames, normalize='all')
+        else:
+            cm = confusion_matrix(y_test, y_pred, labels=classNames)
+            
+        return cm
     
     def getConfusionMatrixDisplay(self, cm, classNames):
         return ConfusionMatrixDisplay(confusion_matrix=cm,
