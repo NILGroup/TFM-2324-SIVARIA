@@ -47,7 +47,7 @@ class FileManager(object):
 
         fileInfoStr = 'File: ' + filename + '\n'
 
-        fileInfoStr += 'File size: ' + str(fileStats['st_size']) + '\n'
+        fileInfoStr += 'File size: ' + str(fileStats['st_size']) + ' ' + fileStats['st_size_unit'] + '\n'
         fileInfoStr += 'Most recent access: ' + str(fileStats['st_atime']) + '\n'
         fileInfoStr += 'Most recent content change: ' + str(fileStats['st_mtime']) + '\n'
         fileInfoStr += 'Most recent metadata change: ' + str(fileStats['st_ctime']) + '\n'
