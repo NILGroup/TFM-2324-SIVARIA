@@ -11,6 +11,10 @@ from configurator import Configurator
 from expertSystem import ExpertSystem
 from exceptions.ApplicationException import ApplicationException
 from exceptions.CommandLineException import CommandLineException
+from exceptions.ModelNotFoundException import ModelNotFoundException
+from exceptions.PredictionErrorException import PredictionErrorException
+from exceptions.ModelTrainingException import ModelTrainingException
+
 
 class Controller():
     
@@ -145,7 +149,11 @@ class Controller():
                 X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
                 classNames = np.unique(newDF['Desenlace'].to_numpy())
 
-                modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
+                try:
+                    modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
+                except Exception:
+                    raise ModelTrainingException('Error during model training.')
+                
                 print('Model trained successfully\n')
 
                 y_pred = expertSystem.predict(X_test)
@@ -222,6 +230,7 @@ class Controller():
                 Checker.checkDatasetParameter(dataset)
 
                 modelType = config.getModelType()
+                print('Model type saved in configuration: ' + modelType + '\n')
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
@@ -235,20 +244,32 @@ class Controller():
                 
                 if mostRecentFilename is not None:
                     print(fileManager.getFileInfo(mostRecentFilename))
+                else:
+                    raise ModelNotFoundException('Save model file of ' + modelType + ' model not found.')
 
                 expertSystem.buildModel(mostRecentFilename)
 
                 if 'Desenlace' in newDF.columns:
                     newDF = newDF.drop('Desenlace', axis=1)
 
-                y_pred = expertSystem.predict(newDF.values)
+                try:
+                    y_pred = expertSystem.predict(newDF.values)
+                except Exception:
+                    raise PredictionErrorException('Error during prediction.')
+                
                 return y_pred
             
             else:
                 raise CommandLineException('Some parameters that do not exist were introduced.\n\n' + self.getHelpMessage())
 
         except (ApplicationException, FileNotFoundError, ValueError) as e:
-            return 'Script error: ' + str(e.message)
+            errorTitle = 'Script error: '
+            if isinstance(e, ApplicationException):
+                log = errorTitle + str(e.message)
+            else:
+                log = errorTitle + str(e)
+            
+            return log
 
     def getHelpMessage(self):
         helpMessage = 'main.py [OPTION] [DATASET|MODEL TYPE|MODEL SAVE FILENAME]\n\n'
