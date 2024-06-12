@@ -1,0 +1,239 @@
+from pgmpy.models import BayesianNetwork
+from pgmpy.estimators import BayesianEstimator, MaximumLikelihoodEstimator
+import pandas as pd
+import constants
+import numpy as np
+
+def decodeAgeColumn(age):
+    if age < 12:
+        return 'MENOR DE 12'
+    elif age >= 12 and age <= 21:
+        return '12-21'
+    elif age > 21:
+        return 'MAYOR DE 21'
+    else:
+        print('Error')
+def decodeHeightColumn(height):
+    if height <= 149:
+        return "MENOS DE 149"
+    elif height >= 150 or height < 160:
+        return "150-159"
+    elif height >= 160 or height < 170:
+        return "160-169"
+    elif height >= 170 or height < 180:
+        return "170-179"
+    elif height >= 180 or height < 190:
+        return "180-189"
+    elif height >= 190:
+        return "MAS DE 190"
+    else:
+        print('Error') 
+
+def decodeWeightColumn(weight):
+    if weight <= 49:
+        return "MENOS DE 49"
+    elif weight >= 50 or weight < 60:
+        return "50-59"
+    elif weight >= 60 or weight < 70:
+        return "60-69"
+    elif weight >= 70 or weight < 80:
+        return "70-79"
+    elif weight >= 80 or weight < 90:
+        return "80-89"
+    elif weight >= 90:
+        return "MAS DE 90"
+    else:
+        print('Error') 
+
+def decodeMonthlyFamiliarIncome(income):
+    if income <= 499:
+        return "MENOS DE 499"
+    elif income >= 500 or income < 1000:
+        return "500-999"
+    elif income >= 1000 or income < 1500:
+        return "1000-1499"
+    elif income >= 1500 or income < 2000:
+        return "1500-1999"
+    elif income >= 2000 or income < 2500:
+        return "2000-2499"
+    elif income >= 2500:
+        return "MAS DE 2500"
+    else:
+        print('Error')
+
+def decodeYesNoColumn(cell):
+    if cell == 'SI' or cell == True or cell == 1:
+        return 'SI' 
+    
+    return 'NO'
+
+def decodeYesNoColumn2(cell):
+    if cell == 'SI' or cell == True or cell == 1:
+        return 1 
+    
+    return 0
+
+def decodeAgeDiscrimination(element):
+    if element == 'Orientacion sexual':
+        return 1
+    
+    return 0
+
+def decodeRaceDiscrimination(element):
+    if element == 'Raza':
+        return 1
+    
+    return 0
+
+def decodeGenderDiscrimination(element):
+    if element == 'Genero':
+        return 1
+    
+    return 0
+
+def decodeDisabilityDiscrimination(element):
+    if element == 'Discapacidad':
+        return 1
+    
+    return 0
+
+def decodeSexualOrientationDiscrimination(element):
+    if element == 'Orientacion sexual':
+        return 1
+    
+    return 0
+
+
+def decodeDataset(df):
+    newData = df
+
+    for key, values in constants.BAYES_NETWORK_STATE_NAMES_3_2.items():
+        if key in newData:
+            column = newData[key]
+            newData[key] = column.apply(lambda x: values.index(x))
+
+    '''
+    # Target value
+    value = 'SI'
+
+    # Extract Column Names
+    column_names = newData.columns[newData.isin([value]).any()].tolist()
+
+    print(column_names)
+    '''
+
+
+    #print(newData.head())
+    #print(newData.dtypes)
+    #newData.info()
+
+    newData['Presencia pasado clinico'] = (newData['Tratamiento psiquiatrico previo'].apply(decodeYesNoColumn2) | 
+                                           newData['Presenta enfermedad cronica'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de bullying'] = (newData['Bullying victima'].apply(decodeYesNoColumn2) | 
+                                        newData['Bullying perpetrador'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de cyberbullying'] = (newData['Cyberbullying victima'].apply(decodeYesNoColumn2) | 
+                                             newData['Cyberbullying perpetrador'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de adicciones'] = (newData['Adiccion/abuso alcohol'].apply(decodeYesNoColumn2) | 
+                                          newData['Adiccion/abuso sustancias'].apply(decodeYesNoColumn2) |
+                                          newData['Adiccion/abuso Internet'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de problemas psicopatologicos'] = (newData['Problemas interiorizados'].apply(decodeYesNoColumn2) | 
+                                                          newData['Problemas exteriorizados'].apply(decodeYesNoColumn2) |
+                                                          newData['Problemas de contexto'].apply(decodeYesNoColumn2) |
+                                                          newData['Problemas recursos psicologicos'].apply(decodeYesNoColumn2))
+
+    newData['Discriminacion por edad'] = newData['Fuente de discriminacion'].apply(decodeAgeDiscrimination)
+    newData['Discriminacion por raza'] = newData['Fuente de discriminacion'].apply(decodeRaceDiscrimination)
+    newData['Discriminacion por genero'] = newData['Fuente de discriminacion'].apply(decodeGenderDiscrimination)
+    newData['Discriminacion por discapacidad'] = newData['Fuente de discriminacion'].apply(decodeDisabilityDiscrimination)
+    newData['Discriminacion por orientacion sexual'] = newData['Fuente de discriminacion'].apply(decodeSexualOrientationDiscrimination)
+
+    newData['Percepcion de discriminacion'] =  (newData['Discriminacion por edad'] | 
+                                                newData['Discriminacion por raza'] |
+                                                newData['Discriminacion por genero'] | 
+                                                newData['Discriminacion por discapacidad'] | 
+                                                newData['Discriminacion por orientacion sexual'])
+    
+    newData.drop('Fuente de discriminacion', axis=1)
+
+
+    newData['Presencia de atrapamiento'] = (newData['Atrapamiento interno'].apply(decodeYesNoColumn2) |
+                                            newData['Atrapamiento externo'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de motivos para el suicidio'] = (newData['Presencia de atrapamiento'].apply(decodeYesNoColumn2) |
+                                                        newData['Sentido de pertenencia frustada'].apply(decodeYesNoColumn2) |
+                                                        newData['Percepcion de ser una carga'].apply(decodeYesNoColumn2) |
+                                                        newData['Autoeficiencia para el suicidio'].apply(decodeYesNoColumn2))
+    
+    newData['Padres adolescentes'] = (newData['Padre adolescente'].apply(decodeYesNoColumn2) |
+                                      newData['Madre adolescente'].apply(decodeYesNoColumn2))
+
+    newData['Presencia de problemas familiares'] = (newData['Padres adolescentes'].apply(decodeYesNoColumn2) |
+                                                    newData['Familia monoparental'].apply(decodeYesNoColumn2) |
+                                                    newData['Tratamiento psicologico padre/madre'].apply(decodeYesNoColumn2) |
+                                                    newData['Adiccion padre/madre'].apply(decodeYesNoColumn2) |
+                                                    newData['Relaciones conflictivas hijo-padre/madre'].apply(decodeYesNoColumn2) |
+                                                    newData['Familia reconstruida'].apply(decodeYesNoColumn2))
+    
+    newData['Presencia de influencia de tecnologias y RRSS'] = (newData['Busqueda informacion autolesion'].apply(decodeYesNoColumn2) |
+                                                    newData['Compartir en RRSS pensamiento autolesion'].apply(decodeYesNoColumn2) |
+                                                    newData['Peticion ayuda en Internet'].apply(decodeYesNoColumn2) |
+                                                    newData['Contagio'].apply(decodeYesNoColumn2) |
+                                                    newData['Tener conocidos que comparten autolesion en Internet'].apply(decodeYesNoColumn2) |
+                                                    newData['Via de contacto para RRSS'].apply(decodeYesNoColumn2) |
+                                                    newData['Contacto informacion autolesion'].apply(decodeYesNoColumn2) |
+                                                    newData['Denuncia autolesion Internet'].apply(decodeYesNoColumn2))
+
+    
+
+    #newData['Desenlace'] = newData['Desenlace'].apply(lambda x: constants.BAYES_NETWORK_STATE_NAMES['Desenlace'][x])
+    #print(newData.dtypes)
+    #newData.info()
+    #print(newData[['Madre adolescente', 'Padre adolescente','Padres adolescentes']].head())
+    
+    return newData.astype(np.int8)
+
+# ----------------------------------------------------------------------------------
+
+df = pd.read_csv('csvCreator/datasets/autoinforme/dataset1.csv')
+
+newData = df
+
+newData.drop(['Index', 'Nombre'], axis=1, inplace=True)
+
+ageColumn = newData['Edad']
+heightColumn = newData['Altura']
+weightColumn = newData['Peso']
+
+newData['Edad'] = ageColumn.apply(decodeAgeColumn).astype(object)
+newData['Altura'] = heightColumn.apply(decodeHeightColumn).astype(object)
+newData['Peso'] = weightColumn.apply(decodeWeightColumn).astype(object)
+
+
+df = newData.apply(lambda x: x.astype(str).str.upper())
+df = decodeDataset(df)
+
+
+numRows = round(constants.TRAINING_PERCENTAGE_DATASET * len(df))
+numRowsTrain = numRows - 1
+
+trainingDF = df[:numRowsTrain]
+testDF = df[numRows:]
+#predictData = testDF.drop('Desenlace', axis=1)
+
+#trainingDF.info()
+#print(trainingDF.head())
+del(df)
+del(newData)
+del(ageColumn)
+del(heightColumn)
+del(weightColumn)
+# ----------------------------------------------------------------------------
+model = BayesianNetwork(constants.NEW_BAYES_NETWORK_EDGES_AUTOINFORME)
+model.fit(data=trainingDF, 
+          estimator=MaximumLikelihoodEstimator)
+
+

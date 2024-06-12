@@ -1,0 +1,26 @@
+Index,Nombre,Edad,Curso,Peso,Altura,Sexo asignado,Transgenero,Problemas interiorizados,Problemas exteriorizados,Problemas de contexto,Problemas recursos psicologicos,Madre adolescente,Padre adolescente,Padres divorciados,Familia monoparental,Tratamiento psicologico padre/madre,Adiccion padre/madre,Relaciones conflictivas hijo-padre/madre,Familia reconstruida,Aceptacion/rechazo parental,Control parental,Desenlace
+1,Declan Lopez,23,Formacion Profesional,65.43,113.53,Otro,No estoy seguro de ser trans,No,Si,No,No,No,Si,No,No,No,No,Si,Si,Rechazo,Si,Planificacion
+2,Wes Gomez,22,Universidad,52.97,175.92,Otro,Si,Si,Si,Si,No,No,No,No,No,Si,No,Si,No,Aceptacion,No,Deseo
+3,Jordan Rodriguez,21,Universidad,55.12,199.71,Hombre,No estoy seguro de ser trans,No,Si,No,No,No,No,Si,No,Si,Si,No,Si,Aceptacion,Si,Deseo
+4,Kyle Hernandez,13,Colegio,61.64,155.57,Hombre,No,Si,No,Si,No,Si,No,No,No,Si,No,Si,Si,Aceptacion,No,Planificacion
+5,Fikayo Carter,14,ESO,56.75,184.34,Otro,No,No,No,Si,Si,No,Si,Si,No,Si,No,No,Si,Aceptacion,Si,Comunicacion
+6,Jack Martinez,22,Formacion Profesional,72.11,112.78,Hombre,No,Si,Si,No,No,No,No,Si,Si,No,No,No,No,Aceptacion,No,Planificacion
+7,Jeff Watson,24,Universidad,63.95,185.91,Hombre,No estoy seguro de ser trans,No,No,Si,No,No,Si,No,No,No,Si,Si,Si,Rechazo,No,Ideacion
+8,Frank Allen,19,Universidad,80.25,190.92,Hombre,No estoy seguro de ser trans,No,Si,Si,No,No,No,Si,Si,Si,Si,Si,Si,Aceptacion,No,Ideacion
+9,Cindy Diaz,23,Formacion Profesional,55.0,181.96,Otro,No estoy seguro de lo que se pregunta,Si,No,No,Si,No,Si,Si,No,No,Si,No,Si,Rechazo,No,Deseo
+10,Cristian Price,13,Colegio,55.08,187.43,Otro,Si,Si,Si,No,Si,No,No,No,No,No,Si,Si,No,Aceptacion,No,Comunicacion
+11,John Jones,25,Universidad,64.98,116.17,Mujer,No estoy seguro de ser trans,Si,Si,No,Si,No,Si,No,No,No,Si,No,Si,Rechazo,Si,Ideacion
+12,Lance Moore,10,Colegio,56.66,125.52,Mujer,No,Si,No,Si,Si,No,Si,No,Si,No,Si,No,Si,Rechazo,No,Planificacion
+13,Rachel Gomez,11,Colegio,67.97,185.23,Otro,No estoy seguro de ser trans,No,Si,Si,Si,No,Si,Si,No,No,No,No,Si,Aceptacion,No,Planificacion
+14,Mary Cook,15,ESO,55.64,171.5,Hombre,Si,No,Si,No,Si,Si,No,Si,No,Si,No,Si,Si,Aceptacion,No,Deseo
+15,Sean Kelly,22,Formacion Profesional,83.06,155.87,Otro,No,No,Si,Si,Si,Si,Si,Si,Si,Si,No,Si,Si,Rechazo,Si,Finalidad
+16,Marcos Morales,11,Colegio,64.62,165.42,Otro,No,Si,Si,Si,No,Si,Si,Si,No,Si,No,Si,No,Aceptacion,Si,Comunicacion
+17,Maxwell Cooper,12,Colegio,72.68,137.11,Hombre,No estoy seguro de ser trans,No,No,Si,No,Si,Si,Si,Si,No,No,Si,No,Aceptacion,Si,Planificacion
+18,Lana Baker,10,Colegio,61.42,136.64,Hombre,No estoy seguro de lo que se pregunta,No,No,Si,Si,Si,No,No,Si,No,No,No,Si,Rechazo,No,Intencion
+19,John Hernandez,20,Formacion Profesional,71.91,116.52,Mujer,Si,Si,No,No,No,Si,Si,Si,Si,Si,Si,No,Si,Rechazo,No,Intencion
+20,Paul Gomez,14,ESO,80.33,138.62,Mujer,Si,Si,No,Si,Si,No,No,No,No,No,No,No,No,Aceptacion,Si,Finalidad
+21,Yui Lewis,24,Formacion Profesional,71.32,160.46,Hombre,No estoy seguro de ser trans,No,No,No,No,Si,No,No,No,No,No,Si,No,Aceptacion,No,Intencion
+22,Lucy Olson,19,Formacion Profesional,55.1,153.14,Otro,No,Si,No,Si,No,No,No,No,No,Si,No,No,No,Aceptacion,Si,Comunicacion
+23,Rio Harris,16,ESO,54.27,151.72,Otro,Si,No,Si,No,Si,Si,Si,No,Si,No,Si,No,Si,Rechazo,Si,Planificacion
+24,Mariana Scott,13,Colegio,54.53,188.59,Hombre,No estoy seguro de ser trans,No,Si,No,No,Si,Si,No,Si,No,No,No,No,Aceptacion,Si,Deseo
+25,Fikayo Ramsey,23,Formacion Profesional,52.56,198.61,Hombre,No estoy seguro de lo que se pregunta,Si,No,Si,Si,Si,No,No,Si,No,Si,No,No,Rechazo,Si,Finalidad
