@@ -8,6 +8,7 @@ from .services.services import RolService, UserService, UserHasParentService
 # User authentication
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+from rest_framework import generics, permissions
 
 '''
 Type of requests to all the posts
@@ -85,6 +86,9 @@ http://127.0.0.1:8000/sivaria/v1/rol
 
 '''
 class Rol_APIView(APIView):
+
+    serializer_class = RolSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None, *args, **kwargs):
         rolService = RolService()
@@ -203,6 +207,8 @@ http://127.0.0.1:8000/sivaria/v1/user/register
 '''
 class AppUser_APIView_Register(APIView):
 
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request, format=None):
         rolService = RolService()
         userHasParentService = UserHasParentService()
@@ -256,6 +262,9 @@ http://127.0.0.1:8000/sivaria/v1/user/login
 '''
 class AppUser_APIView_Login(APIView):
 
+    permission_classes = [permissions.AllowAny]
+
+
     def post(self, request, format=None):
         userService = UserService()
         
@@ -280,16 +289,33 @@ class AppUser_APIView_Login(APIView):
         user = authenticate(username=data['email'], password=data['password'])
         if user:
             print('\n' + 'Creando el token' + '\n')
-            token, _ = Token.objects.get_or_create(user=1)
+            token, _ = Token.objects.get_or_create(user=user)
 
             response['status']='ok'
             response['message']='Usuario logeado correctamente'
             response['data'] = {
                 'token': token.key
             }
-            return Response(response, status=status.HTTP_201_CREATED)
+            return Response(response, status=status.HTTP_200_OK)
         else:
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+'''
+http://127.0.0.1:8000/sivaria/v1/user/logout
+
+'''
+class AppUser_APIView_Logout(APIView):
+
+    def post(self, request, format=None):
+        userService = UserService()
+
+        try:
+            # Delete the user's token to logout
+            request.user.auth_token.delete()
+            return Response({'status':'ok', 'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'status':'ok','message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 
 '''

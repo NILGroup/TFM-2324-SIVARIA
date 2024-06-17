@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .api.managers.managers import AppUserManager
 
 # Create your models here.
 class Post(models.Model):
@@ -18,16 +19,24 @@ class Rol(models.Model):
     def __str__(self) -> str:
         return f'Rol: {self.slug}'
 
-class AppUser(models.Model): 
-    name = models.CharField(max_length=200)
-    surname = models.CharField(max_length=200)
-    email = models.EmailField(max_length=50, unique=True)
-    password = models.CharField(max_length=100)
-    phone = models.CharField(max_length=20, unique=True)
+class AppUser(AbstractUser): 
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255, null=True)
+    phone = models.CharField(max_length=20, unique=True, null=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     id_rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    USERNAME_FIELD = 'email'  # Establece el campo de email para la autenticación
+    REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    objects = AppUserManager()
 
     def __str__(self) -> str:
-        return f'User: {self.name} {self.surname} - {self.email}'
+        return f'User: {self.first_name} {self.last_name} - {self.email}'
     
 class UserHasParent(models.Model):
     id_son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
