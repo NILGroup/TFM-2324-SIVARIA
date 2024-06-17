@@ -222,7 +222,7 @@ class AppUser_APIView_Register(APIView):
             'phone': request.data.get('phone', None),
             'id_rol': request.data.get('rolId', None)
         }
-        print(data)
+        #print(data)
         # The user is saved in AppUser table
         serializer_response, saved = userService.save_user(data)
         if saved:
