@@ -46,4 +46,4 @@ class UserHasParent(models.Model):
     phone_parent_2 = models.CharField(max_length=15, null=True)
 
     def __str__(self) -> str: 
-        return f'UserHasParent: {self.id_son.id} - {self.id_son.name} {self.id_son.surname}'
+        return f'UserHasParent: {self.id_son.id} - {self.id_son.first_name} {self.id_son.last_name}'

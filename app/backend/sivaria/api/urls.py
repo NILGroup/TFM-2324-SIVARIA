@@ -11,6 +11,7 @@ urlpatterns = [
     path('v1/rol/<int:rolId>', Rol_APIView_Detail_RolId.as_view()),
     path('v1/user/register', AppUser_APIView_Register.as_view()),
     path('v1/user/login', AppUser_APIView_Login.as_view()),
+    path('v1/user/logout', AppUser_APIView_Logout.as_view()),
     path('v1/user/<int:userId>', AppUser_APIView_Detail_UserId.as_view()),
     path('v1/user/getUserByEmail', AppUser_APIView_Detail_Email.as_view()),
 ]

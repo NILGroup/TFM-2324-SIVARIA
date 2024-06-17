@@ -15,7 +15,8 @@ class AppUserSerializer(ModelSerializer):
     id_rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'name', 'surname', 'email', 'password', 'phone', 'id_rol')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'id_rol')
+
 
 class UserHasParentSerializer(ModelSerializer):
     id_son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)

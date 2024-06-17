@@ -10,6 +10,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework import generics, permissions
 
+from .....scripts.controller import Controller
+
 '''
 Type of requests to all the posts
 
@@ -215,8 +217,8 @@ class AppUser_APIView_Register(APIView):
         userService = UserService()
 
         data = {
-            'name': request.data.get('name', None),
-            'surname': request.data.get('surname', None),
+            'first_name': request.data.get('first_name', None),
+            'last_name': request.data.get('last_name', None),
             'email': request.data.get('email', None),
             'password': userService.hash_password(request.data.get('password', None)),
             'phone': request.data.get('phone', None),
@@ -224,8 +226,11 @@ class AppUser_APIView_Register(APIView):
         }
         #print(data)
         # The user is saved in AppUser table
+        print('Guardando datos')
         serializer_response, saved = userService.save_user(data)
+
         if saved:
+            print('Gurdadndo datos si es joven')
             id_rol = data['id_rol']
             rol = rolService.get_rol_by_id_json(id_rol)
 
@@ -264,10 +269,7 @@ class AppUser_APIView_Login(APIView):
 
     permission_classes = [permissions.AllowAny]
 
-
-    def post(self, request, format=None):
-        userService = UserService()
-        
+    def post(self, request, format=None):        
         data = {
             'email': request.data.get('email'),
             'password': request.data.get('password')
@@ -277,18 +279,9 @@ class AppUser_APIView_Login(APIView):
             'status': 'error',
             'message': 'Credenciales inválidas'
         }
-        '''
-        try:
-            user = userService.get_user_by_email_json(data['email'])
-        except (Http404, HttpResponseBadRequest) as e:
-            response['data'] = e
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
-        verified = userService.verify_password(data['password'], user['password'])
-        '''
         user = authenticate(username=data['email'], password=data['password'])
         if user:
-            print('\n' + 'Creando el token' + '\n')
             token, _ = Token.objects.get_or_create(user=user)
 
             response['status']='ok'
@@ -307,14 +300,12 @@ http://127.0.0.1:8000/sivaria/v1/user/logout
 class AppUser_APIView_Logout(APIView):
 
     def post(self, request, format=None):
-        userService = UserService()
-
         try:
             # Delete the user's token to logout
             request.user.auth_token.delete()
             return Response({'status':'ok', 'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'status':'ok','message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'status':'error','message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
@@ -327,7 +318,14 @@ class AppUser_APIView_Detail_UserId(APIView):
     
     def get(self, request, userId, format=None):
         userService = UserService()
-        return Response(userService.get_user_by_userId_json(userId)) 
+        user = userService.get_user_by_userId_json(userId)
+        user.pop('password', None)
+        response = {
+            'status': 'ok',
+            'message': 'Datos obtenidos correctamente',
+            'data': user
+        }
+        return Response(response, status=status.HTTP_200_OK) 
 
 '''
 Get user by user email
@@ -340,4 +338,30 @@ class AppUser_APIView_Detail_Email(APIView):
     def get(self, request, format=None):
         email = request.get.data('email')
         userService = UserService()
-        return Response(userService.get_user_by_email_json(email)) 
+        user = userService.get_user_by_email_json(email)
+        user.pop('password', None)
+        response = {
+            'status': 'ok',
+            'message': 'Datos obtenidos correctamente',
+            'data': user
+        }
+        return Response(response, status=status.HTTP_200_OK) 
+
+'''
+http://127.0.0.1:8000/sivaria/v1/expertSystem/predict
+
+'''
+class ExpertSystem_APIView_Predict(APIView):
+
+    def post(self, request, format=None):
+        controller = Controller()
+        argc = []
+        result = controller.execute(argc)
+        response = {
+            'status': 'ok',
+            'message': 'Predicción hecha correctamente',
+            'data': result
+        }
+        return Response(response, status=status.HTTP_200_OK) 
+
+

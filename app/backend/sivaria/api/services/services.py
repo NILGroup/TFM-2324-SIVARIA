@@ -61,7 +61,7 @@ class UserService(object):
     
     def get_user_by_userId(self, userId):
         try:
-            return AppUser.objects.get(userId=userId)
+            return AppUser.objects.get(id=userId)
         except AppUser.DoesNotExist:
             raise Http404('Usuario no encontrado') 
         except AppUser.MultipleObjectsReturned:

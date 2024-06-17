@@ -5,7 +5,59 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from .models import *
+
+#from .forms.forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms.forms import CustomAppUserCreationForm, CustomAppUserChangeForm
 # Register your models here.
+
+class AppUserAdmin(BaseUserAdmin):
+    # Los formularios para agregar y cambiar instancias de usuario
+    form = CustomAppUserChangeForm
+    add_form = CustomAppUserCreationForm
+
+    # Los campos que se usarán para mostrar el modelo de usuario.
+    list_display = ('email', 'first_name', 'last_name', 'phone', 'id_rol', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'id_rol')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser')}),
+    )
+    # Añade el campo de contraseña para el formulario de creación de usuario
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'first_name', 'last_name', 'phone', 'id_rol', 'password1', 'password2', 'is_staff', 'is_active')}
+        ),
+    )
+    search_fields = ('email', 'first_name', 'last_name', 'phone')
+    ordering = ('email',)
+    filter_horizontal = ()
+
+'''
+class CustomUserAdmin(BaseUserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = AppUser
+    list_display = ("email", "is_staff", "is_active",)
+    list_filter = ("email", "is_staff", "is_active",)
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
+    )
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": (
+                "email", "password1", "password2", "is_staff",
+                "is_active", "groups", "user_permissions"
+            )}
+        ),
+    )
+    search_fields = ("email",)
+    ordering = ("email",)
+'''
+
 
 '''
 class UserCreationForm(forms.ModelForm):
@@ -74,7 +126,9 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 '''
-admin.site.register(AppUser, BaseUserAdmin)
+#admin.site.register(AppUser, CustomUserAdmin)
+#admin.site.register(AppUser, BaseUserAdmin)
+admin.site.register(AppUser, AppUserAdmin)
 admin.site.register(Post)
 admin.site.register(Rol)
 admin.site.register(UserHasParent)
