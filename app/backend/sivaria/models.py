@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .api.managers.managers import AppUserManager
+from .validators.validators import SpanishPhoneValidator
 
 # Create your models here.
 class Post(models.Model):
@@ -22,7 +23,7 @@ class Rol(models.Model):
 class AppUser(AbstractUser): 
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255, null=True)
-    phone = models.CharField(max_length=20, unique=True, null=True)
+    phone = models.CharField(max_length=20, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     id_rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)

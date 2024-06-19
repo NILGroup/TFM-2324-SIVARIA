@@ -51,6 +51,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8081'
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -109,6 +111,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
+    {
+        "NAME": "sivaria.validators.validators.SpecialCharacterPasswordValidator",
+    },
 ]
 
 
@@ -154,11 +159,15 @@ REST_AUTH_SERIALIZERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication', # Usalo para crear una autenticacion basada en sesiones aparte de la basada en tokens. Asi podremos acceder a todos los API endpoints
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
