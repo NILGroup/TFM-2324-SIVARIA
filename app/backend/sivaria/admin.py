@@ -16,18 +16,18 @@ class AppUserAdmin(BaseUserAdmin):
     add_form = CustomAppUserCreationForm
 
     # Los campos que se usarán para mostrar el modelo de usuario.
-    list_display = ('email', 'first_name', 'last_name', 'phone', 'id_rol', 'is_staff', 'is_active')
+    list_display = ('email', 'first_name', 'last_name', 'phone', 'rol', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'id_rol')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'rol')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser')}),
     )
     # Añade el campo de contraseña para el formulario de creación de usuario
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'phone', 'id_rol', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('email', 'first_name', 'last_name', 'phone', 'rol', 'password1', 'password2', 'is_staff', 'is_active')}
         ),
     )
     search_fields = ('email', 'first_name', 'last_name', 'phone')

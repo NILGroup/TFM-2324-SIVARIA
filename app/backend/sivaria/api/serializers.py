@@ -1,5 +1,8 @@
-from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
+from rest_framework.serializers import Serializer, CharField, EmailField, ModelSerializer, PrimaryKeyRelatedField
 from ..models import *
+from django.contrib.auth import authenticate, login, logout
+from rest_framework.serializers import ValidationError
+
 
 class PostSerializer(ModelSerializer):
     class Meta:
@@ -11,16 +14,18 @@ class RolSerializer(ModelSerializer):
         model = Rol
         fields = '__all__'
 
+
 class AppUserSerializer(ModelSerializer):
     id_rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
         model = AppUser
         fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'id_rol')
-'''
-class AppUserRegisterSerializer(ModelSerializer):
+
+class AppUserRegisterSerializer(Serializer):
+    
     class Meta:
         model = AppUser
-        fiels = '__all__'
+        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'rol')
     
     def create(self, clean_data):
         user_obj = AppUser.objects.create_user(
@@ -29,49 +34,33 @@ class AppUserRegisterSerializer(ModelSerializer):
             first_name=clean_data['first_name'],
             last_name=clean_data['last_name'],
             phone=clean_data['phone'],
-            rol=clean_data['id_rol'],
+            rol=clean_data['rol'],
         )
 
         user_obj.save()
         return user_obj
 
-class AppUserLoginSerializer(ModelSerializer):
+class AppUserLoginSerializer(Serializer):
+    email = EmailField()
+    password = CharField()
+
     class Meta:
-        model = AppUser
-        fiels = '__all__'
+        fields = '__all__'
     
-    def create(self, clean_data):
-        user_obj = AppUser.objects.create_user(
-            email=clean_data['email'],
-            password=clean_data['password'],
-            first_name=clean_data['first_name'],
-            last_name=clean_data['last_name'],
-            phone=clean_data['phone'],
-            rol=clean_data['id_rol'],
-        )
-
-        user_obj.save()
-        return user_obj
+    # Function lo login the user
+    def check_user(self, clean_data):
+        user = authenticate(username=clean_data['email'], password=clean_data['password'])
+        if not user:
+            raise ValidationError('Usuario no encontrado')
+        
+        return user
     
 
 class AppUserLogoutSerializer(ModelSerializer):
     class Meta:
         model = AppUser
-        fiels = '__all__'
-    
-    def create(self, clean_data):
-        user_obj = AppUser.objects.create_user(
-            email=clean_data['email'],
-            password=clean_data['password'],
-            first_name=clean_data['first_name'],
-            last_name=clean_data['last_name'],
-            phone=clean_data['phone'],
-            rol=clean_data['id_rol'],
-        )
+        fiels = 'email'
 
-        user_obj.save()
-        return user_obj
-'''
 
 class UserHasParentSerializer(ModelSerializer):
     id_son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
@@ -79,8 +68,17 @@ class UserHasParentSerializer(ModelSerializer):
         model = UserHasParent
         fields = ('id', 'id_son', 'phone_parent_1', 'phone_parent_2')
 
-    def create_user_has_parent(self, clean_data):
-        id_user = clean_data['id_son']
-        user_has_parent = UserHasParent.objects.create(id_son=id_user, )
-        user_has_parent.save()
-        return user_has_parent
+class UserHasParentModificationSerializer(Serializer):
+    class Meta:
+        model = UserHasParent
+        fields = ('id', 'son', 'phone_parent_1', 'phone_parent_2')
+
+    def create(self, clean_data):
+        uhp_obj = UserHasParent.objects.create(
+            son=clean_data['son'],
+            phone_parent_1=clean_data['phone_parent_1'],
+            phone_parent_2=clean_data['phone_parent_2'],
+        )
+
+        uhp_obj.save()
+        return uhp_obj

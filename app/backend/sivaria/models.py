@@ -23,10 +23,10 @@ class Rol(models.Model):
 class AppUser(AbstractUser): 
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255, null=True)
-    phone = models.CharField(max_length=20, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
+    phone = models.CharField(max_length=9, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    id_rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -40,11 +40,11 @@ class AppUser(AbstractUser):
         return f'User: {self.first_name} {self.last_name} - {self.email}'
     
 class UserHasParent(models.Model):
-    id_son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     #id_parent_1 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     #id_parent_2 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
-    phone_parent_1 = models.CharField(max_length=15, null=True)
-    phone_parent_2 = models.CharField(max_length=15, null=True)
+    phone_parent_1 = models.CharField(max_length=9, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
+    phone_parent_2 = models.CharField(max_length=9, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
 
     def __str__(self) -> str: 
-        return f'UserHasParent: {self.id_son.id} - {self.id_son.first_name} {self.id_son.last_name}'
+        return f'UserHasParent: {self.son.id} - {self.son.first_name} {self.son.last_name}'
