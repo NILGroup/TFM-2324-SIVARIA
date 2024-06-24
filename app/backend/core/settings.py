@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,8 @@ SECRET_KEY = "django-insecure-+8iehv8h*vs6)2(=2@z$h!%$p=#l!$(fc*q)ht19$bpr#-q%9(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
 
 # Application definition
 
@@ -46,17 +47,39 @@ INSTALLED_APPS = [
     'rest_framework.authtoken'
 
 ]
+# IMPORTANTE. NO ELIMINAR ESTA LINEA, PORQUE ESTO PERMITE QUE SE HAGAN PETICIONES CRUZADAS CON LA APP DE REACT
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8081'
+    'http://localhost:8081',
+    'exp://192.168.1.40:8081'
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+# Esto asegura que las cookies se envíen con las solicitudes
+#CSRF_COOKIE_HTTPONLY = False
+#CSRF_COOKIE_SAMESITE = 'None'
+
+CSRF_TRUSTED_ORIGINS = [ # Ajusta esto a los dominios de React Native
+    'http://localhost:8081',
+    'exp://192.168.1.40:8081'
+]
+#CSRF_USE_SESSIONS = True # Nos aseguramos de que el backend este configurado para usar sesiones
+
+#CORS_ALLOW_HEADERS = list(default_headers) + [
+    #'Set-Cookie'
+#]
+
+#SESSION_COOKIE_SAMESITE = 'Lax' 
+#SESSION_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_NAME = "csrftoken"
+
+#CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -159,10 +182,10 @@ REST_AUTH_SERIALIZERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication', # Usalo para crear una autenticacion basada en sesiones aparte de la basada en tokens. Asi podremos acceder a todos los API endpoints
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
         #'rest_framework.authentication.BasicAuthentication',
-        #'rest_framework.authentication.TokenAuthentication',
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [

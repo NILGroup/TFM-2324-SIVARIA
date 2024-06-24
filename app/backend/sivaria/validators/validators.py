@@ -64,7 +64,7 @@ class LoginValidator:
         password = data['password'].strip()
         if not password:
             raise CoreValidationError('Contraseña vacía')
-        
+        '''
         # Check the password length
         if len(password) < 8:
             raise CoreValidationError("Tu contraseña debe tener una longitud de 8 caracteres")
@@ -84,5 +84,5 @@ class LoginValidator:
         # Check for at least one special character
         if not re.search(r'[\W_]', password):
             raise CoreValidationError("Tu contraseña debe contener al menos un caracter especial.")
-
+        '''
         return True

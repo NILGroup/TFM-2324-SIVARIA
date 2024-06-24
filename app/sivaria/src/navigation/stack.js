@@ -9,8 +9,8 @@ export const HomeStack = () => {
     return (
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Dashboard" component={DashboardScreen} options={{title: 'Inicio'}} />
-        <Stack.Screen name="Register" component={RegisterScreen} options={{title: 'Registrarse'}} />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
       </Stack.Navigator>
     );
   }

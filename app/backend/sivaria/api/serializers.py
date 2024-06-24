@@ -16,10 +16,17 @@ class RolSerializer(ModelSerializer):
 
 
 class AppUserSerializer(ModelSerializer):
-    id_rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
+    rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'id_rol')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol')
+
+class AppUserCompleteSerializer(ModelSerializer):
+    rol = RolSerializer(many=False)
+    class Meta:
+        model = AppUser
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol')
+
 
 class AppUserRegisterSerializer(Serializer):
     
@@ -66,18 +73,18 @@ class UserHasParentSerializer(ModelSerializer):
     id_son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
     class Meta:
         model = UserHasParent
-        fields = ('id', 'id_son', 'phone_parent_1', 'phone_parent_2')
+        fields = ('id', 'id_son', 'email_parent_1', 'email_parent_2')
 
 class UserHasParentModificationSerializer(Serializer):
     class Meta:
         model = UserHasParent
-        fields = ('id', 'son', 'phone_parent_1', 'phone_parent_2')
+        fields = ('id', 'son', 'email_parent_1', 'email_parent_2')
 
     def create(self, clean_data):
         uhp_obj = UserHasParent.objects.create(
             son=clean_data['son'],
-            phone_parent_1=clean_data['phone_parent_1'],
-            phone_parent_2=clean_data['phone_parent_2'],
+            email_parent_1=clean_data['email_parent_1'],
+            email_parent_2=clean_data['email_parent_2'],
         )
 
         uhp_obj.save()

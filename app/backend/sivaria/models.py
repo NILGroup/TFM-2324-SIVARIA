@@ -43,8 +43,8 @@ class UserHasParent(models.Model):
     son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     #id_parent_1 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     #id_parent_2 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
-    phone_parent_1 = models.CharField(max_length=9, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
-    phone_parent_2 = models.CharField(max_length=9, unique=True, null=True, validators=[SpanishPhoneValidator()], help_text='The phone number must contain only digits and must be a Spanish number.')
+    email_parent_1 = models.EmailField(unique=True, null=True, default=None)
+    email_parent_2 = models.EmailField(unique=True, null=True, default=None)
 
     def __str__(self) -> str: 
         return f'UserHasParent: {self.son.id} - {self.son.first_name} {self.son.last_name}'

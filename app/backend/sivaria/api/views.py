@@ -21,6 +21,12 @@ from rest_framework.authentication import SessionAuthentication
 
 from ..validators.validators import LoginValidator
 
+from django.middleware.csrf import get_token
+
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.utils.decorators import method_decorator
+
+
 #from scripts.controller import Controller
 
 '''
@@ -221,14 +227,15 @@ class Rol_APIView_Detail_RolId(APIView):
 http://127.0.0.1:8000/sivaria/v1/user/register
 
 '''
+@method_decorator(csrf_protect, name='dispatch')
 class AppUser_APIView_Register(APIView):
 
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, format=None):
-        rolService = RolService()
-        userHasParentService = UserHasParentService()
-        userService = UserService()
+        rol_service = RolService()
+        user_has_parent_service = UserHasParentService()
+        user_service = UserService()
         
         response = {
             'status': 'error',
@@ -240,9 +247,9 @@ class AppUser_APIView_Register(APIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         #cambiarlo por el serializador
-        rol_slug = request.data.get('rol_slug', None)
-        rol_instance = Rol.objects.get(slug=rol_slug)
-        #rol_instance = rolService.get_rol_by_slug(request.data.get('rolSlug', None))
+        #rol_slug = request.data.get('rol_slug', None)
+        #rol_instance = Rol.objects.get(slug=rol_slug)
+        rol_instance = rol_service.get_rol_by_slug(request.data.get('rol_slug', None))
 
         data = {
             'first_name': request.data.get('first_name', None),
@@ -261,14 +268,12 @@ class AppUser_APIView_Register(APIView):
         # The user is saved in AppUser table
         #serializer_response, saved = userService.save_user(data)
 
-        serializer = AppUserRegisterSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.create(data)
+        user = user_service.register_user(data=data)
         if(user and request.data.get('rol_slug', None) == 'joven'):
             #user = userService.get_user_by_email_json(data['email'])
-            phone_parent_1 = request.data.get('phone_parent_1', None)
-            phone_parent_2 = request.data.get('phone_parent_2', None)
-            if phone_parent_1 is None and phone_parent_2 is None:
+            email_parent_1 = request.data.get('email_parent_1', None)
+            email_parent_2 = request.data.get('email_parent_2', None)
+            if email_parent_1 is None and email_parent_2 is None:
                 response = {
                     'status': 'error',
                     'message': 'No phone parent number was provided'
@@ -277,22 +282,23 @@ class AppUser_APIView_Register(APIView):
             
             uhpData = {
                 'son': user,
-                'phone_parent_1': phone_parent_1,
-                'phone_parent_2': phone_parent_2
+                'email_parent_1': email_parent_1,
+                'email_parent_2': email_parent_2
             }
-            uhpSerializer = UserHasParentModificationSerializer(data=uhpData)
-            
-            uhpSerializer.is_valid(raise_exception=True)
-            _ = uhpSerializer.create(clean_data=uhpData)
+
+            _ = user_has_parent_service.insert_user_has_parent(data=uhpData)
+
+            token, created = Token.objects.get_or_create(user=user)
 
             response = {
                 'status': 'ok',
-                'message': 'Usuario registrado correctamente'
+                'message': 'Usuario registrado correctamente',
+                'token': token.key
             }
 
             return Response(response, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
       
 '''
@@ -302,25 +308,43 @@ http://127.0.0.1:8000/sivaria/v1/user/login
 class AppUser_APIView_Login(APIView):
 
     permission_classes = (permissions.AllowAny, )
-    authentication_classes = (SessionAuthentication, )
+    #authentication_classes = (SessionAuthentication, )
 
-    def post(self, request, format=None):        
-        data = request.data
-
-        LoginValidator().validate_email(data)
-        LoginValidator().validate_email(data)
-        
-        serializer = AppUserLoginSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.check_user(data)
-        login(request, user)
-
-        response_data = {
-                'status': 'ok',
-                'message': 'Usuario logeado correctamente',
-                'data': serializer.data
+    def post(self, request, format=None):
+        response = {
+            'status': 'error', 
+            'message': 'Error en el proceso de login del usuario.',  
         }
-        return Response(response_data, status=status.HTTP_200_OK)
+        user_service = UserService()
+        data = request.data
+        try:
+            LoginValidator().validate_email(data)
+        except:
+            response['data'] = 'Email vacío'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:  
+            LoginValidator().validate_password(data)
+        except:
+            response['data'] = 'Contraseña vacía'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = user_service.check_user(data)
+            #login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            user_data = user_service.get_user_by_email_json(email=data['email'])
+            user_data.pop('password')
+        except:
+            response['data'] = 'Usuario no encontrado'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+        
+        response['status'] = 'ok',
+        response['message'] = 'Usuario logeado correctamente',
+        response['data'] = user_data
+        response['token'] = token.key
+        return Response(response, status=status.HTTP_200_OK)
+        
         '''
         user = authenticate(username=data['email'], password=data['password'])
         if user:
@@ -365,11 +389,39 @@ class AppUser_APIView_Login(APIView):
         else:
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         '''
+
+'''
+http://127.0.0.1:8000/sivaria/v1/user/getCSRFToken
+
+'''
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class GetCSRFToken(APIView):
+
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, format=None):
+        return Response({'status': 'ok', 'message': 'Token creado correctamente'}, status=status.HTTP_200_OK)
+
+'''
+http://127.0.0.1:8000/sivaria/v1/user/deleteAccount
+
+'''
+class DeleteAccountView(APIView):
+
+    def delete(self, request, format=None):
+        try:
+            email = request.data.get('email', None)
+            UserService().delete_user(email=email)
+        except:
+            return Response({'status': 'error', 'message': 'Error eliminando al usuario'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 '''
 http://127.0.0.1:8000/sivaria/v1/user/logout
 
 '''
 class AppUser_APIView_Logout(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
         '''
@@ -405,8 +457,16 @@ class AppUser_APIView_Logout(APIView):
         except Exception as e:
             return Response({'status':'error','message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         '''
-        logout(request)    
-        return Response(status=status.HTTP_200_OK)
+        try:
+            #logout(request)    
+            request.user.auth_token.delete()
+            response = {
+                'status': 'ok',
+                'message': 'Logout realizado correctamente'
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        except:
+            return Response({'status': 'error', 'message': 'Error durante el proceso de logout'}, status=status.HTTP_400_BAD_REQUEST)
 
 '''
 Get info of a user by user Id
@@ -432,7 +492,7 @@ class AppUser_APIView_Detail_UserId(APIView):
         return Response(response, status=status.HTTP_200_OK) 
 
 '''
-Get user by user email
+Get user data by user email
 
 http://127.0.0.1:8000/sivaria/v1/getUserByEmail
 
@@ -450,6 +510,29 @@ class AppUser_APIView_Detail_Email(APIView):
             'data': user
         }
         return Response(response, status=status.HTTP_200_OK) 
+
+'''
+Update user data
+
+http://127.0.0.1:8000/sivaria/v1/user/{email}/updateUserData
+
+'''
+class AppUser_APIView_Update(APIView):
+
+    def put(self, request, email, format=None):
+        try:
+            data = request.data
+            user = AppUser.objects.get(email=email)
+            serializer = AppUserSerializer(user, data=data, partial=True)
+            serializer.save()
+            response = {
+                'status': 'ok',
+                'message': 'Datos actualizados correctamente',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK) 
+        except:
+            return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario'}, status=status.HTTP_400_BAD_REQUEST)
 
 '''
 http://127.0.0.1:8000/sivaria/v1/expertSystem/{modelType}/predict

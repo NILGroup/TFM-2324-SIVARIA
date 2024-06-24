@@ -55,7 +55,7 @@ class UserService(object):
         try:
             return AppUser.objects.get(email=email)
         except AppUser.DoesNotExist:
-            raise Http404 
+            raise Http404('Usuario no encontrado')
         except AppUser.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el mismo email')
     
@@ -77,13 +77,13 @@ class UserService(object):
 
 
     def get_user_by_email_json(self, email):
-        return AppUserSerializer(self.get_user_by_email(email)).data
+        return AppUserCompleteSerializer(self.get_user_by_email(email)).data
         
     def get_user_by_userId_json(self, userId):
-        return AppUserSerializer(self.get_user_by_userId(userId)).data
+        return AppUserCompleteSerializer(self.get_user_by_userId(userId)).data
         
     def get_user_by_phone_json(self, phone):
-        return AppUserSerializer(self.get_user_by_phone(phone)).data
+        return AppUserCompleteSerializer(self.get_user_by_phone(phone)).data
 
     def hash_password(self, password):
         return make_password(password=password)
@@ -93,6 +93,18 @@ class UserService(object):
     def verify_password(self, password, hash_password):
         return check_password(password=password, encoded=hash_password)
     
+    def register_user(self, data):
+        serializer = AppUserRegisterSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.create(data)
+        return user
+    
+    def check_user(self, data):
+        serializer = AppUserLoginSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.check_user(data)
+        return user
+
     def save_user(self, data):
         serializer = AppUserSerializer(data=data)  
         if serializer.is_valid():
@@ -108,6 +120,9 @@ class UserService(object):
             return (serializer.data, True)
         
         return (serializer.errors, False)
+    
+    def delete_user(self, email):
+        AppUser.objects.filter(email=email).delete()
 
 
 class UserHasParentService(object):
@@ -127,6 +142,12 @@ class UserHasParentService(object):
             raise Http404('Registro no encontrado')
         except UserHasParent.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el ID')
+
+    def insert_user_has_parent(self, data):
+        uhpSerializer = UserHasParentModificationSerializer(data=data)
+        
+        uhpSerializer.is_valid(raise_exception=True)
+        return uhpSerializer.create(clean_data=data)
 
     def save_user_has_parent(self, data):
         serializer = UserHasParentSerializer(data=data)  
