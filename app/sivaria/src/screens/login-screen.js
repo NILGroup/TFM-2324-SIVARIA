@@ -32,8 +32,7 @@ const { StatusBarManager } = NativeModules;
 //axiosInstance.defaults.xsrfHeaderName = 'X-XSRFToken';
 //axiosInstance.defaults.withCredentials = true;
 
-const LoginScreen = () => {
-    const navigation = useNavigation();
+const LoginScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 

@@ -6,7 +6,7 @@ import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';
 import PhoneInput from "react-native-phone-input";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({navigation}) => {
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');

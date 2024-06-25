@@ -2,9 +2,7 @@ import { View, Text, Alert, SafeAreaView, Pressable } from 'react-native';
 import axiosInstance from '../utils/axios-config-web';
 import { useNavigation } from '@react-navigation/native';
 
-const DashboardScreen = () => {
-
-  const navigation = useNavigation();
+const DashboardScreen = ({navigation}) => {
 
   const callLogout = () => {
     console.log(axiosInstance.defaults.withCredentials);
