@@ -23,8 +23,8 @@ const RegisterScreen = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        console.log('entrando a buscar roles');
-        console.log(axiosInstance);
+        //console.log('entrando a buscar roles');
+        //console.log(axiosInstance.defaults.baseURL + '/sivaria/v1/rol');
         const fetchRoles = async () => {
             await axiosInstance.get('/sivaria/v1/rol')
             .then(function (response) {
@@ -32,10 +32,11 @@ const RegisterScreen = () => {
                     label: role.description, // Ajusta esto según la estructura de tu JSON
                     value: role.slug // Ajusta esto según la estructura de tu JSON
                 }));
-                console.log(rolesData);
+                //console.log(rolesData);
                 setRoles(rolesData);
             })
             .catch(function (error) {
+                console.log(error);
                 Alert.alert('Error', 'Hubo un problema al obtener los roles');
             });
 

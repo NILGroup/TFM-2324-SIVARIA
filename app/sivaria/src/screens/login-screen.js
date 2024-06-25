@@ -14,6 +14,7 @@ import { Form } from 'react-bootstrap';
 
 import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';
+import { removeItem, setItem, getItem } from '../utils/async-storage';
 
 //import CookieManager from '@react-native-cookies/cookies';
 /*
@@ -29,7 +30,7 @@ else {
 const { StatusBarManager } = NativeModules;
 //axiosInstance.defaults.xsrfCookieName = 'csrftoken';
 //axiosInstance.defaults.xsrfHeaderName = 'X-XSRFToken';
-axiosInstance.defaults.withCredentials = true;
+//axiosInstance.defaults.withCredentials = true;
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -38,9 +39,8 @@ const LoginScreen = () => {
 
     const windowDimensions = useWindowDimensions();
 
-    function callLogin(e) {
+    async function callLogin(e) {
         e.preventDefault();
-        console.log(API_SERVER + '/sivaria/v1/user/login');
 
         if(!email && !password) {
             Alert.alert('Error', 'El campo email y contraseña están vacíos.')
@@ -59,15 +59,15 @@ const LoginScreen = () => {
             password:password
         }
 
-        axiosInstance.post('/sivaria/v1/user/login', data)
-            .then(function (response) {
+        await axiosInstance.post('/sivaria/v1/user/login', data)
+            .then(async function (response) {
                 //const token = response.data.data.token;
                 //console.log('Token JWT:', token);
                 
                 // Llamar función para resetear campos después del login exitoso
                 //setEmail('');
                 //setPassword('');
-                console.log(response);
+                //console.log(response);
 
                 /*
                 if(Platform.OS !== 'web') {
@@ -85,7 +85,9 @@ const LoginScreen = () => {
                     }
                 }
                 */
-                
+               //console.log(response.data);
+               //console.log(response.data.token);
+               Platform.OS === 'web' ? localStorage.setItem('userTokenLocalStorage', response.data.token) : await setItem('userToken', response.data.token);
                 
 
                 //axiosInstance.defaults.withCredentials = true;
@@ -95,22 +97,31 @@ const LoginScreen = () => {
                 //axiosInstance.defaults.xsrfHeaderName = response.config.xsrfHeaderName;
                 //axiosInstance.defaults.xsrfCookieName = response.config.xsrfCookieName;
                 
+                //console.log(localStorage.getItem('userTokenLocalStorage'));
+                //console.log(getItem('userToken'));
+
                 // Navegar a la siguiente pantalla (Dashboard, por ejemplo)
                 console.log('Login exitoso');
                 
                 //navigation.navigate('Dashboard');
             })
             .catch(function (error) {
-                console.log('Error de inicio de sesión:', error);
+                console.error('Error de inicio de sesión:', error);
                 Alert.alert('Error', 'Error en el inicio de sesión. Inténtelo de nuevo.')
             });
     }
 
-    function callLogout(e) {
+    async function callLogout(e) {
         e.preventDefault();
-        axiosInstance.post("/sivaria/v1/user/logout", {withCredentials: true})
-        .then(function (response) {
+        await axiosInstance.post("/sivaria/v1/user/logout")
+        .then(async function (response) {
+            //const token = Platform.OS === 'web' ? localStorage.getItem('userTokenLocalStorage') : await getItem('userToken');
+            //console.log(token);
             console.log('Logout exitoso');
+            Platform.OS === 'web' ? localStorage.removeItem('userTokenLocalStorage') : removeItem('userToken');
+            //const tokenI = Platform.OS === 'web' ? localStorage.getItem('userTokenLocalStorage') : await getItem('userToken');
+            //console.log(tokenI);
+            //removeItem('userToken');
         })
         .catch(function (error) {
             console.log(error);
