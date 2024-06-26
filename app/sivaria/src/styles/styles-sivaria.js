@@ -70,7 +70,13 @@ const stylesSivaria = StyleSheet.create({
         flex:0.5,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    loading: {
+        flex: 1,
+        padding: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default stylesSivaria;

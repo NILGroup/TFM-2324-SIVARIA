@@ -5,6 +5,7 @@ import ShowHidePasswordInput from '../components/show-hide-password-input';
 import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';
 import PhoneInput from "react-native-phone-input";
+import LoadingScreen from './loading-screen';
 
 const RegisterScreen = ({navigation}) => {
 
@@ -76,7 +77,7 @@ const RegisterScreen = ({navigation}) => {
                 // Llamar función para resetear campos después del login exitoso
 
                 console.log(response);
-                // Navegar a la siguiente pantalla (Dashboard, por ejemplo)
+                // Navegar a la siguiente pantalla (Home, por ejemplo)
                 console.log('Registro exitoso');
                 
                 navigation.navigate('Login');
@@ -89,9 +90,7 @@ const RegisterScreen = ({navigation}) => {
 
     if(loading) {
         return (
-            <View style={styles.loading}>
-                <ActivityIndicator size="large" color="#006E51" />
-            </View>
+            <LoadingScreen />
         );
     }
 
@@ -178,14 +177,5 @@ const RegisterScreen = ({navigation}) => {
         </SafeAreaView>
     );
 }
-  
-const styles = StyleSheet.create({
-    loading: {
-      flex: 1,
-      padding: 16,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  });
 
 export default RegisterScreen;

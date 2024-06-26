@@ -14,9 +14,8 @@ import { Form } from 'react-bootstrap';
 
 import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';
-import { removeItem, setItem, getItem } from '../utils/async-storage';
+import { setItemLocalStorage, removeItemLocalStorage, getItemLocalStorage } from '../utils/general-local-storage';//import CookieManager from '@react-native-cookies/cookies';
 
-//import CookieManager from '@react-native-cookies/cookies';
 /*
 let axiosInstance;
 if (Platform.OS !== 'web') {
@@ -32,9 +31,10 @@ const { StatusBarManager } = NativeModules;
 //axiosInstance.defaults.xsrfHeaderName = 'X-XSRFToken';
 //axiosInstance.defaults.withCredentials = true;
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({navigation, route}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { setIsAuthenticated } = route.params;
 
     const windowDimensions = useWindowDimensions();
 
@@ -86,8 +86,8 @@ const LoginScreen = ({navigation}) => {
                 */
                //console.log(response.data);
                //console.log(response.data.token);
-               Platform.OS === 'web' ? localStorage.setItem('userTokenLocalStorage', response.data.token) : await setItem('userToken', response.data.token);
-                
+
+                setItemLocalStorage('userToken', response.data.token);
 
                 //axiosInstance.defaults.withCredentials = true;
                 //axiosInstance.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -96,35 +96,19 @@ const LoginScreen = ({navigation}) => {
                 //axiosInstance.defaults.xsrfHeaderName = response.config.xsrfHeaderName;
                 //axiosInstance.defaults.xsrfCookieName = response.config.xsrfCookieName;
                 
-                //console.log(localStorage.getItem('userTokenLocalStorage'));
-                //console.log(getItem('userToken'));
+                //console.log(getItemLocalStorage('userToken'));
 
-                // Navegar a la siguiente pantalla (Dashboard, por ejemplo)
+                // Navegar a la siguiente pantalla (Home, por ejemplo)
                 console.log('Login exitoso');
+                setIsAuthenticated(true); 
+                //navigation.navigate('Home');
+                //navigation.navigate('Root', {screen: 'Home'});
                 
-                //navigation.navigate('Dashboard');
             })
             .catch(function (error) {
                 console.error('Error de inicio de sesión:', error);
                 Alert.alert('Error', 'Error en el inicio de sesión. Inténtelo de nuevo.')
             });
-    }
-
-    async function callLogout(e) {
-        e.preventDefault();
-        await axiosInstance.post("/sivaria/v1/user/logout")
-        .then(async function (response) {
-            //const token = Platform.OS === 'web' ? localStorage.getItem('userTokenLocalStorage') : await getItem('userToken');
-            //console.log(token);
-            console.log('Logout exitoso');
-            Platform.OS === 'web' ? localStorage.removeItem('userTokenLocalStorage') : removeItem('userToken');
-            //const tokenI = Platform.OS === 'web' ? localStorage.getItem('userTokenLocalStorage') : await getItem('userToken');
-            //console.log(tokenI);
-            //removeItem('userToken');
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
     }
 
     function sendPush() {
@@ -164,14 +148,6 @@ const LoginScreen = ({navigation}) => {
                     <Text style={stylesSivaria.buttonText}>Registrarse</Text>
                 </Pressable>
 
-                
-                <Pressable 
-                    style={stylesSivaria.button}
-                    onPress={(e) => callLogout(e)}>
-                    <Text style={stylesSivaria.buttonText}>Logout</Text>
-                </Pressable>
-
-                
                 <Pressable 
                     style={stylesSivaria.button}
                     onPress={(e) => sendPush(e)}>

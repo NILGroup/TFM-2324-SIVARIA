@@ -12,7 +12,7 @@ export const config = {
             screens: {
                 LoginScreen:"/",
                 RegisterScreen: "/register",
-                DashboardScreen: "/dashboard"
+                HomeScreen: "/home"
             }
         }
     }
