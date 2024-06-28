@@ -4,7 +4,7 @@ from rest_framework import status
 from ..models import *
 from .serializers import *
 from django.http import Http404, HttpResponseBadRequest
-from .services.services import RolService, UserService, UserHasParentService
+from .services.services import RolService, UserService, UserHasParentService, ExpoService, PushNotificationTypeService
 import sys
 # User authentication
 from rest_framework.authtoken.models import Token
@@ -257,7 +257,8 @@ class AppUser_APIView_Register(APIView):
             'email': request.data.get('email', None),
             'password': request.data.get('password', None),
             'phone': request.data.get('phone', None),
-            'rol': rol_instance
+            'rol': rol_instance,
+            'expo_token': request.data.get('expo_token', None)
         }
         # Validate data, in this case, the serializar makes the validation job with is_valid function()
         # Email would be already validated by EmailField in model
@@ -316,7 +317,10 @@ class AppUser_APIView_Login(APIView):
             'message': 'Error en el proceso de login del usuario.',  
         }
         user_service = UserService()
-        data = request.data
+        data = {
+            'email':request.data.get('email', None),
+            'password': request.data.get('password', None)
+        }
         try:
             LoginValidator().validate_email(data)
         except:
@@ -333,8 +337,13 @@ class AppUser_APIView_Login(APIView):
             user = user_service.check_user(data)
             #login(request, user)
             token, created = Token.objects.get_or_create(user=user)
+            expo_token = request.data.get('expo_token',None)
+            if expo_token is not None or expo_token == '':
+                user_service.update_user(user=user, data={'expo_token': expo_token}, partial=True)
+            
             user_data = user_service.get_user_by_email_json(email=data['email'])
             user_data.pop('password')
+            user_data.pop('expo_token')
         except:
             response['data'] = 'Usuario no encontrado'
             return Response(response, status=status.HTTP_400_BAD_REQUEST) 
@@ -553,3 +562,82 @@ class ExpertSystem_APIView_Predict(APIView):
         return Response(response, status=status.HTTP_200_OK) 
 
 '''
+'''
+http://127.0.0.1:8000/sivaria/v1/external/sendNotification
+
+'''
+class External_SendNotification(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        response = {
+            'status': 'error',
+            'message': 'Error en el envío de la notificación',
+        }
+        user_service = UserService()
+        push_notification_type_service = PushNotificationTypeService()
+        
+        data = request.data
+        email = data.get('email', [])
+        emails = []
+        if isinstance(email, list):
+            for email_data in email:
+                emails.append(email_data['email'])
+        else:
+            emails.append(email)
+
+        expo_tokens = []
+        for email in emails:
+            try:
+                user_data = user_service.get_user_by_email_json(email)
+                expo_token = user_data.get('expo_token')
+                if expo_token is not None:
+                    expo_tokens.append(expo_token)
+            except:
+                continue
+            
+        #expo_tokens = []
+        #expo_tokens.append(expo_token)
+        notification_type = request.data.get('notification_type', None)
+        if notification_type is None:
+            response['data'] = 'Tipo de notificación no enviada'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+        try:
+            notification_type_data = push_notification_type_service.get_push_notification_type_by_slug_json(notification_type)
+        except:
+            response['data'] = 'Notificación no encontrada'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+ 
+
+        expo_service = ExpoService()
+        try:
+            title = notification_type_data.get('title', '')
+            body = notification_type_data.get('body', '')
+            data = notification_type_data.get('data')
+            if data == '':
+                data = None
+
+            invalid_tokens = expo_service.send_push_messages(
+                expo_tokens= expo_tokens,
+                title=title,
+                message=body,
+                data=data, 
+            )   
+
+            if invalid_tokens:
+                for invalid_token in invalid_tokens:
+                    users = user_service.get_users_by_expo_token(invalid_token)
+                    for user in users:
+                        user_service.update_user(user=user, data={'expo_token':None}, partial=True)
+                
+        except Exception as exc:
+            response['data'] = str(exc)
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+            
+
+        response['status'] = 'ok'
+        response['message'] = 'Notificación enviada'
+        return Response(response, status=status.HTTP_200_OK) 
+
+

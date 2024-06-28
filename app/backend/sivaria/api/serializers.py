@@ -19,20 +19,20 @@ class AppUserSerializer(ModelSerializer):
     rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol', 'expo_token')
 
 class AppUserCompleteSerializer(ModelSerializer):
     rol = RolSerializer(many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'rol', 'expo_token')
 
 
 class AppUserRegisterSerializer(Serializer):
     
     class Meta:
         model = AppUser
-        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'rol')
+        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'rol', 'expo_token')
     
     def create(self, clean_data):
         user_obj = AppUser.objects.create_user(
@@ -42,6 +42,7 @@ class AppUserRegisterSerializer(Serializer):
             last_name=clean_data['last_name'],
             phone=clean_data['phone'],
             rol=clean_data['rol'],
+            expo_token=clean_data['expo_token'],
         )
 
         user_obj.save()
@@ -89,3 +90,9 @@ class UserHasParentModificationSerializer(Serializer):
 
         uhp_obj.save()
         return uhp_obj
+    
+
+class PushNotificationTypeSerializer(ModelSerializer):
+    class Meta:
+        model = PushNotificationType
+        fields = '__all__'

@@ -129,6 +129,7 @@ class UserAdmin(BaseUserAdmin):
 #admin.site.register(AppUser, CustomUserAdmin)
 #admin.site.register(AppUser, BaseUserAdmin)
 admin.site.register(AppUser, AppUserAdmin)
-admin.site.register(Post)
+#admin.site.register(Post)
 admin.site.register(Rol)
 admin.site.register(UserHasParent)
+admin.site.register(PushNotificationType)

@@ -3,6 +3,16 @@ from ..serializers import *
 from django.http import Http404, HttpResponseBadRequest
 from django.contrib.auth.hashers import make_password, check_password
 
+from exponent_server_sdk import (
+    DeviceNotRegisteredError,
+    PushClient,
+    PushMessage,
+    PushServerError,
+    PushTicketError,
+)
+from requests.exceptions import ConnectionError, HTTPError
+
+
 class RolService(object):
     def get_rol_by_id(self, rolId):
         try:
@@ -74,6 +84,12 @@ class UserService(object):
             raise Http404('Usuario no encontrado') 
         except AppUser.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el mismo teléfono')
+
+    def get_users_by_expo_token(self, token):
+        try:
+            return list(AppUser.objects.filter(expo_token=token))
+        except AppUser.DoesNotExist:
+            raise Http404('Usuario no encontrado') 
 
 
     def get_user_by_email_json(self, email):
@@ -164,3 +180,58 @@ class UserHasParentService(object):
             return (serializer.data, True)
         
         return (serializer.errors, False)
+    
+class PushNotificationTypeService:
+
+    def get_push_notification_type_by_slug(self, slug):
+        try:
+            return PushNotificationType.objects.get(slug=slug)
+        except PushNotificationType.DoesNotExist:
+            raise Http404('Registro no encontrado') 
+        
+    def get_push_notification_type_by_slug_json(self, slug):
+        return PushNotificationTypeSerializer(self.get_push_notification_type_by_slug(slug)).data
+
+class ExpoService:
+
+    def __init__(self):
+        self.client = PushClient(force_fcm_v1=True)
+
+    def send_push_messages(self, expo_tokens, title, message, data=None, sound=None):
+        try:
+            push_messages = []
+            for token in expo_tokens:
+                push_message = PushMessage(
+                    to=token,
+                    title= title,
+                    body=message,
+                    data=data,
+                    sound=sound,
+                    priority='high'
+                )
+                push_messages.append(push_message)
+                
+            responses = PushClient().publish_multiple(push_messages=push_messages) 
+        
+        except (ConnectionError, HTTPError, PushServerError) as exc:
+            # Encountered some Connection or HTTP error
+            raise Exception(str(exc))
+        
+        for response in responses:
+            invalid_tokens = []
+            try:
+                # We got a response back, but we don't know whether it's an error yet.
+                # This call raises errors so we can handle them with normal exception
+                # flows.
+                response.validate_response()
+            except DeviceNotRegisteredError as exc:
+                # Mark the push token as inactive
+                #from notifications.models import PushToken
+                #PushToken.objects.filter(token=token).update(active=False)
+                raise Exception(str(exc))
+                
+            except PushTicketError as exc:
+                # Encountered some other per-notification error.
+                raise Exception(str(exc))
+            
+        return invalid_tokens
