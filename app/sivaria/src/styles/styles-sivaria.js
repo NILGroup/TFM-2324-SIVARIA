@@ -3,6 +3,11 @@ import { StyleSheet, Platform, NativeModules} from "react-native";
 const { StatusBarManager } = NativeModules;
 
 const stylesSivaria = StyleSheet.create({
+    tabContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: Platform.OS === 'android' ? StatusBarManager.HEIGHT : 0,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

@@ -4,7 +4,7 @@ from rest_framework import status
 from ..models import *
 from .serializers import *
 from django.http import Http404, HttpResponseBadRequest
-from .services.services import RolService, UserService, UserHasParentService, ExpoService, PushNotificationTypeService
+from .services.services import *
 import sys
 # User authentication
 from rest_framework.authtoken.models import Token
@@ -25,9 +25,6 @@ from django.middleware.csrf import get_token
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-
-
-#from scripts.controller import Controller
 
 '''
 Type of requests to all the posts
@@ -544,21 +541,37 @@ class AppUser_APIView_Update(APIView):
             return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario'}, status=status.HTTP_400_BAD_REQUEST)
 
 '''
-http://127.0.0.1:8000/sivaria/v1/expertSystem/{modelType}/predict
+http://127.0.0.1:8000/sivaria/v1/expertSystem/predict
 
 '''
 '''
 class ExpertSystem_APIView_Predict(APIView):
 
     def post(self, request, format=None):
-        controller = Controller()
-        argc = []
-        result = controller.execute(argc)
         response = {
-            'status': 'ok',
-            'message': 'Predicción hecha correctamente',
-            'data': result
+            'status': 'error',
+            'message': 'Error en la predicción'
         }
+        expert_system_service = ExpertSystemService()
+
+        model_type = request.data.get('model_type', None)
+        user_data_sivaria = request.data.get('user_data_sivaria', None) 
+
+        if model_type is None:
+            response['data'] = 'Model type not specified'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+        
+        if model_type.lower() not in ['autoinforme', 'familia', 'profesional']:
+            response['data'] = 'Model type not found'
+            return Response(response, status=status.HTTP_404_NOT_FOUND) 
+
+        result = expert_system_service.predict(model_type, user_data_sivaria)
+        #argc = []
+        #result = controller.execute(argc)
+        response['status'] = 'ok'
+        response['message'] = 'Predicción hecha correctamente'
+        response['data'] = result
+
         return Response(response, status=status.HTTP_200_OK) 
 
 '''

@@ -2,14 +2,20 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/login-screen";
 import HomeScreen from "../screens/home-screen";
 import RegisterScreen from "../screens/register-screen";
+import { Platform } from "react-native";
+import { HomeTabsNavigator } from "./logged-tab-stack";
 
 const UserStack = createNativeStackNavigator();
 
 export const UserStackNavigator = ({isAuthenticated, setIsAuthenticated}) => {
   return (
-    <UserStack.Navigator screenOptions={{headerShown: false}}>
-      {isAuthenticated ? (        
-        <UserStack.Screen name="Home" component={HomeScreen} initialParams={{setIsAuthenticated}} />
+    <UserStack.Navigator screenOptions={ { headerShown: Platform.OS !== 'web' ? true : false } }>
+      {isAuthenticated ? ( 
+        <UserStack.Screen name="Dashboard" initialParams={{setIsAuthenticated}}>     
+        {() => (  
+          <HomeTabsNavigator initialParams={{setIsAuthenticated}} />
+        )}
+        </UserStack.Screen>
       ) : (
         <>
           <UserStack.Screen name="Login" component={LoginScreen} initialParams={{setIsAuthenticated}}/>

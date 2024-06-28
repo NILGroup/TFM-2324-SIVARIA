@@ -12,6 +12,14 @@ from exponent_server_sdk import (
 )
 from requests.exceptions import ConnectionError, HTTPError
 
+import os 
+import sys
+'''
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(os.path.join(current_dir, '../../../../../scripts'))
+from controller import Controller
+'''
 
 class RolService(object):
     def get_rol_by_id(self, rolId):
@@ -194,6 +202,8 @@ class PushNotificationTypeService:
 
 class ExpoService:
 
+    client = None
+
     def __init__(self):
         self.client = PushClient(force_fcm_v1=True)
 
@@ -235,3 +245,27 @@ class ExpoService:
                 raise Exception(str(exc))
             
         return invalid_tokens
+'''
+class ExpertSystemService():
+    
+    controller = None
+
+    def __init__(self):
+       self.controller = Controller() 
+
+    def predict(self, model_type, user_data_sivaria):
+        argc = ['controller.py', '-mt', str(model_type)]
+        _ = self.controller.execute(argc)
+        argc = ['controller.py', '-st', 'accuracy']
+        _ = self.controller.execute(argc)
+
+
+        csv = self.__convertToDataframe__(user_data_sivaria)
+        argc = ['controller.py', '-p', '']
+        result = self.controller.execute(argc)
+
+        return result
+    
+    def __convertToDataframe__(self, user_data_sivaria):
+        return None
+'''

@@ -31,7 +31,7 @@ const HomeScreen = ({navigation, route}) => {
     async function sendPush(e) {
         e.preventDefault();
         data = {
-            email: getItemLocalStorage('email'),
+            email: await getItemLocalStorage('email'),
             notification_type: 'example'
         }
         await axiosInstance.post("/sivaria/v1/external/sendNotification", data)
@@ -50,13 +50,14 @@ const HomeScreen = ({navigation, route}) => {
     }
 
   return (
-      <SafeAreaView>
-        <Text>Home Screen</Text>
+      <SafeAreaView style={stylesSivaria.tabContainer}>
         <View>
-              <Pressable 
-                onPress={(e) => callLogout(e)}>
-                  <Text>Cerrar sesión</Text>
-              </Pressable>
+            <Pressable 
+                style={stylesSivaria.button}
+                onPress={(e) => callLogout(e)}
+            >
+                <Text style={stylesSivaria.buttonText}>Cerrar sesión</Text>
+            </Pressable>
         </View>
         <View>
             <Pressable 

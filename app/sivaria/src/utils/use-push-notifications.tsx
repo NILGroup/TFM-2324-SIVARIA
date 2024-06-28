@@ -53,10 +53,11 @@ export const usePushNotifications = (): PushNotificationState => {
             if(finalStatus !== 'granted') {
                 //alert('Fallo a la hora de conseguir el push token');
             }
-
-            token = await Notifications.getExpoPushTokenAsync({
-                projectId: Constants.expoConfig?.extra?.eas?.projectId,
-            });
+            if(Platform.OS !== 'web') {
+                token = await Notifications.getExpoPushTokenAsync({
+                    projectId: Constants.expoConfig?.extra?.eas?.projectId,
+                });
+            }
 
             if(Platform.OS === 'android') {
                 Notifications.setNotificationChannelAsync('default', {
