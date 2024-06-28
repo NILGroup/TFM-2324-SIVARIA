@@ -16,6 +16,8 @@ import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';
 import { setItemLocalStorage, removeItemLocalStorage, getItemLocalStorage } from '../utils/general-local-storage';//import CookieManager from '@react-native-cookies/cookies';
 
+import { usePushNotifications } from '../utils/use-push-notifications';
+
 /*
 let axiosInstance;
 if (Platform.OS !== 'web') {
@@ -32,6 +34,11 @@ const { StatusBarManager } = NativeModules;
 //axiosInstance.defaults.withCredentials = true;
 
 const LoginScreen = ({navigation, route}) => {
+
+    const {expoPushToken, notification} = usePushNotifications();
+    const data = JSON.stringify(notification, undefined, 2);
+    //console.log('Data '+data);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { setIsAuthenticated } = route.params;
@@ -55,7 +62,11 @@ const LoginScreen = ({navigation, route}) => {
 
         const data = {
             email:email,
-            password:password
+            password:password,
+        }
+
+        if (Platform.OS !== 'web') {
+            data['expo_token'] = expoPushToken.data
         }
 
         await axiosInstance.post('/sivaria/v1/user/login', data)
@@ -86,8 +97,9 @@ const LoginScreen = ({navigation, route}) => {
                 */
                //console.log(response.data);
                //console.log(response.data.token);
-
+                userData = response.data.data;
                 setItemLocalStorage('userToken', response.data.token);
+                setItemLocalStorage('email', userData.email);
 
                 //axiosInstance.defaults.withCredentials = true;
                 //axiosInstance.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -109,10 +121,6 @@ const LoginScreen = ({navigation, route}) => {
                 console.error('Error de inicio de sesión:', error);
                 Alert.alert('Error', 'Error en el inicio de sesión. Inténtelo de nuevo.')
             });
-    }
-
-    function sendPush() {
-        
     }
 
     return (
@@ -148,12 +156,6 @@ const LoginScreen = ({navigation, route}) => {
                     <Text style={stylesSivaria.buttonText}>Registrarse</Text>
                 </Pressable>
 
-                <Pressable 
-                    style={stylesSivaria.button}
-                    onPress={(e) => sendPush(e)}>
-                    <Text style={stylesSivaria.buttonText}>Enviar push</Text>
-                </Pressable>
-
             </View>
             <View style={stylesSivaria.footer}>
                 <Text style={stylesSivaria.buttonText}>Hecho por Aldair Maldonado</Text>
@@ -161,7 +163,11 @@ const LoginScreen = ({navigation, route}) => {
             
         </SafeAreaView>
     );
-    
+    /*
+        Meter para probar si se crea un Expo Token
+        <Text>Token: {expoPushToken?.data ?? ""}</Text>
+        <Text>{data}</Text>
+    */
 }
 
 export default LoginScreen;

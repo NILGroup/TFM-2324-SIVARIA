@@ -41,7 +41,7 @@ export default function App() {
   // Used to save the current route before the component is dismounted
   useEffect(() => {
     const saveCurrentRoute = () => {
-      const currentRoute = navigationRef.current.getCurrentRoute().name;
+      const currentRoute = (navigationRef !== null) ? navigationRef.current.getCurrentRoute().name : null;
       console.log('Current Route');
       console.log(currentRoute);
       if (currentRoute) {
@@ -56,10 +56,10 @@ export default function App() {
         }
       };
 
-      AppState.addEventListener('change', handleAppStateChange);
+      const subscription = AppState.addEventListener('change', handleAppStateChange);
 
       return () => {
-        AppState.removeEventListener('change', handleAppStateChange);
+        subscription.remove();
       };
 
     } else {
@@ -109,7 +109,7 @@ export default function App() {
       }}
     >
 
-    <UserStackNavigator isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>
+      <UserStackNavigator isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>
       
     </NavigationContainer>
   );
