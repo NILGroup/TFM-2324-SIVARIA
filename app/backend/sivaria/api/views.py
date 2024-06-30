@@ -224,7 +224,7 @@ class Rol_APIView_Detail_RolId(APIView):
 http://127.0.0.1:8000/sivaria/v1/user/register
 
 '''
-@method_decorator(csrf_protect, name='dispatch')
+#@method_decorator(csrf_protect, name='dispatch')
 class AppUser_APIView_Register(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -257,6 +257,15 @@ class AppUser_APIView_Register(APIView):
             'rol': rol_instance,
             'expo_token': request.data.get('expo_token', None)
         }
+
+        try:
+            check_user_data = user_service.get_user_by_email(email=data['email'])
+            if check_user_data:
+                response['data'] = 'El usuario ya existe'
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            pass
+
         # Validate data, in this case, the serializar makes the validation job with is_valid function()
         # Email would be already validated by EmailField in model
         # Password will be validated by the validators set in AUTH_PASSWORD_VALIDATORS property in the settings.py file
