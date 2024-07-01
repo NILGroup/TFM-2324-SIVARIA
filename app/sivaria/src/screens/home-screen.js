@@ -3,6 +3,10 @@ import axiosInstance from '../utils/axios-config-web';
 //import { useNavigation } from '@react-navigation/native';
 import { getItemLocalStorage, removeItemLocalStorage } from '../utils/general-local-storage';
 import stylesSivaria from '../styles/styles-sivaria';
+import SivariaButton from '../components/sivaria-custom-basic-components/sivaria-button';
+import Container from '../components/component-containers/container';
+
+import SivariaText from '../components/sivaria-custom-basic-components/sivaria-text';
 
 const HomeScreen = ({navigation, route}) => {
     const { setIsAuthenticated } = route.params;
@@ -50,23 +54,24 @@ const HomeScreen = ({navigation, route}) => {
     }
 
   return (
-      <SafeAreaView style={stylesSivaria.tabContainer}>
-        <View>
-            <Pressable 
-                style={stylesSivaria.button}
-                onPress={(e) => callLogout(e)}
-            >
-                <Text style={stylesSivaria.buttonText}>Cerrar sesión</Text>
-            </Pressable>
+      <Container>
+        <View style={{backgroundColor: 'white', alignItems: 'center', justifyContent: 'center'}}>
+            <View style={{width: '100%', alignItems:'center', justifyContent: 'center'}}>
+                <SivariaButton onPress={(e) => callLogout(e)}>
+                    <SivariaText isBold={true}>
+                        CERRAR SESIÓN
+                    </SivariaText>
+                </SivariaButton>
+            </View>
+            <View style={{width: '100%', alignItems:'center', justifyContent: 'center'}}>
+                <SivariaButton onPress={(e) => sendPush(e)}>
+                    <SivariaText isBold={true}>
+                        ENVIAR PUSH
+                    </SivariaText>
+                </SivariaButton>
+            </View>
         </View>
-        <View>
-            <Pressable 
-                style={stylesSivaria.button}
-                onPress={(e) => sendPush(e)}>
-                <Text style={stylesSivaria.buttonText}>Enviar push</Text>
-            </Pressable>
-        </View>
-      </SafeAreaView>
+      </Container>
   );
 }
   

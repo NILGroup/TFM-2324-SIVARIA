@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import stylesInput from "../styles/styles-input";
 import stylesIcon from "../styles/styles-icon";
 
-const ShowHidePasswordInput = ({style, placeholder, password, onChangeText}) => {
+const ShowHidePasswordInput = ({placeholder, password, onChangeText}) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -45,7 +45,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#f3f3f3', 
         borderRadius: 8, 
         paddingHorizontal: 14, 
+
+        width: '80%',
+        borderWidth: 1,
+        borderColor: '#ccc',
     }, 
+    prueba: {
+        width: '80%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 10,
+        paddingHorizontal: 10,
+        color:'#333',
+        fontSize: 16,
+    },
     input: { 
         flex: 1, 
         color: '#333', 
@@ -55,13 +69,7 @@ const styles = StyleSheet.create({
     }, 
     icon: { 
         marginLeft: 10, 
-    }, 
-    heading: { 
-        alignItems: 'center', 
-        fontSize: 20, 
-        color: 'green', 
-        marginBottom: 20, 
-    }, 
+    },
 }); 
 
 export default ShowHidePasswordInput;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert } from 'react-native';
-import Dropdown from '../components/dropdown';
+import Dropdown from '../components/sivaria-custom-basic-components/dropdown';
 import ShowHidePasswordInput from '../components/show-hide-password-input';
 import axiosInstance from '../utils/axios-config-web';
 import stylesSivaria from '../styles/styles-sivaria';

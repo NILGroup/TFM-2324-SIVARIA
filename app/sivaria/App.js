@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { UserStackNavigator /*, LoggedUserStack, NonLoggedUserStack */} from './src/navigation/stack';
 import { linking, fallback } from './src/utils/navigation-config';
 import { View, ActivityIndicator, AppState, Platform } from 'react-native';
-import { getItemLocalStorage, setItemLocalStorage } from './src/utils/general-local-storage';
+import { getItemLocalStorage, removeItemLocalStorage, setItemLocalStorage } from './src/utils/general-local-storage';
 import stylesSivaria from './src/styles/styles-sivaria';
 import LoadingScreen from './src/screens/loading-screen';
 
