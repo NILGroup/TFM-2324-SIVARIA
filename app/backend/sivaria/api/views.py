@@ -246,7 +246,8 @@ class AppUser_APIView_Register(APIView):
         #cambiarlo por el serializador
         #rol_slug = request.data.get('rol_slug', None)
         #rol_instance = Rol.objects.get(slug=rol_slug)
-        rol_instance = rol_service.get_rol_by_slug(request.data.get('rol_slug', None))
+        rol_slug = request.data.get('rol_slug', None)
+        rol_instance = rol_service.get_rol_by_slug(rol_slug)
 
         data = {
             'first_name': request.data.get('first_name', None),
@@ -261,7 +262,7 @@ class AppUser_APIView_Register(APIView):
         try:
             check_user_data = user_service.get_user_by_email(email=data['email'])
             if check_user_data:
-                response['data'] = 'El usuario ya existe'
+                response['data'] = 'Ya existe un usuario con este email.'
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         except:
             pass
@@ -276,27 +277,28 @@ class AppUser_APIView_Register(APIView):
         #serializer_response, saved = userService.save_user(data)
 
         user = user_service.register_user(data=data)
-        if(user and request.data.get('rol_slug', None) == 'joven'):
-            #user = userService.get_user_by_email_json(data['email'])
-            email_parent_1 = request.data.get('email_parent_1', None)
-            email_parent_2 = request.data.get('email_parent_2', None)
-            if email_parent_1 is None and email_parent_2 is None:
-                response = {
-                    'status': 'error',
-                    'message': 'No phone parent number was provided'
+        if user:
+            if rol_slug == 'joven':
+                #user = userService.get_user_by_email_json(data['email'])
+                email_parent_1 = request.data.get('email_parent_1', None)
+                email_parent_2 = request.data.get('email_parent_2', None)
+                if email_parent_1 is None and email_parent_2 is None:
+                    response = {
+                        'status': 'error',
+                        'message': 'No se ha dado ningún email de ningún padre.'
+                    }
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
+                
+                uhpData = {
+                    'son': user,
+                    'email_parent_1': email_parent_1,
+                    'email_parent_2': email_parent_2
                 }
-                return Response(response, status=status.HTTP_400_BAD_REQUEST)
-            
-            uhpData = {
-                'son': user,
-                'email_parent_1': email_parent_1,
-                'email_parent_2': email_parent_2
-            }
 
-            _ = user_has_parent_service.insert_user_has_parent(data=uhpData)
+                _ = user_has_parent_service.insert_user_has_parent(data=uhpData)
+
 
             token, created = Token.objects.get_or_create(user=user)
-
             response = {
                 'status': 'ok',
                 'message': 'Usuario registrado correctamente',
@@ -304,7 +306,7 @@ class AppUser_APIView_Register(APIView):
             }
 
             return Response(response, status=status.HTTP_201_CREATED)
-        
+            
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
       
@@ -514,11 +516,79 @@ http://127.0.0.1:8000/sivaria/v1/getUserByEmail
 '''
 class AppUser_APIView_Detail_Email(APIView):
 
-    def get(self, request, format=None):
-        email = request.get.data('email')
+    def get(self, request, email, format=None):
+        LoginValidator().validate_email({'email': email})
+        #email = request.get.data('email')
+        user_service = UserService()
+        user_has_parent_service = UserHasParentService()
+        #print(email)
+        user = user_service.get_user_by_email_json(email)
+        try: 
+            user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(user['id'])
+        except Exception as e:
+            pass
+        user.pop('password', None)
+        user.pop('expo_token', None)
+
+        rol = user.get('rol', None)
+        if rol: 
+            slug = rol.get('slug', None)
+            if slug == 'joven':
+                user['email_parent_1'] = user_has_parent.get('email_parent_1', None)
+                user['email_parent_2'] = user_has_parent.get('email_parent_2', None) 
+
+
+        titles = {
+            'email': 'Email',
+            'first_name': 'Nombre',
+            'last_name': 'Apellidos',
+            'phone': 'Teléfono',
+            'email_parent_1': 'Teléfono pariente 1',
+            'email_parent_2': 'Teléfono pariente 2',
+            'rol': 'Rol',
+        }
+
+        data = []
+        for key in user:
+            value = user.get(key, None)
+            title = titles.get(key, None)
+            if title:
+                if key != 'rol':
+                    singleData = {
+                        'title': title,
+                        'value': None if not value or value == '' else value,
+                        'key': key,
+                    }
+                else:
+                    singleData = {
+                        'title': title,
+                        'value': None if not value or value == '' else value['description'],
+                        'key': str(key) + '_description',
+                    }
+                
+                data.append(singleData)
+
+        response = {
+            'status': 'ok',
+            'message': 'Datos obtenidos correctamente',
+            'data': data
+        }
+        return Response(response, status=status.HTTP_200_OK) 
+
+
+'''
+Get user data by user email
+
+http://127.0.0.1:8000/sivaria/v1/getUserByEmail
+
+'''
+class AppUser_APIView_Detail_Email_Api(APIView):
+
+    def get(self, request, email, format=None):
+        LoginValidator().validate_email({'email': email})
         userService = UserService()
         user = userService.get_user_by_email_json(email)
-        user.pop('password', None)
+
         response = {
             'status': 'ok',
             'message': 'Datos obtenidos correctamente',

@@ -21,6 +21,7 @@ class Rol(models.Model):
         return f'Rol: {self.slug}'
 
 class AppUser(AbstractUser): 
+    username = models.CharField(max_length=50, unique=False, null=False, blank=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255, null=True)
     #In production, phone must be unique
@@ -34,6 +35,8 @@ class AppUser(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
+
+
     USERNAME_FIELD = 'email'  # Establece el campo de email para la autenticación
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
@@ -41,13 +44,13 @@ class AppUser(AbstractUser):
 
     def __str__(self) -> str:
         return f'User: {self.first_name} {self.last_name} - {self.email}'
-    
+
 class UserHasParent(models.Model):
     son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     #id_parent_1 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     #id_parent_2 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
-    email_parent_1 = models.EmailField(unique=True, null=True, default=None)
-    email_parent_2 = models.EmailField(unique=True, null=True, default=None)
+    email_parent_1 = models.EmailField(null=True, default=None)
+    email_parent_2 = models.EmailField(null=True, default=None)
 
     def __str__(self) -> str: 
         return f'UserHasParent: {self.son.id} - {self.son.first_name} {self.son.last_name}'

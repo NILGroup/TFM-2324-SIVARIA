@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { UserStackNavigator /*, LoggedUserStack, NonLoggedUserStack */} from './src/navigation/stack';
 import { linking, fallback } from './src/utils/navigation-config';
@@ -7,19 +7,24 @@ import { getItemLocalStorage, removeItemLocalStorage, setItemLocalStorage } from
 import stylesSivaria from './src/styles/styles-sivaria';
 import LoadingScreen from './src/screens/loading-screen';
 
+import { AuthContext } from './src/context/auth-context';
+import AuthProvider from './src/context/auth-provider';
+
 export default function App() {
+  //const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
   const [loading, setLoading] = useState(true);
   const navigationRef = useRef(null);
   const routeNameRef = useRef(null);
 
-  const checkTokenAndRoute = async() => {
+  const checkToken = async() => {
     const token = await getItemLocalStorage('userToken');
-    const savedRoute = await getItemLocalStorage('currentRoute');
-    
-    console.log('Token');
-    console.log(token);
-    console.log(savedRoute);
+    //const savedRoute = await getItemLocalStorage('currentRoute');
+    //removeItemLocalStorage('userToken');
+    //console.log('Token');
+    //console.log(token);
+    //console.log(savedRoute);
     if(token) {
       setIsAuthenticated(true);
     }
@@ -35,15 +40,15 @@ export default function App() {
 
   // Each time a page is loaded, it is checked if the user is authenticatd or not.
   useEffect(() => {
-    checkTokenAndRoute();
+    checkToken();
   }, []);
 
   // Used to save the current route before the component is dismounted
   useEffect(() => {
     const saveCurrentRoute = () => {
       const currentRoute = (navigationRef !== null) ? navigationRef.current.getCurrentRoute().name : null;
-      console.log('Current Route');
-      console.log(currentRoute);
+      //console.log('Current Route');
+      //console.log(currentRoute);
       if (currentRoute) {
         setItemLocalStorage('currentRoute', currentRoute);
       }
@@ -75,7 +80,8 @@ export default function App() {
   useEffect(() => {
     const getCurrentRoute = async () => {
       const savedRoute = await getItemLocalStorage('currentRoute');
-      console.log('Saved Route');
+      //console.log('Saved Route');
+      //removeItemLocalStorage('currentRoute');
       console.log(savedRoute);
       if (savedRoute && navigationRef.current) {
         navigationRef.current.navigate(savedRoute);
@@ -92,26 +98,29 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      linking={linking}
-      fallback={fallback}
-      onReady={() => {
-        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
-      }}
-      onStateChange={() => {
-        const previousRouteName = routeNameRef.current;
-        const currentRouteName = navigationRef.current.getCurrentRoute().name;
-        if (previousRouteName !== currentRouteName) {
-          setItemLocalStorage('currentRoute', currentRouteName);
-        }
-        routeNameRef.current = currentRouteName;
-      }}
-    >
 
-      <UserStackNavigator isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>
-      
-    </NavigationContainer>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <NavigationContainer
+        ref={navigationRef}
+        linking={linking}
+        fallback={fallback}
+        onReady={() => {
+          routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+        }}
+        onStateChange={() => {
+          const previousRouteName = routeNameRef.current;
+          const currentRouteName = navigationRef.current.getCurrentRoute().name;
+          if (previousRouteName !== currentRouteName) {
+            setItemLocalStorage('currentRoute', currentRouteName);
+          }
+          routeNameRef.current = currentRouteName;
+        }}
+      >
+
+        <UserStackNavigator isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>
+        
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 //<UserStackNavigator isAuthenticated={isAuthenticated}/>

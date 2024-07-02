@@ -71,10 +71,10 @@ class AppUserLogoutSerializer(ModelSerializer):
 
 
 class UserHasParentSerializer(ModelSerializer):
-    id_son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
+    son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
     class Meta:
         model = UserHasParent
-        fields = ('id', 'id_son', 'email_parent_1', 'email_parent_2')
+        fields = ('id', 'son', 'email_parent_1', 'email_parent_2')
 
 class UserHasParentModificationSerializer(Serializer):
     class Meta:

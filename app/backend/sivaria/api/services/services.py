@@ -151,9 +151,9 @@ class UserService(object):
 
 class UserHasParentService(object):
 
-    def get_user_has_parent_by_son(self, id_son):
+    def get_user_has_parent_by_son(self, son_id):
         try:
-            return UserHasParent.objects.get(id_son=id_son)
+            return UserHasParent.objects.get(son_id=son_id)
         except UserHasParent.DoesNotExist:
             raise Http404('Registro no encontrado') 
         except UserHasParent.MultipleObjectsReturned:
@@ -166,6 +166,10 @@ class UserHasParentService(object):
             raise Http404('Registro no encontrado')
         except UserHasParent.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el ID')
+
+    def get_user_has_parent_by_son_json(self, son_id):
+        return UserHasParentSerializer(self.get_user_has_parent_by_son(son_id)).data
+
 
     def insert_user_has_parent(self, data):
         uhpSerializer = UserHasParentModificationSerializer(data=data)

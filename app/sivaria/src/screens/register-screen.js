@@ -49,8 +49,6 @@ const RegisterScreen = ({navigation}) => {
 
 
     useEffect(() => {
-        //console.log('entrando a buscar roles');
-        //console.log(axiosInstance.defaults.baseURL + '/sivaria/v1/rol');
         const fetchRoles = async () => {
             await axiosInstance.get('/sivaria/v1/rol')
             .then(function (response) {
@@ -58,12 +56,9 @@ const RegisterScreen = ({navigation}) => {
                     label: role.description, // Ajusta esto según la estructura de tu JSON
                     value: role.slug // Ajusta esto según la estructura de tu JSON
                 }));
-                //console.log(rolesData);
                 setRoles(rolesData);
             })
             .catch(function (error) {
-                //console.log(error);
-                //Alert.alert('Error', 'Hubo un problema al obtener los roles');
                 let message = 'No se han podido cargar los roles de los usuarios.';
                 setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message)
             });
@@ -153,7 +148,10 @@ const RegisterScreen = ({navigation}) => {
                     // Navegar a la siguiente pantalla (Home, por ejemplo)
                     //console.log('Registro exitoso');
                     
-                    navigation.navigate('Login');
+                    //navigation.navigate('Login');
+                    let message = 'El usuairo se ha registrado correctamente';
+                    setVisibleModal(ModalType.Information, ModalTitle.InformationTitle, message);
+
                 })
                 .catch(function (error) {
                     //console.log('Error de registro:', error);
@@ -161,7 +159,7 @@ const RegisterScreen = ({navigation}) => {
                     //setModalMessage('Error en el registro');
                     //setModalVisible(true);
                     const message = 'Ha habido un error durante el proceso de registro del usuario. ' + error.response.data.data;
-                    setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message)
+                    setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
                     //Alert.alert('Error', 'Error en el registro. Inténtelo de nuevo.')
                 });
         }

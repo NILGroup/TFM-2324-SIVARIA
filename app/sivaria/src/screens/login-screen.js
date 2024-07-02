@@ -1,6 +1,6 @@
 //import axios from 'axios';
 import { ScrollView, StyleSheet, Alert, Text, TextInput, View, SafeAreaView, Pressable, Platform, NativeModules, useWindowDimensions } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import ShowHidePasswordInput from '../components/show-hide-password-input';
@@ -25,6 +25,7 @@ import SivariaInput from '../components/sivaria-custom-basic-components/sivaria-
 
 import Container from '../components/component-containers/container';
 import { ModalType, ModalTitle } from '../utils/enum-types-modal';
+import { AuthContext } from '../context/auth-context';
 /*
 let axiosInstance;
 if (Platform.OS !== 'web') {
@@ -40,7 +41,7 @@ const { StatusBarManager } = NativeModules;
 //axiosInstance.defaults.xsrfHeaderName = 'X-XSRFToken';
 //axiosInstance.defaults.withCredentials = true;
 
-const LoginScreen = ({navigation, route}) => {
+const LoginScreen = ({navigation}) => {
 
     const {expoPushToken, notification} = usePushNotifications();
     const data = JSON.stringify(notification, undefined, 2);
@@ -48,7 +49,7 @@ const LoginScreen = ({navigation, route}) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { setIsAuthenticated } = route.params;
+    const { setIsAuthenticated } = useContext(AuthContext);
 
     const { width, height } = useWindowDimensions();
     
@@ -115,13 +116,53 @@ const LoginScreen = ({navigation, route}) => {
                             });
                         }
                     }
-                    */
-                //console.log(response.data);
-                //console.log(response.data.token);
+                    */           
+                    userData = response.data.data;  
+                    console.log(response.data.token);    
+                    await setItemLocalStorage('userToken', response.data.token);   
+                    await setItemLocalStorage('email', userData.email);
+                    /*
+                    console.log('HOLA');
+                    console.log(response);
+                    console.log(response.data);
+                    console.log(response.data.data);
+                    console.log(response.data.token);
                     userData = response.data.data;
                     setItemLocalStorage('userToken', response.data.token);
-                    setItemLocalStorage('email', userData.email);
+                    let userDataArray = {
+                        email: userData.email,
+                        firstName: userData.first_name ?? null,
+                        lastName: userData.last_name ?? null,
+                        phone: userData.phone ?? null,
+                        rolDescription: userData.rol.description ?? null,
+                        rolSlug: userData.rol.slug ?? null,
+                    }
+                    console.log(userDataArray)
+                    if ('email_parent_1' in userDataArray) {
+                        userDataArray['emailParent1'] = userData.email_parent_1 ?? null;
+                    }
+                    if ('email_parent_2' in userDataArray) {
+                        userDataArray['emailParent2'] = userData.email_parent_2 ?? null;
+                    }
+                    console.log('HOLA 2');
+                    setItemLocalStorage('firstName', userData.first_name ?? null);
+                    setItemLocalStorage('lastName', userData.last_name ?? null);
+                    setItemLocalStorage('phone', userData.phone ?? null);
+                    setItemLocalStorage('rol', userData.rol.description ?? null);
+                    setItemLocalStorage('rolSlug', userData.rol.slug ?? null);
+                    if ('email_parent_1' in userData) {
+                        setItemLocalStorage('emailParent1', userData.email_parent_1 ?? null);
+                    }
+                    if ('email_parent_1' in userData) {
+                        setItemLocalStorage('emailParent2', userData.email_parent_2 ?? null);
+                    }
+                    console.log('HOLA 3');
 
+                    setItemLocalStorage('userData', btoa(userDataArray));
+                    */
+                    //setItemLocalStorage('emailParent1', userData.email_parent_1);
+                    //setItemLocalStorage('emailParent2', userData.email_parent_2);
+                    
                     //axiosInstance.defaults.withCredentials = true;
                     //axiosInstance.defaults.xsrfHeaderName = "X-CSRFTOKEN";
                     //axiosInstance.defaults.xsrfCookieName = "csrftoken";
@@ -136,7 +177,6 @@ const LoginScreen = ({navigation, route}) => {
                     setIsAuthenticated(true); 
                     //navigation.navigate('Home');
                     //navigation.navigate('Root', {screen: 'Home'});
-                    
                 })
                 .catch(function (error) {
                     //setModalType(ModalType.Error)

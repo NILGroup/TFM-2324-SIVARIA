@@ -35,7 +35,7 @@ export const HomeTabNavigator = createAppContainer(TabNavigator);
 
 const Tab = createBottomTabNavigator();
 
-export const HomeTabsNavigator = ({isAuthenticated, setIsAuthenticated}) => {
+export const HomeTabsNavigator = () => {
   return (
     <Tab.Navigator 
         screenOptions={({ route }) => ({
@@ -80,13 +80,11 @@ export const HomeTabsNavigator = ({isAuthenticated, setIsAuthenticated}) => {
       >      
         <Tab.Screen 
             name="Home" 
-            component={HomeScreen} 
-            initialParams={{setIsAuthenticated}} 
+            component={HomeScreen}
         />
         <Tab.Screen 
             name="Profile" 
-            component={ProfileScreen} 
-            initialParams={{setIsAuthenticated}} 
+            component={ProfileScreen}
         />
     </Tab.Navigator>
   );
