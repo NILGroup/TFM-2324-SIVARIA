@@ -12,8 +12,9 @@ urlpatterns = [
     path('v1/user/register', AppUser_APIView_Register.as_view()),
     path('v1/user/login', AppUser_APIView_Login.as_view()),
     path('v1/user/logout', AppUser_APIView_Logout.as_view()),
-    path('v1/user/<int:userId>', AppUser_APIView_Detail_UserId.as_view()),
+    path('v1/user/id/<int:userId>', AppUser_APIView_Detail_UserId.as_view()),
     path('v1/user/getUserByEmail/<str:email>', AppUser_APIView_Detail_Email.as_view()),
+    path('v1/user/email/<str:email>', AppUser_APIView_Modifications.as_view()),
     path('v1/user/getCSRFToken', GetCSRFToken.as_view()),
     path('v1/external/sendNotification', External_SendNotification.as_view()),
 ]

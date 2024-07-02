@@ -579,7 +579,7 @@ class AppUser_APIView_Detail_Email(APIView):
 '''
 Get user data by user email
 
-http://127.0.0.1:8000/sivaria/v1/getUserByEmail
+http://127.0.0.1:8000/sivaria/v1/getUserByEmail/{email}
 
 '''
 class AppUser_APIView_Detail_Email_Api(APIView):
@@ -597,12 +597,27 @@ class AppUser_APIView_Detail_Email_Api(APIView):
         return Response(response, status=status.HTTP_200_OK) 
 
 '''
-Update user data
+Update user data or delete user
 
-http://127.0.0.1:8000/sivaria/v1/user/{email}/updateUserData
+http://127.0.0.1:8000/sivaria/v1/user/email/{email}
 
 '''
-class AppUser_APIView_Update(APIView):
+class AppUser_APIView_Modifications(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, email, format=None):
+        try:
+            user_service = UserService()
+            LoginValidator().validate_email({'email': email})
+            user = user_service.get_user_by_email(email)
+            user.delete()
+            response = {
+                'status': 'ok',
+                'message': 'Usuario eliminado correctamente'
+            }
+            return Response(response, status=status.HTTP_200_OK) 
+        except:
+            return Response({'status': 'error', 'message': 'Error eliminando los datos del usuario'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, email, format=None):
         try:
