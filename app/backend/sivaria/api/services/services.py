@@ -12,14 +12,19 @@ from exponent_server_sdk import (
 )
 from requests.exceptions import ConnectionError, HTTPError
 
+from ...validators.service_validators import UserValidator
+
 import os 
 import sys
+import re
 '''
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 sys.path.append(os.path.join(current_dir, '../../../../../scripts'))
 from controller import Controller
 '''
+
+from django.core.mail import send_mail
 
 class RolService(object):
     def get_rol_by_id(self, rolId):
@@ -68,6 +73,11 @@ class RolService(object):
 
 
 class UserService(object):
+
+    validator = None
+    
+    def __init__(self):
+        self.validator = UserValidator()
 
     def get_user_by_email(self, email):
         try:
@@ -147,6 +157,32 @@ class UserService(object):
     
     def delete_user(self, email):
         AppUser.objects.filter(email=email).delete()
+
+    def validate_email(self, email):
+        return self.validator.validate_email(email)
+    
+    def validate_password(self, password):
+        return self.validator.validate_password(password)
+
+    def clean_email(self, email = ''):
+        try:
+            local_part, domain = self.divide_email_address(email)
+        except ValueError as e:
+            raise AttributeError('Formato incorrecto del email')
+
+        pattern = re.compile(r'[^a-zA-Z0-9.]')
+
+        local_part_clean = re.sub(pattern, '', local_part)
+        domain_clean = re.sub(pattern, '', domain)
+        
+        return f"{local_part_clean}@{domain_clean}"
+    
+    def divide_email_address(self, email = ''):
+        email_parts = []
+        if email or email != '':
+            email_parts = email.strip().split('@')
+
+        return email_parts
 
 
 class UserHasParentService(object):
@@ -273,3 +309,14 @@ class ExpertSystemService():
     def __convertToDataframe__(self, user_data_sivaria):
         return None
 '''
+
+class EmailService():
+
+    def __init__(self): 
+        pass
+
+    def send_email(self, subject, message, to_mail):
+        #to_mail debe ser un array de emails a los que enviar
+        # Rodear la funcion con un try Except
+        send_mail(subject, message, None, to_mail)
+        pass
