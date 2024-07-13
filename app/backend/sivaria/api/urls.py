@@ -17,4 +17,5 @@ urlpatterns = [
     path('v1/user/email/<str:email>', AppUser_APIView_Modifications.as_view()),
     path('v1/user/getCSRFToken', GetCSRFToken.as_view()),
     path('v1/external/sendNotification', External_SendNotification.as_view()),
+    path('v1/email/sendEmail', EmailApiView.as_view()),
 ]

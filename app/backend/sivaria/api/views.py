@@ -19,8 +19,6 @@ from django.core.exceptions import ValidationError as CoreValidationError
 
 from rest_framework.authentication import SessionAuthentication
 
-from ..validators.validators import LoginValidator
-
 from django.middleware.csrf import get_token
 
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -243,6 +241,14 @@ class AppUser_APIView_Register(APIView):
             response['data'] = 'Petición vacía'
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
+        email = request.data.get('email', None)
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response['data'] = str(e)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+
         #cambiarlo por el serializador
         #rol_slug = request.data.get('rol_slug', None)
         #rol_instance = Rol.objects.get(slug=rol_slug)
@@ -252,7 +258,7 @@ class AppUser_APIView_Register(APIView):
         data = {
             'first_name': request.data.get('first_name', None),
             'last_name': request.data.get('last_name', None),
-            'email': request.data.get('email', None),
+            'email': email_clean,
             'password': request.data.get('password', None),
             'phone': request.data.get('phone', None),
             'rol': rol_instance,
@@ -325,21 +331,32 @@ class AppUser_APIView_Login(APIView):
             'message': 'Error en el proceso de login del usuario.',  
         }
         user_service = UserService()
-        data = {
-            'email':request.data.get('email', None),
-            'password': request.data.get('password', None)
-        }
+        
+        email = request.data.get('email', None)
+        password = request.data.get('password', None)
         try:
-            LoginValidator().validate_email(data)
+            user_service.validate_email(email)
         except:
             response['data'] = 'Email vacío'
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         try:  
-            LoginValidator().validate_password(data)
+            user_service.validate_password(password)
         except:
             response['data'] = 'Contraseña vacía'
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response['data'] = str(e)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+        data = {
+            'email': email_clean,
+            'password': password
+        }
 
         try:
             user = user_service.check_user(data)
@@ -426,9 +443,21 @@ http://127.0.0.1:8000/sivaria/v1/user/deleteAccount
 class DeleteAccountView(APIView):
 
     def delete(self, request, format=None):
+        user_service = UserService()
         try:
+            user_service = UserService()
             email = request.data.get('email', None)
-            UserService().delete_user(email=email)
+            try:
+                email_clean = user_service.clean_email(email)
+            except AttributeError as e:
+                response = {
+                    'status': 'error',
+                    'message': 'Error obtetiendo los datos del usuario',
+                    'data': str(e)
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+            user_service.delete_user(email=email_clean)
         except:
             return Response({'status': 'error', 'message': 'Error eliminando al usuario'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -517,12 +546,22 @@ http://127.0.0.1:8000/sivaria/v1/getUserByEmail
 class AppUser_APIView_Detail_Email(APIView):
 
     def get(self, request, email, format=None):
-        LoginValidator().validate_email({'email': email})
-        #email = request.get.data('email')
         user_service = UserService()
+        user_service.validate_email(email)
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response = {
+                'status': 'error',
+                'message': 'Error obtetiendo los datos del usuario',
+                'data': str(e)
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+        #email = request.get.data('email')
         user_has_parent_service = UserHasParentService()
         #print(email)
-        user = user_service.get_user_by_email_json(email)
+        user = user_service.get_user_by_email_json(email_clean)
         try: 
             user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(user['id'])
         except Exception as e:
@@ -579,15 +618,25 @@ class AppUser_APIView_Detail_Email(APIView):
 '''
 Get user data by user email
 
-http://127.0.0.1:8000/sivaria/v1/getUserByEmail/{email}
+http://127.0.0.1:8000/sivaria/v1/user/getUserByEmail/{email}
 
 '''
 class AppUser_APIView_Detail_Email_Api(APIView):
 
     def get(self, request, email, format=None):
-        LoginValidator().validate_email({'email': email})
-        userService = UserService()
-        user = userService.get_user_by_email_json(email)
+        user_service = UserService()
+        user_service.validate_email(email)
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response = {
+                'status': 'error',
+                'message': 'Error obtetiendo los datos del usuario',
+                'data': str(e)
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+        user = user_service.get_user_by_email_json(email_clean)
 
         response = {
             'status': 'ok',
@@ -608,8 +657,18 @@ class AppUser_APIView_Modifications(APIView):
     def delete(self, request, email, format=None):
         try:
             user_service = UserService()
-            LoginValidator().validate_email({'email': email})
-            user = user_service.get_user_by_email(email)
+            user_service.validate_email(email)
+            try:
+                email_clean = user_service.clean_email(email)
+            except AttributeError as e:
+                response = {
+                    'status': 'error',
+                    'message': 'Error eliminando al usuario',
+                    'data': str(e)
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+             
+            user = user_service.get_user_by_email(email_clean)
             user.delete()
             response = {
                 'status': 'ok',
@@ -621,17 +680,48 @@ class AppUser_APIView_Modifications(APIView):
 
     def put(self, request, email, format=None):
         try:
-            data = request.data
+            user_service = UserService()
+            user_service.validate_email(email)
+            try:
+                email_clean = user_service.clean_email(email)
+            except AttributeError as e:
+                response = {
+                    'status': 'error',
+                    'message': 'Error actualizando los datos del usuario',
+                    'data': str(e)
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+
+            data = {}
+            first_name = request.data.get('first_name', None)
+            last_name = request.data.get('last_name', None)
+            phone = request.data.get('phone', None)
+
+            if first_name:
+                data['first_name'] = first_name
+            if last_name:
+                data['last_name'] = last_name
+            if phone:
+                data['phone'] = phone
+            
+            user = user_service.get_user_by_email(email_clean)
+            serializer_response, saved = user_service.update_user(user, data, partial=True)
+            if saved:
+                response = {
+                    'status': 'ok',
+                    'message': 'Datos actualizados correctamente',
+                    'data': serializer_response
+                }
+                return Response(response, status=status.HTTP_200_OK) 
+            else:
+                return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario', data: serializer_response}, status=status.HTTP_400_BAD_REQUEST)
+            '''
             user = AppUser.objects.get(email=email)
             serializer = AppUserSerializer(user, data=data, partial=True)
+            serializer.is_valid(raise_exception=True)
             serializer.save()
-            response = {
-                'status': 'ok',
-                'message': 'Datos actualizados correctamente',
-                'data': serializer.data
-            }
-            return Response(response, status=status.HTTP_200_OK) 
-        except:
+            '''
+        except Exception as e:
             return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario'}, status=status.HTTP_400_BAD_REQUEST)
 
 '''
@@ -747,4 +837,44 @@ class External_SendNotification(APIView):
         response['message'] = 'Notificación enviada'
         return Response(response, status=status.HTTP_200_OK) 
 
+'''
+http://127.0.0.1:8000/sivaria/v1/email/sendEmail
+{
+    "to_mail": array,
+    "subject": string,
+    "message": string
+}
+'''
+class EmailApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request):
+        try:
+            email_service = EmailService()
+            to_mail = request.data.get('to_mail', None)
+            subject = request.data.get('subject', None)
+            message = request.data.get('message', None)
+
+            if not to_mail:
+                raise Exception('Campo to_mail no encontrado.')
+            if not isinstance(to_mail, list):
+                raise Exception('Formato incorrecto del to_mail. Debe ser un array.')
+
+            if not subject:
+                raise Exception('Campo subject no encontrado.')
+            if not isinstance(subject, str):
+                raise Exception('Formato incorrecto del subject. Debe ser un string.')
+    
+            if not message:
+                raise Exception('Campo message no encontrado.')
+            if not isinstance(message, str):
+                raise Exception('Formato incorrecto del message. Debe ser un string.')
+            #to_mail = ['aldairfmh2004@hotmail.com']
+            #subject = 'Mensaje de prueba'
+            #message = 'Este es un mensaje de Prueba desde DRF'
+            
+            email_service.send_email(subject=subject, message=message, to_mail=to_mail)
+            return Response({'status': 'ok', 'message': 'Correo enviado con éxito'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_message = str(e)
+            return Response({'status': 'error', 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
