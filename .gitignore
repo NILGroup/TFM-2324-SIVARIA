@@ -344,3 +344,4 @@ app/backend/sivaria/forms/__pycache__/forms.cpython-39.pyc
 scripts/exceptions/__pycache__/ApplicationException.cpython-39.pyc
 scripts/exceptions/__pycache__/CommandLineException.cpython-39.pyc
 scripts/exceptions/__pycache__/FormatException.cpython-39.pyc
+/scripts/exceptions/__pycache__
