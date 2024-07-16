@@ -345,3 +345,4 @@ scripts/exceptions/__pycache__/ApplicationException.cpython-39.pyc
 scripts/exceptions/__pycache__/CommandLineException.cpython-39.pyc
 scripts/exceptions/__pycache__/FormatException.cpython-39.pyc
 /scripts/exceptions/__pycache__
+/scripts/__pycache__
