@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
 
 def main():
     """Run administrative tasks."""

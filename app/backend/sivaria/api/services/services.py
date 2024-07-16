@@ -26,6 +26,10 @@ from controller import Controller
 
 from django.core.mail import send_mail
 
+from ...expert_system.controller import Controller
+
+import pandas as pd
+
 class RolService(object):
     def get_rol_by_id(self, rolId):
         try:
@@ -183,7 +187,15 @@ class UserService(object):
             email_parts = email.strip().split('@')
 
         return email_parts
+    
+    def get_all_users_by_rol(self, rol, field = None):
+        users = []
+        if not field:
+            users = AppUser.objects.filter(rol=rol, is_active=True).values()
+        else:
+            users = AppUser.objects.filter(rol=rol, is_active=True).values(field)
 
+        return users
 
 class UserHasParentService(object):
 
@@ -229,7 +241,7 @@ class UserHasParentService(object):
         
         return (serializer.errors, False)
     
-class PushNotificationTypeService:
+class PushNotificationTypeService(object):
 
     def get_push_notification_type_by_slug(self, slug):
         try:
@@ -240,7 +252,7 @@ class PushNotificationTypeService:
     def get_push_notification_type_by_slug_json(self, slug):
         return PushNotificationTypeSerializer(self.get_push_notification_type_by_slug(slug)).data
 
-class ExpoService:
+class ExpoService(object):
 
     client = None
 
@@ -285,8 +297,8 @@ class ExpoService:
                 raise Exception(str(exc))
             
         return invalid_tokens
-'''
-class ExpertSystemService():
+
+class ExpertSystemService(object):
     
     controller = None
 
@@ -295,28 +307,42 @@ class ExpertSystemService():
 
     def predict(self, model_type, user_data_sivaria):
         argc = ['controller.py', '-mt', str(model_type)]
-        _ = self.controller.execute(argc)
-        argc = ['controller.py', '-st', 'accuracy']
-        _ = self.controller.execute(argc)
+        ans = self.controller.execute(argc)
+        print(ans)
+        #argc = ['controller.py', '-st', 'accuracy']
+        #_ = self.controller.execute(argc)
 
 
-        csv = self.__convertToDataframe__(user_data_sivaria)
-        argc = ['controller.py', '-p', '']
+        #csv = self.__convertToDataframe__(user_data_sivaria)
+        argc = ['controller.py', '-p', '--json', user_data_sivaria]
+        # devuelve un dataframe
         result = self.controller.execute(argc)
-
-        return result
+        #Se convierte a JSON y se devuelve
+        print(result)
+        return result[0]
     
-    def __convertToDataframe__(self, user_data_sivaria):
-        return None
-'''
+class EmailTemplateService(object):
+    def __init__(self): 
+        pass
+        
+    def get_email_template_by_code(self, code):
+        try:
+            return EmailTemplate.objects.get(code=code)
+        except EmailTemplate.DoesNotExist:
+            raise Http404('Registro no encontrado') 
+        except EmailTemplate.MultipleObjectsReturned:
+            raise Http404('Se han encontrado más de un email template con el mismo código') 
+        
+    def get_email_template_by_code_json(self, code):
+        return EmailTemplateSerializer(self.get_email_template_by_code(code)).data
 
-class EmailService():
+class EmailService(object):
 
     def __init__(self): 
         pass
 
-    def send_email(self, subject, message, to_mail):
-        #to_mail debe ser un array de emails a los que enviar
-        # Rodear la funcion con un try Except
+    def send_email(self, subject = '', message = '', to_mail = []):
+        # to_mail must be an array
         send_mail(subject, message, None, to_mail)
         pass
+        

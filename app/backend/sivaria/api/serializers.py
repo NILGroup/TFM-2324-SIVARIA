@@ -96,3 +96,11 @@ class PushNotificationTypeSerializer(ModelSerializer):
     class Meta:
         model = PushNotificationType
         fields = '__all__'
+
+        
+class EmailTemplateSerializer(ModelSerializer):
+    class Meta:
+        model = EmailTemplate
+        fields = '__all__'
+
+      

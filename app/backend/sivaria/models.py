@@ -49,17 +49,25 @@ class UserHasParent(models.Model):
     son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     #id_parent_1 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     #id_parent_2 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
-    email_parent_1 = models.EmailField(null=True, default=None)
-    email_parent_2 = models.EmailField(null=True, default=None)
+    email_parent_1 = models.EmailField(null=True, default=None, blank=True)
+    email_parent_2 = models.EmailField(null=True, default=None, blank=True)
 
     def __str__(self) -> str: 
         return f'UserHasParent: {self.son.id} - {self.son.first_name} {self.son.last_name}'
 
 class PushNotificationType(models.Model):
-    slug = models.CharField(max_length=20, unique=True, null=False)
-    title = models.TextField(max_length=50)
-    body = models.TextField(max_length=255)
+    slug = models.CharField(max_length=50, unique=True, null=False)
+    title = models.CharField(max_length=80)
+    body = models.TextField(max_length=255, null=True, default=None, blank=True)
     data = models.TextField(max_length=255, null=True, default=None, blank=True)
 
     def __str__(self) -> str:
         return f'PushNotificationType: {self.slug}'
+
+class EmailTemplate(models.Model):
+    code = models.CharField(max_length=50)
+    subject = models.CharField(max_length=80)
+    message = models.TextField(max_length=255, null=True, default=None, blank=True)
+
+    def __str__(self) -> str:
+        return f'EmailTemplate: {self.code}'

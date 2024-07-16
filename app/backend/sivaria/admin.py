@@ -16,7 +16,7 @@ class AppUserAdmin(BaseUserAdmin):
     add_form = CustomAppUserCreationForm
 
     # Los campos que se usarán para mostrar el modelo de usuario.
-    list_display = ('email', 'first_name', 'last_name', 'phone', 'rol', 'is_staff', 'is_active')
+    list_display = ('id','email', 'first_name', 'last_name', 'phone', 'rol', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -133,3 +133,4 @@ admin.site.register(AppUser, AppUserAdmin)
 admin.site.register(Rol)
 admin.site.register(UserHasParent)
 admin.site.register(PushNotificationType)
+admin.site.register(EmailTemplate)

@@ -24,6 +24,9 @@ from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 
+import json
+import base64
+
 '''
 Type of requests to all the posts
 
@@ -726,39 +729,196 @@ class AppUser_APIView_Modifications(APIView):
 
 '''
 http://127.0.0.1:8000/sivaria/v1/expertSystem/predict
-
-'''
+{
+    "email": string,
+    "user_data_asivaria": json string 
+}
 '''
 class ExpertSystem_APIView_Predict(APIView):
 
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, format=None):
+
+        '''
+        Debe hacer 3 cosas.
+        1. Guardar los datos del cuestionario
+        2. Realizar predicción
+        3. Establecer las acciones dependiendo del tipo de riesgo devuelto de la predicción.
+        '''
         response = {
             'status': 'error',
             'message': 'Error en la predicción'
         }
         expert_system_service = ExpertSystemService()
+        user_service = UserService()
+        rol_service = RolService()
+        email_service = EmailService()
+        email_template_service = EmailTemplateService()
+        push_notification_type_service = PushNotificationTypeService()
+        expo_service = ExpoService()
+        user_has_parent_service = UserHasParentService()
 
-        model_type = request.data.get('model_type', None)
-        user_data_sivaria = request.data.get('user_data_sivaria', None) 
+        email = request.data.get('email', None)
+        user_data_sivaria = request.data.get('user_data_sivaria', None)
 
-        if model_type is None:
-            response['data'] = 'Model type not specified'
+        if not email:
+            response['data'] = 'Email no especificado.'
             return Response(response, status=status.HTTP_400_BAD_REQUEST) 
         
+        if not user_data_sivaria:
+            response['data'] = 'Datos del cuestionario no encontrado.'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+
+        try:
+            user = user_service.get_user_by_email_json(email=email)
+        except Exception as e:
+            error_message = str(e)
+            response['data'] = error_message
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+
+        rol = user.get('rol' , None)
+
+        if not rol:
+            response['data'] = 'El usuario no tiene ningún rol'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+
+        rol_slug = rol.get('slug')
+        
+        #GUARDAR DATOS EN BBDD
+        
+
+        #PREDICCION
+
+        model_type = ''
+        if rol_slug == 'joven':
+            model_type = 'autoinforme'
+        elif rol_slug == 'madre' or rol_slug == 'padre':
+            model_type = 'familia'
+        elif rol_slug == 'profesional':
+            model_type = 'profesional'
+
         if model_type.lower() not in ['autoinforme', 'familia', 'profesional']:
-            response['data'] = 'Model type not found'
+            response['data'] = 'Tipo de modelo '+ model_type +' no encontrado.'
             return Response(response, status=status.HTTP_404_NOT_FOUND) 
 
-        result = expert_system_service.predict(model_type, user_data_sivaria)
+        desenlace = expert_system_service.predict(model_type, user_data_sivaria)
+        '''
+        # Decoding data
+
+        json_str = base64.b64decode(user_data_sivaria)
+        print(json_str)
+
+        new_data = json.loads(json_str.decode('utf-8'))
+        print(new_data)
+
+        newDF = pd.json_normalize(new_data)
+        print(newDF)
+        '''
+
         #argc = []
         #result = controller.execute(argc)
+
+        #ACCIONES DEL USUARIO (MANDAR EMAIL O PUSH A PROFESIONALES Y PADRES)
+        #ENVIANDO PUSH A LOS PROFESIONALES
+        if desenlace and (desenlace == 'IDEACION' or desenlace == 'AUTOLESION' or desenlace == 'PLANIFICACION' or desenlace == 'INTENCION'):
+            rol = rol_service.get_rol_by_slug_json(slug='profesional')
+            rolId = rol.get('id', None)
+            #print(rolId)
+            professionals = user_service.get_all_users_by_rol(rol=rolId)
+            #print(professionals)
+
+            code = None
+            if desenlace == 'AUTOLESION':
+                code = 'riesgo_moderado'
+            elif desenlace == 'IDEACION':
+                code = 'riesgo_moderado'
+            elif desenlace == 'PLANIFICACION':
+                code = 'riesgo_grave'
+            elif desenlace == 'INTENCION':
+                code = 'emergencia'
+
+            code_professional = code + '_profesional'
+
+            push_template = push_notification_type_service.get_push_notification_type_by_slug_json(slug=code_professional)
+            email_template = email_template_service.get_email_template_by_code_json(code=code_professional)
+
+            to_mail = []
+            expo_tokens = []
+            for professional in professionals:
+                to_mail.append(professional.get('email', None))
+                expo_tokens.append(professional.get('expo_token', None))
+            
+            title = push_template.get('title' , None)
+            message = push_template.get('body' , None)
+            message = message.replace(r"{{desenlace}}", desenlace)
+            #print(to_mail)
+            #email_service.send_email(to_mail=to_mail, subject='Correo de prueba SIVARIA', message='Mensaje de Prueba')
+            expo_service.send_push_messages(expo_tokens=expo_tokens, title=title, message=message)
+            
+            subject = email_template.get('subject' , None)
+            message = email_template.get('message' , None)
+            message = message.replace(r"{{desenlace}}", desenlace)
+            email_service.send_email(subject=subject, message=message, to_mail=to_mail)
+
+
+            #ENVIANDO PUSH O CORREO (EN CASO DE QUE NO ESTEN LOGEADOS EN LA PLATAFORMA) A LOS PADRES
+            code_parents = code + '_padres'
+            push_template_parents = push_notification_type_service.get_push_notification_type_by_slug_json(slug=code_parents)
+            email_template_parents = email_template_service.get_email_template_by_code_json(code=code_parents)
+            
+            if rol_slug == 'joven':
+                userId = user.get('id',None)
+            elif rol_slug == 'madre' or rol_slug == 'padre':
+                pass
+            elif rol_slug == 'profesional':
+                pass
+
+            user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(son_id=userId)
+            email_parent_1 = user_has_parent.get('email_parent_1',None)
+            email_parent_2 = user_has_parent.get('email_parent_2',None)
+
+            #print(email_parent_1)
+            #print(email_parent_2)
+            to_mail = []
+            to_push = []
+            if email_parent_1:
+                try:
+                    # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                    parent_1 = user_service.get_user_by_email_json(email=email_parent_1)
+                    expo_token = parent_1.get('expo_token', None)
+                    to_push.append(expo_token)
+                except:
+                    # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                    to_mail.append(email_parent_1)
+
+            if email_parent_2:
+                try:
+                    # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                    parent_2 = user_service.get_user_by_email_json(email=email_parent_2)
+                    expo_token = parent_2.get('expo_token', None)
+                    to_push.append(expo_token)
+                except:
+                    # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                    to_mail.append(email_parent_2)
+
+            #print(to_push)
+            #print(to_mail)
+            if to_push:
+                title = push_template_parents.get('title', None)
+                message = push_template_parents.get('body', None)
+                expo_service.send_push_messages(expo_tokens=to_push, title=title, message=message)
+            if to_mail:
+                subject = email_template_parents.get('subject', None)
+                message = email_template_parents.get('message', None)
+                email_service.send_email(subject=subject, message=message, to_mail=to_mail)
+
         response['status'] = 'ok'
         response['message'] = 'Predicción hecha correctamente'
-        response['data'] = result
+        response['data'] = desenlace
 
         return Response(response, status=status.HTTP_200_OK) 
 
-'''
 '''
 http://127.0.0.1:8000/sivaria/v1/external/sendNotification
 
