@@ -13,26 +13,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from corsheaders.defaults import default_headers
 import environ
-
-env = environ.Env()
-environ.Env.read_env()
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+8iehv8h*vs6)2(=2@z$h!%$p=#l!$(fc*q)ht19$bpr#-q%9("
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,8 +54,7 @@ INSTALLED_APPS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8081',
-    'exp://192.168.1.40:8081'
+    env('FRONTEND_SIVARIA_BASE_URL')
 ]
 
 # Esto asegura que las cookies se envíen con las solicitudes
@@ -64,8 +62,7 @@ CORS_ALLOWED_ORIGINS = [
 #CSRF_COOKIE_SAMESITE = 'None'
 
 CSRF_TRUSTED_ORIGINS = [ # Ajusta esto a los dominios de React Native
-    'http://localhost:8081',
-    'exp://192.168.1.40:8081'
+    env('FRONTEND_SIVARIA_BASE_URL')
 ]
 #CSRF_USE_SESSIONS = True # Nos aseguramos de que el backend este configurado para usar sesiones
 

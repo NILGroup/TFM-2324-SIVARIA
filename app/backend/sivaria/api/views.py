@@ -27,6 +27,16 @@ from django.utils.decorators import method_decorator
 import json
 import base64
 
+from pathlib import Path
+import environ
+import os
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 '''
 Type of requests to all the posts
 
@@ -334,6 +344,7 @@ class AppUser_APIView_Login(APIView):
             'message': 'Error en el proceso de login del usuario.',  
         }
         user_service = UserService()
+        user_has_parent_service = UserHasParentService()
         
         email = request.data.get('email', None)
         password = request.data.get('password', None)
@@ -370,6 +381,13 @@ class AppUser_APIView_Login(APIView):
                 user_service.update_user(user=user, data={'expo_token': expo_token}, partial=True)
             
             user_data = user_service.get_user_by_email_json(email=data['email'])
+            rol = user_data.get('rol', None)
+            if rol:
+                slug = rol.get('slug', None)
+                if slug and slug=='joven':
+                    user_has_parent_data = user_has_parent_service.get_user_has_parent_by_son_json(son_id=user_data['id'])
+                    user_data['email_parent_1'] = user_has_parent_data.get('email_parent_1', None)
+                    user_data['email_parent_2'] = user_has_parent_data.get('email_parent_2', None)
             user_data.pop('password')
             user_data.pop('expo_token')
         except:
@@ -585,8 +603,8 @@ class AppUser_APIView_Detail_Email(APIView):
             'first_name': 'Nombre',
             'last_name': 'Apellidos',
             'phone': 'Teléfono',
-            'email_parent_1': 'Teléfono pariente 1',
-            'email_parent_2': 'Teléfono pariente 2',
+            'email_parent_1': 'Email pariente 1',
+            'email_parent_2': 'Email pariente 2',
             'rol': 'Rol',
         }
 
@@ -688,17 +706,14 @@ class AppUser_APIView_Modifications(APIView):
             try:
                 email_clean = user_service.clean_email(email)
             except AttributeError as e:
-                response = {
-                    'status': 'error',
-                    'message': 'Error actualizando los datos del usuario',
-                    'data': str(e)
-                }
-                return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+                raise Exception(str(e)) 
 
             data = {}
             first_name = request.data.get('first_name', None)
             last_name = request.data.get('last_name', None)
             phone = request.data.get('phone', None)
+            password = request.data.get('password', None)
+            confirm_password = request.data.get('confirm_password', None)
 
             if first_name:
                 data['first_name'] = first_name
@@ -706,6 +721,8 @@ class AppUser_APIView_Modifications(APIView):
                 data['last_name'] = last_name
             if phone:
                 data['phone'] = phone
+            if password and confirm_password and (password == confirm_password):
+                data['password'] = make_password(password)
             
             user = user_service.get_user_by_email(email_clean)
             serializer_response, saved = user_service.update_user(user, data, partial=True)
@@ -717,7 +734,7 @@ class AppUser_APIView_Modifications(APIView):
                 }
                 return Response(response, status=status.HTTP_200_OK) 
             else:
-                return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario', data: serializer_response}, status=status.HTTP_400_BAD_REQUEST)
+                raise Exception(serializer_response)
             '''
             user = AppUser.objects.get(email=email)
             serializer = AppUserSerializer(user, data=data, partial=True)
@@ -725,13 +742,75 @@ class AppUser_APIView_Modifications(APIView):
             serializer.save()
             '''
         except Exception as e:
-            return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario'}, status=status.HTTP_400_BAD_REQUEST)
+            error_message = str(e)
+            return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario. ' + error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+'''
+Update user data or delete user
+
+http://127.0.0.1:8000/sivaria/v1/user/{email}/changeUserPassword
+{
+    "password": string,
+    "confirm_password": string
+}
+Note: the token is deleted once the password is changed
+'''
+class AppUser_APIView_Modifications_ChangePassword(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, email, format=None):
+        try:
+            user_service = UserService()
+            user_service.validate_email(email)
+            try:
+                email_clean = user_service.clean_email(email)
+            except AttributeError as e:
+                response = {
+                    'status': 'error',
+                    'message': 'Error actualizando los datos del usuario',
+                    'data': str(e)
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST) 
+
+            password = request.data.get('password', None)
+            confirm_password = request.data.get('confirm_password', None)
+            
+            if not password:
+                raise Exception('El campo de la contraseña está vacío')
+            if not confirm_password:
+                raise Exception('El campo de confirmación de contraseña está vacío')
+            if password and confirm_password and password != confirm_password:
+                raise Exception('Las dos contraseñas no coinciden.')
+            
+            data = {}
+
+            if password and confirm_password and (password == confirm_password):
+                data['password'] = make_password(password)
+
+            user = user_service.get_user_by_email(email_clean)
+            serializer_response, saved = user_service.update_user(user, data, partial=True)
+            if saved:
+                response = {
+                    'status': 'ok',
+                    'message': 'Contraseña cambiada correctamente',
+                    'data': serializer_response
+                }
+                
+                #request.user.auth_token.delete()
+                return Response(response, status=status.HTTP_200_OK) 
+            else:
+                raise Exception(serializer_response)
+        except Exception as e:
+            error_message = str(e)
+            return Response({'status': 'error', 'message': 'Error actualizando los datos del usuario. ' + error_message}, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''
 http://127.0.0.1:8000/sivaria/v1/expertSystem/predict
 {
     "email": string,
-    "user_data_asivaria": json string 
+    "user_data_asivaria": json string base64 decoded
 }
 '''
 class ExpertSystem_APIView_Predict(APIView):
@@ -742,9 +821,9 @@ class ExpertSystem_APIView_Predict(APIView):
 
         '''
         Debe hacer 3 cosas.
-        1. Guardar los datos del cuestionario
+        1. Guardar los datos del cuestionario en BBDD
         2. Realizar predicción
-        3. Establecer las acciones dependiendo del tipo de riesgo devuelto de la predicción.
+        3. Establecer las acciones dependiendo del tipo de riesgo devuelto de la predicción. (OK)
         '''
         response = {
             'status': 'error',
@@ -1034,6 +1113,55 @@ class EmailApiView(APIView):
             #message = 'Este es un mensaje de Prueba desde DRF'
             
             email_service.send_email(subject=subject, message=message, to_mail=to_mail)
+            return Response({'status': 'ok', 'message': 'Correo enviado con éxito'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_message = str(e)
+            return Response({'status': 'error', 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+
+'''
+http://127.0.0.1:8000/sivaria/v1/email/sendRecoveryPasswordEmail
+{
+    "email": string
+}
+'''
+class EmailRecoveryPasswordApiView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        try:
+            email_service = EmailService()
+            email_template_service = EmailTemplateService()
+            user_service = UserService()
+            email = request.data.get('email', None)
+
+            if not email:
+                raise Exception('Email no encontrado.')
+            
+            user_service.validate_email(email)
+
+            user = user_service.get_user_by_email(email=email)
+            
+            code_email_template = 'recovery_password'
+            email_template = email_template_service.get_email_template_by_code_json(code=code_email_template)
+            subject = email_template.get('subject', None)
+            message = email_template.get('message', None)
+
+            baseURL = env('FRONTEND_SIVARIA_BASE_URL')
+            #print(baseURL)
+            token, _ = Token.objects.get_or_create(user=user)
+            #print(token)
+            message = message.replace(r"{{baseURL}}", baseURL)
+            message = message.replace(r"{{token}}", str(token))
+            message = message.replace(r"{{email}}", email)
+
+            #print(message)
+            #to_mail = ['aldairfmh2004@hotmail.com']
+            #subject = 'Mensaje de prueba'
+            #message = 'Este es un mensaje de Prueba desde DRF'
+            
+            email_service.send_email(subject=subject, message=message, to_mail=[email])
             return Response({'status': 'ok', 'message': 'Correo enviado con éxito'}, status=status.HTTP_200_OK)
         except Exception as e:
             error_message = str(e)
