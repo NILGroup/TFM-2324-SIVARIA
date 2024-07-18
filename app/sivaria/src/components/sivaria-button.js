@@ -1,9 +1,23 @@
 import { Pressable } from "react-native";
+import SivariaText from "./sivaria-text";
 
-const SivariaButton = ({onPress, children }) => {
+const SivariaButton = ({onPress, message, disabled=false}) => {
     return (
         <Pressable 
-            style={
+            style={ (disabled) ?
+                {
+                    //padding: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    //marginTop: 10,
+                    width: '80%',
+                    height: '50%',
+                    backgroundColor: '#024332',
+                    borderColor: '#024332',
+                }
+                :
                 ({pressed}) => [
                     {
                         backgroundColor: pressed ? '#7bdcb5' : '#006E51',
@@ -15,7 +29,6 @@ const SivariaButton = ({onPress, children }) => {
                         justifyContent: 'center',
                         borderRadius: 8,
                         borderWidth: 1,
-                        borderColor: '#024332',
                         //marginTop: 10,
                         width: '80%',
                         height: '50%'
@@ -24,8 +37,11 @@ const SivariaButton = ({onPress, children }) => {
                 ]
             }
             onPress={onPress}
+            disabled={disabled ? true : false}
         >
-            { children }
+            <SivariaText isBold={true} color={disabled ? 'grey' : 'white'}>
+                { message }
+            </SivariaText>
         </Pressable>
     );
 }

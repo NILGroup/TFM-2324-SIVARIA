@@ -1,11 +1,10 @@
 import { Modal, Pressable, Text, View, StyleSheet, ScrollView } from "react-native";
 import stylesSivaria from "../styles/styles-sivaria";
 import stylesSivariaModal from "../styles/styles-sivaria-modal";
-import SivariaButton from "./sivaria-custom-basic-components/sivaria-button";
-import SivariaText from "./sivaria-custom-basic-components/sivaria-text";
+import SivariaButton from "./sivaria-button";
+import SivariaText from "./sivaria-text";
 import { AntDesign } from "@expo/vector-icons";
 import { ModalIcon, ModalType, ModalBackgroundColor } from "../utils/enum-types-modal";
-import { useState } from "react";
 
 const ModalComponent = ({animationType, setIsVisible, isVisible, modalType, title, message}) => {
 

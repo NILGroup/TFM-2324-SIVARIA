@@ -1,10 +1,43 @@
 // src/context/AuthContext.js
-import React, { createContext, useState, useEffect, useReducer, useMemo } from 'react';
+import React, { useRef, createContext, useState, useEffect, useReducer, useMemo } from 'react';
 import { getItemLocalStorage, removeItemLocalStorage, setItemLocalStorage } from '../utils/general-local-storage';
-
 import axios from 'axios';
-
+// NOT USED (NOT NOW)
 export const AuthContext = createContext();
+
+export const AuthProvider = ({children}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticatedRef = useRef(false);
+  isAuthenticatedRef.current = isAuthenticated;
+
+  // Each time a page is loaded, it is checked if the user is authenticatd or not.
+  useEffect(() => {
+    const checkToken = async() => {
+      const token = await getItemLocalStorage('userToken');
+      if(token) {
+        console.log('AUTENTICADO EN EL CONTEXTO');
+        setIsAuthenticated(true);
+      }
+      //setLoading(false);
+    }
+
+    checkToken();
+  }, []);
+
+  const login = () => {
+      setIsAuthenticated(true)
+  };
+  
+  const logout = () => {
+      setIsAuthenticated(false)
+  };
+
+  return (
+      <AuthContext.Provider value={{ isAuthenticatedRef, login, logout }}>
+          { children }
+      </AuthContext.Provider>
+  );
+}
 
 const initialState = {
     isLoading: true,

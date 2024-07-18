@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert, Dimensions, Platform } from 'react-native';
-import Dropdown from '../components/sivaria-custom-basic-components/dropdown';
-import ShowHidePasswordInput from '../components/show-hide-password-input';
-import axiosInstance from '../utils/axios-config-web';
-import stylesSivaria from '../styles/styles-sivaria';
-import PhoneInput from "react-native-phone-input";
-import LoadingScreen from './loading-screen';
+import { StyleSheet, View, Text, Dimensions, Platform } from 'react-native';
+import Dropdown from '../../components/dropdown';
+import ShowHidePasswordInput from '../../components/show-hide-password-input';
+import axiosInstance from '../../utils/axios-config-web';
+import stylesSivaria from '../../styles/styles-sivaria';
+import LoadingScreen from '../loading-screen';
 
-import SivariaText from '../components/sivaria-custom-basic-components/sivaria-text';
-import SivariaInput from '../components/sivaria-custom-basic-components/sivaria-input';
-import SivariaButton from '../components/sivaria-custom-basic-components/sivaria-button';
-import Container from '../components/component-containers/container';
+import SivariaText from '../../components/sivaria-text';
+import SivariaInput from '../../components/sivaria-input';
+import SivariaButton from '../../components/sivaria-button';
+import Container from '../../components/component-containers/container';
 
-import ModalComponent from '../components/modal-component';
+import ModalComponent from '../../components/modal-component';
 
-import { ModalType, ModalTitle } from '../utils/enum-types-modal';
+import { usePushNotifications } from '../../utils/use-push-notifications';
 
-import { usePushNotifications } from '../utils/use-push-notifications';
+import useModal from '../../utils/modal-hook';
+import { useToast } from 'react-native-toast-notifications';
+import SivariaSpanishPhoneInput from '../../components/sivaria-spanish-phone-input';
 
 const { height } = Dimensions.get('window');
 
@@ -34,19 +35,18 @@ const RegisterScreen = ({navigation}) => {
 
     const [roles, setRoles] = useState([]);
 
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [isDisabled, setIsDisabled] = useState(true);
 
 
     const [showExtraText, setShowExtraText] = useState(false);
-
-    const [modalType, setModalType] = useState('');
-    const [modalTitle, setModalTitle] = useState('');
-    const [modalMessage, setModalMessage] = useState('');
-    const [isVisible, setModalVisible] = useState(false);
-
     
     const {expoPushToken, notification} = usePushNotifications();
 
+    const toast = useToast();
+    
+    const { modalType, modalTitle, modalMessage, isVisible, setModalVisible, setVisibleModal } = useModal();
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -60,30 +60,44 @@ const RegisterScreen = ({navigation}) => {
             })
             .catch(function (error) {
                 let message = 'No se han podido cargar los roles de los usuarios.';
-                setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message)
+                //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message)
+                toast.show(
+                    message,
+                    {
+                        type: 'danger'
+                    }
+                );
             });
 
-            setLoading(false);
+            setIsLoading(false);
 
         };
-    
+        
+        setIsLoading(true);
         fetchRoles();
       }, []
     );
-      /*
+    
     useEffect(() => {
         // AÑADIR VALIDACIONES
-    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, phoneNumberParent1, phoneNumberParent2]);
-*/
+        if(firstName && 
+            lastName &&
+            email &&
+            password &&
+            confirmPassword &&
+            phoneNumber &&
+            rol &&
+            emailParent1 &&
+            emailParent2) 
+        {
+            setIsDisabled(true);
+        }
+    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2]);
 
-    function setVisibleModal(modalType, title, message) {
-        setModalType(modalType)
-        setModalTitle(title);
-        setModalMessage(message);
-        setModalVisible(true);
-    }
 
-    const handleSubmit = async () => {
+    async function handleSubmit(e) {
+        e.preventDefault();
+        //setIsLoading(true);
         let message = '';
         if(!firstName) {
             message += 'El campo del nombre está vacío.\n\n';
@@ -106,6 +120,15 @@ const RegisterScreen = ({navigation}) => {
         if(!phoneNumber) {            
             message += 'El campo del número del télefono está vacío.\n\n';
         }
+        else if(phoneNumber && isNaN(phoneNumber)) {
+            message += 'El número de teléfono introducido no es numérico.\n\n';
+        }
+        else if(phoneNumber && !isNaN(phoneNumber) && (phoneNumber.length !== 9)) {
+            message += 'El número de teléfono introducido no tiene 9 dígitos';
+        }
+        else if(phoneNumber && !isNaN(phoneNumber) && (!phoneNumber.startsWith('6') && !phoneNumber.startsWith('7'))) {
+            message += 'El número de teléfono introducido no empieza con 6 o 7';
+        }
         if(!rol) {            
             message += 'El campo del rol está vacío.\n\n';
         }
@@ -114,10 +137,19 @@ const RegisterScreen = ({navigation}) => {
         }
 
         if(message.length !== 0) {
-            console.log(message);
-            setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
+            //setIsLoading(false);
+            toast.show(
+                message,
+                {
+                    type: 'danger'
+                }
+            );
+            //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
         }
         else {
+            console.log('LOGEADO');
+            /*
+            setIsLoading(true);
             const data = {
                 first_name:firstName,
                 last_name:lastName,
@@ -139,33 +171,58 @@ const RegisterScreen = ({navigation}) => {
 
             await axiosInstance.post('/sivaria/v1/user/register', data)
                 .then(function (response) {
-                    //const token = response.data.data.token;
-                    //console.log('Token JWT:', token);
-                    
-                    // Llamar función para resetear campos después del login exitoso
-
-                    //console.log(response);
-                    // Navegar a la siguiente pantalla (Home, por ejemplo)
-                    //console.log('Registro exitoso');
-                    
-                    //navigation.navigate('Login');
-                    let message = 'El usuairo se ha registrado correctamente';
-                    setVisibleModal(ModalType.Information, ModalTitle.InformationTitle, message);
+                    setIsLoading(false);
+                    let message = 'El usuario se ha registrado correctamente';
+                    //setVisibleModal(ModalType.Information, ModalTitle.InformationTitle, message);
+                    toast.show(
+                        message,
+                        {
+                            type: 'success'
+                        }
+                    );
 
                 })
                 .catch(function (error) {
-                    //console.log('Error de registro:', error);
-                    //setModalTitle('ERROR');
-                    //setModalMessage('Error en el registro');
-                    //setModalVisible(true);
-                    const message = 'Ha habido un error durante el proceso de registro del usuario. ' + error.response.data.data;
-                    setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
+                    setIsLoading(false);
+                    let message = 'Ha habido un error durante el proceso de registro del usuario. ' + error.response.data.data;
+                    //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
                     //Alert.alert('Error', 'Error en el registro. Inténtelo de nuevo.')
+                    toast.show(
+                        message,
+                        {
+                            type: 'danger'
+                        }
+                    );
                 });
+                */
         }
     }
 
-    if(loading) {
+    useEffect(() => {
+        function enableRegisterButton(){
+            if(firstName && 
+                lastName && 
+                email && 
+                password && 
+                confirmPassword &&
+                rol
+            ) {
+                const areFieldsFilled = firstName && lastName && email && password && confirmPassword && rol;
+
+                if (!areFieldsFilled) {
+                    setIsDisabled(true);
+                    return;
+                }
+
+                const isRoleValid = rol === 'joven' ? (emailParent1 || emailParent2) : rol !== '0';
+
+                setIsDisabled(!isRoleValid);
+            }
+        }
+        enableRegisterButton();
+    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2]);
+
+    if(isLoading) {
         return (
             <LoadingScreen />
         );
@@ -183,7 +240,7 @@ const RegisterScreen = ({navigation}) => {
             />
             {/* Título */}
             <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
-                <SivariaText isBold={true} fontSize={35}>SIVARIA</SivariaText>
+                <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
                 <SivariaText fontSize={20}>Formulario de registro</SivariaText>
             </View>
             
@@ -215,6 +272,7 @@ const RegisterScreen = ({navigation}) => {
                             onChangeText={setEmail}
                             autoCorrect={false}
                             autoCapitalize={'none'} 
+                            inputMode={'email'}
                         />
                     </View>
                     <View style={{height:70, alignItems:'center', justifyContent: 'center'}}>
@@ -230,13 +288,10 @@ const RegisterScreen = ({navigation}) => {
                             onChangeText={setConfirmPassword} />
                     </View>
                     <View style={{height:80,alignItems:'center', justifyContent: 'center'}}>
-                        <SivariaInput 
+                        <SivariaSpanishPhoneInput 
                             placeholder={'Número de teléfono'}
-                            value={phoneNumber}
+                            phoneNumber={phoneNumber}
                             onChangeText={setPhoneNumber}
-                            autoCorrect={false}
-                            autoCapitalize={'none'}
-                            keyboardType={'phone-pad'} 
                         />
                     </View>
                     <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
@@ -251,31 +306,29 @@ const RegisterScreen = ({navigation}) => {
                     <>
                         <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
                             <SivariaInput 
-                                placeholder={'Email madre o figura parental'}
+                                placeholder={'Email de figura parental 1'}
                                 value={emailParent1}
                                 onChangeText={setEmailParent1}
                                 autoCorrect={false}
                                 autoCapitalize={'none'} 
+                                inputMode={'email'}
                             />
                         </View>
                         
                         <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
                             <SivariaInput 
-                                placeholder={'Email padre o figura parental'}
+                                placeholder={'Email de figura parental 2'}
                                 value={emailParent2}
                                 onChangeText={setEmailParent2}
                                 autoCorrect={false}
                                 autoCapitalize={'none'} 
+                                inputMode={'email'}
                             />
                         </View>
                     </>
                     )}
                     <View style={{height:80, alignItems:'center', justifyContent:'center'}}>
-                        <SivariaButton onPress={handleSubmit}>
-                            <SivariaText isBold={true}>
-                                ENVIAR
-                            </SivariaText>
-                        </SivariaButton>
+                        <SivariaButton onPress={handleSubmit} message={'ENVIAR'} disabled={isDisabled}/>
                     </View>
 
                 </View>

@@ -12,7 +12,7 @@ const Dropdown = ({items, placeholder, value, onValueChange}) => {
           placeholder={placeholder}
           value={value}
           onValueChange={onValueChange}
-          style={pickerSelectStyles.inputAndroid}
+          style={(Platform.OS === 'android' || Platform.OS === 'web') ? pickerSelectStyles.inputAndroid : pickerSelectStyles.inputIOS}
       />
   );
 

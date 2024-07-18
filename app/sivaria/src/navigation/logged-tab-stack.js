@@ -1,9 +1,11 @@
-import HomeScreen from "../screens/home-screen";
-import ProfileScreen from "../screens/profile-screen";
+import HomeScreen from "../screens/logged-users/home-screen";
+import ProfileScreen from "../screens/logged-users/profile-screen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from '@expo/vector-icons';
 import { Platform, Text } from "react-native";
 import stylesSivaria from "../styles/styles-sivaria";
+import { useContext } from "react";
+import { UserContext } from "../context/user-context";
 //import { createAppContainer } from "react-navigation"; 
 
 /*
@@ -35,7 +37,8 @@ export const HomeTabNavigator = createAppContainer(TabNavigator);
 
 const Tab = createBottomTabNavigator();
 
-export const HomeTabsNavigator = () => {
+export const DashboardTabsScreen = ({navigation}) => {
+  const userData = useContext(UserContext);
   return (
     <Tab.Navigator 
         screenOptions={({ route }) => ({
@@ -57,6 +60,7 @@ export const HomeTabsNavigator = () => {
             paddingTop: 5,
             height: Platform.OS === 'ios' ? 80 : 60,
           },
+          tabBarLabelPosition: 'below-icon',
           tabBarIcon: ({ focused }) => {
               let iconName;
               let color = focused ? "white" : "#96bf96";

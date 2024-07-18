@@ -1,8 +1,7 @@
 import { Platform } from 'react-native';
 import axios from 'axios'
 import { API_SERVER_MOBILE, API_SERVER_WEB } from '@env'
-import { getItem, clear } from './async-storage';
-import { getItemLocalStorage } from './general-local-storage';
+import { getItemLocalStorage, removeItemLocalStorage } from './general-local-storage';
 
 const axiosInstance = axios.create({
     baseURL: Platform.OS === 'web' ? API_SERVER_WEB : API_SERVER_MOBILE,
@@ -17,11 +16,13 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     async (config) => {
       //const token = Platform.OS === 'web' ? localStorage.getItem('userTokenLocalStorage') : await getItem('userToken');
-      //await clear();
       //console.log(token ? 'HAY TOKEN' : 'NO HAY TOKEN');
       //console.log(token);
       //console.log(await AsyncStorage.getItem('userToken'));
       //console.log(token);
+      //console.log('BASEURL ' + Platform.OS === 'web' ? API_SERVER_WEB : API_SERVER_MOBILE);
+      //removeItemLocalStorage('userToken');
+      //removeItemLocalStorage('currentRoute');
       const token = await getItemLocalStorage('userToken');
       console.log(token);
       if (token) {

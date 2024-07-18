@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import SivariaButton from "../sivaria-custom-basic-components/sivaria-button";
+import SivariaButton from "../sivaria-button";
 
 const SivariaButtonContainer = ({children}) => {
     return(

@@ -67,7 +67,7 @@ class PushNotificationType(models.Model):
 class EmailTemplate(models.Model):
     code = models.CharField(max_length=50)
     subject = models.CharField(max_length=80)
-    message = models.TextField(max_length=255, null=True, default=None, blank=True)
+    message = models.TextField(max_length=512, null=True, default=None, blank=True)
 
     def __str__(self) -> str:
         return f'EmailTemplate: {self.code}'

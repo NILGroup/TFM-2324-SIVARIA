@@ -1,7 +1,7 @@
 import { TextInput, View, StyleSheet } from "react-native";
 
 
-const SivariaInput = ({placeholder, value, onChangeText, autoCorrect, autoCapitalize, keyboardType}) => {
+const SivariaInput = ({placeholder, value, onChangeText, autoCorrect, autoCapitalize, inputMode}) => {
     return(
         <View style={styles.inputContainer}>
             <TextInput
@@ -12,7 +12,7 @@ const SivariaInput = ({placeholder, value, onChangeText, autoCorrect, autoCapita
                 onChangeText={onChangeText} 
                 autoCorrect={autoCorrect ? autoCorrect : false}
                 autoCapitalize={autoCapitalize ? autoCapitalize : 'none'}
-                keyboardType= {keyboardType ? keyboardType : 'default'}
+                inputMode= {inputMode ? inputMode : 'text'}
             />
         </View> 
     );

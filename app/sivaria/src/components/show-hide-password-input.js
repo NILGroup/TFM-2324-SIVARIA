@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { TextInput, StyleSheet, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import stylesInput from "../styles/styles-input";
-import stylesIcon from "../styles/styles-icon";
 
 const ShowHidePasswordInput = ({placeholder, password, onChangeText}) => {
 
