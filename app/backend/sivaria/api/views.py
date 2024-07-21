@@ -810,7 +810,7 @@ class AppUser_APIView_Modifications_ChangePassword(APIView):
 http://127.0.0.1:8000/sivaria/v1/expertSystem/predict
 {
     "email": string,
-    "user_data_asivaria": json string base64 decoded
+    "user_data_sivaria": json string base64 decoded
 }
 '''
 class ExpertSystem_APIView_Predict(APIView):
@@ -864,6 +864,11 @@ class ExpertSystem_APIView_Predict(APIView):
 
         rol_slug = rol.get('slug')
         
+        #DECODIFICAR Y MAPEAR DATASET RECIBIDO DEL APP
+        sivaria_mapping = True
+        mapped_data = user_data_sivaria if not sivaria_mapping else expert_system_service.mapData(user.get('id', None), user_data_sivaria, rol_slug)
+
+        
         #GUARDAR DATOS EN BBDD
         
 
@@ -881,7 +886,7 @@ class ExpertSystem_APIView_Predict(APIView):
             response['data'] = 'Tipo de modelo '+ model_type +' no encontrado.'
             return Response(response, status=status.HTTP_404_NOT_FOUND) 
 
-        desenlace = expert_system_service.predict(model_type, user_data_sivaria)
+        desenlace = expert_system_service.predict(model_type, mapped_data)
         '''
         # Decoding data
 

@@ -31,7 +31,8 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+#ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
 # Application definition
 
 INSTALLED_APPS = [

@@ -29,7 +29,7 @@ const HomeScreen = ({navigation}) => {
     async function sendPush(e) {
         e.preventDefault();
         setIsLoading(true);
-        data = {
+        let data = {
             email: await getItemLocalStorage('email'),
             notification_type: 'example'
         }

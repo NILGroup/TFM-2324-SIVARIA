@@ -167,12 +167,22 @@ class Decoder(object):
     @staticmethod   
     def changeValuesToNumeric(df, newFlag = 1):
         newData = df.apply(lambda x: x.astype(str).str.upper())
-
+        #print(newData)
+        #print(newData['altura'])
         items = constants.BAYES_NETWORK_STATE_NAMES_NEW_VERSION_V2.items() if newFlag == 1 else constants.BAYES_NETWORK_STATE_NAMES
 
         for key, values in items:
             if key in newData and key.lower() != 'desenlace':
                 #print(newData[key][0].strip())
+                #print(key)
+                #print(values)
+                #print(values.index())
+                '''
+                if key == 'altura':
+                    print(newData['altura'][0])
+                    p = newData['altura'][0]
+                    print(values.index(p.strip()))
+                '''
                 newData[key] = newData[key].apply(lambda x: values.index(x.strip()))
 
         
