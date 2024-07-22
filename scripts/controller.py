@@ -147,9 +147,11 @@ class Controller():
                 # Training Model
                 print('Training the model...') 
                 X_train, X_test, y_train, y_test = expertSystem.divideDatasetTrainingTesting(newDF)
-                classNames = np.unique(newDF['Desenlace'].to_numpy())
-
+                str_desenlace = 'Desenlace' if 'Desenlace' in newDF.columns else 'desenlace'
+                classNames = np.unique(newDF[str_desenlace].to_numpy())
+                print(classNames)
                 try:
+                    #print(y_train)
                     modelForTest = expertSystem.trainModel(X_train, y_train, classNames)
                 except Exception:
                     raise ModelTrainingException('Error during model training.')
@@ -159,13 +161,14 @@ class Controller():
                 y_pred = expertSystem.predict(X_test)
                 cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames)
                 # Plot Confusion Matrix
-                '''
+                
                 print('Showing confusion matrix...')
                 disp = expertSystem.getConfusionMatrixDisplay(cm, classNames)
                 disp.plot()
                 plt.show()
-                '''
-
+                
+                
+                print(pd.DataFrame(data={'real': y_test, 'test': y_pred}))
                 # Testing Model
                 print('Testing trained model...')
                 (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
@@ -249,8 +252,9 @@ class Controller():
 
                 expertSystem.buildModel(mostRecentFilename)
 
-                if 'Desenlace' in newDF.columns:
-                    newDF = newDF.drop('Desenlace', axis=1)
+                if 'Desenlace' or 'desenlace' in newDF.columns:
+                    str_desenlace = 'Desenlace' if 'Desenlace' in newDF.columns else 'desenlace'
+                    newDF = newDF.drop(str_desenlace, axis=1)
 
                 try:
                     y_pred = expertSystem.predict(newDF.values)

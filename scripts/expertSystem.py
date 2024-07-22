@@ -1,8 +1,8 @@
 import os
 import pickle
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import copy
@@ -44,16 +44,31 @@ class ExpertSystem():
         return (X_train, X_test, y_train, y_test)
 
     def trainModel(self, X_train, y_train, classNames):
-
         if self.__modelType is None:
             raise ValueError('Training process error: Model type not specified.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
-        
+    
         if self.__scoreOption is None:
             raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
         modelForTest = copy.deepcopy(self.__model)
 
-        self.__model.partial_fit(X_train, y_train, classes=classNames)
+        param_grid = {
+            'var_smoothing': np.logspace(0, -9, num=100)
+        }
+        grid_search = GridSearchCV(estimator=self.__model, param_grid=param_grid, cv=5, verbose=1, scoring='accuracy')
+        grid_search.fit(X_train, y_train)
+
+        # Mejor parámetro encontrado por GridSearchCV
+        best_params = grid_search.best_params_
+
+        # Mejor modelo encontrado por GridSearchCV
+        best_model = grid_search.best_estimator_
+        #print(best_params)
+        print(best_model)
+
+        self.__model = best_model
+
+        #self.__model.partial_fit(X_train, y_train, classes=classNames)
 
         return modelForTest
     
@@ -85,13 +100,13 @@ class ExpertSystem():
         pickle.dump(self.__model, open(filename, 'wb'))
 
     def testModel(self, modelForTest, y_pred, X_train, y_train, X_test, y_test):
-        if self.__modelType is None:
+        if not self.__modelType:
             raise ValueError('Model type not specified.')
         
-        if self.__model is None:
+        if not self.__model:
             raise ValueError('Model not specified.')
 
-        if self.__scoreOption is None:
+        if not self.__scoreOption:
             raise ValueError('Score type not set.')
 
         #clf_NB = modelForTest
@@ -100,7 +115,7 @@ class ExpertSystem():
         Score_Ini = self.getScore(y_test, y_pred)
         print('Selected score: ' + self.__scoreOption + ' = %.3f' % Score_Ini)
 
-        NumRepeticiones = 100 # hacemos 100 muestras con bootstrap
+        NumRepeticiones = 100 # hacemos 200 muestras con bootstrap
         NumMuestras = X_train.shape[0] # el número de muestras totales en X_train
         NumMuestrasTest = X_test.shape[0]
         indices = np.arange(X_train.shape[0]) # un listado con los índices de X_train 1,2,...,NumMuestras
@@ -109,8 +124,9 @@ class ExpertSystem():
         Cont = 0
 
         #i=0
+        scores = []
 
-        for rep in np.arange(NumRepeticiones):
+        for _ in np.arange(NumRepeticiones):
             indicesNew = np.random.choice(indices,NumMuestras,replace=True) #nuevos indices cogidos al azar
             indicesNewTest = np.random.choice(indicesTest, NumMuestrasTest, replace=True)
             X_train_Boot = X_train[indicesNew] # tomamos los datos X de esos indices
@@ -124,25 +140,29 @@ class ExpertSystem():
             y_pred_Boot = clf_Boot.predict(X_test_Boot)
             
             #i+=1
+            score = self.getScore(y_test_Boot, y_pred_Boot)
             
-            if self.getScore(y_test_Boot, y_pred_Boot) > Score_Ini:
+            if  score > Score_Ini:
                 Cont +=1
+            scores.append(score)
 
         p_valor = (Cont+1)/(NumRepeticiones + 1)
 
+        print('\nExactitud: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+        
         return (p_valor, Cont)
 
     def getScore(self, y_test, y_pred):
         score = 0
-
+        
         if self.__scoreOption == 'accuracy':
              score = accuracy_score(y_true=y_test, y_pred=y_pred)
         elif self.__scoreOption == 'precision':
-             score = precision_score(y_true=y_test, y_pred=y_pred, average='micro')
+             score = precision_score(y_true=y_test, y_pred=y_pred, average='weighted')
         elif self.__scoreOption == 'recall':
-             score = recall_score(y_true=y_test, y_pred=y_pred, average='micro')
+             score = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
         elif self.__scoreOption == 'f1_score':
-             score = f1_score(y_true=y_test, y_pred=y_pred, average='micro')
+             score = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
              
         return score
 
