@@ -2,7 +2,7 @@ import os
 import pickle
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import copy
@@ -44,18 +44,32 @@ class ExpertSystem():
         return (X_train, X_test, y_train, y_test)
 
     def trainModel(self, X_train, y_train, classNames):
-        #try:
-        if not self.__modelType:
+        if self.__modelType is None:
             raise ValueError('Training process error: Model type not specified.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
     
-        if not self.__scoreOption:
+        if self.__scoreOption is None:
             raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
         modelForTest = copy.deepcopy(self.__model)
 
-        self.__model.partial_fit(X_train, y_train, classes=classNames)
-        #except Exception as e:
-            #print(str(e))
+        param_grid = {
+            'var_smoothing': np.logspace(0, -9, num=100)
+        }
+        grid_search = GridSearchCV(estimator=self.__model, param_grid=param_grid, cv=5, verbose=1, scoring='accuracy')
+        grid_search.fit(X_train, y_train)
+
+        # Mejor parámetro encontrado por GridSearchCV
+        best_params = grid_search.best_params_
+
+        # Mejor modelo encontrado por GridSearchCV
+        best_model = grid_search.best_estimator_
+        #print(best_params)
+        print(best_model)
+
+        self.__model = best_model
+
+        #self.__model.partial_fit(X_train, y_train, classes=classNames)
+
         return modelForTest
     
     def predict(self, X_data):
