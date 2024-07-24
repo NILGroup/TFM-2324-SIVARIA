@@ -8,11 +8,12 @@ class Checker(object):
     
     @staticmethod
     def checkIntValue(value):
-        if not value:
+        if value is None:
             return False
         
         try:
-            return int(value)
+            int_value = int(value)
+            return True
         except ValueError:
             return False
     
@@ -22,17 +23,18 @@ class Checker(object):
     
     @staticmethod
     def checkFloatValue(value):
-        if not value:
+        if value is None:
             return False
         
         try:
-            return float(value)
+            float_value = float(value)
+            return True
         except ValueError:
             return False
     
     @staticmethod
     def checkCSVValue(value):
-        if not value:
+        if value is None:
             return False
         if isinstance(value, str):
             if value.endswith('.csv'):
@@ -41,9 +43,8 @@ class Checker(object):
     
     @staticmethod
     def checkSAVValue(value):
-        if not value:
+        if value is None:
             return False
-        
         if isinstance(value, str):
             if value.endswith('.sav'):
                 return True
@@ -101,15 +102,15 @@ class Checker(object):
 
     @staticmethod
     def checkConfig(config):
-        if not config:
+        if config is None:
             raise CommandLineException('System configuration not found.\n')
 
-        if not config.getModelType():
+        if config.getModelType() is None:
             raise CommandLineException('Model type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]')
-
-        if not config.getScoreType():
+        '''
+        if config.getScoreType() is None:
             raise CommandLineException('Score type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]')
-    
+        '''
     @staticmethod
     def checkConfigModelType(config):
         if not config:
@@ -117,12 +118,3 @@ class Checker(object):
 
         if not config.getModelType():
             raise CommandLineException('Model type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]')
-
-    @staticmethod
-    def checkConfigScoreType(config):
-        if not config:
-            raise CommandLineException('System configuration not found.\n')
-
-        if not config.getScoreType():
-            raise CommandLineException('Score type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]')
-    

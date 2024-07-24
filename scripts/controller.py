@@ -45,23 +45,23 @@ class Controller():
 
                 return output
             
-            elif option =='-st':
-                config = Configurator()
+            #elif option =='-st':
+                #config = Configurator()
 
-                if len(args) <= 2:
-                    scoreType = config.getScoreType()
-                    if scoreType is None:
-                        scoreType = 'None'
-                else:
-                    scoreType = args[2]
-                    config.setScoreType(scoreType)
+                #if len(args) <= 2:
+                    #scoreType = config.getScoreType()
+                    #if scoreType is None:
+                        #scoreType = 'None'
+                #else:
+                    #scoreType = args[2]
+                    #config.setScoreType(scoreType)
                 
-                config.saveConfig()
+                #config.saveConfig()
 
-                output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
-                output += 'Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]'
+                #output = 'Score type of the Expert System: ' + str(scoreType) + '\n'
+                #output += 'Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]'
 
-                return output
+                #return output
             elif option == '-lst':
                 fileManager = FileManager()
 
@@ -124,7 +124,7 @@ class Controller():
                 Checker.checkDatasetParameter(dataset)
                 
                 modelType = config.getModelType()
-                scoreType = config.getScoreType()
+                #scoreType = config.getScoreType()
 
                 if os.path.exists(dataset) == False:
                     raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
@@ -134,7 +134,7 @@ class Controller():
                 newDF = Decoder.codeDataset(df)
 
                 expertSystem.setModelType(modelType)
-                expertSystem.setScoreOption(scoreType)
+                #expertSystem.setScoreOption(scoreType)
 
                 mostRecentFilename = fileManager.getMostRecentFile(modelType)
                 
@@ -171,7 +171,7 @@ class Controller():
                 print(pd.DataFrame(data={'real': y_test, 'test': y_pred}))
                 # Testing Model
                 print('Testing trained model...')
-                (p_valor, Cont) = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
+                metrics = expertSystem.testModel(modelForTest, y_pred, X_train, y_train, X_test, y_test)
                 print('Model tested successfully')
                 #print('('+ str(p_valor) + ',' + str(Cont) +')')
 
@@ -179,33 +179,33 @@ class Controller():
                 print('Saving model...')
                 filePath, filename = fileManager.getConfigModelFilename(expertSystem.getModelType())
 
-                expertSystem.saveModel(filePath, filename)
+                expertSystem.saveModel(filePath, filename, metrics)
                 print('Model saved\n')
 
                 print(fileManager.getFileInfo(filename))
 
                 # Preparing data to return 
                 cm = expertSystem.getConfusionMatrix(y_test, y_pred, classNames, False)
-                FP = cm.sum(axis=0) - np.diag(cm)  
-                FN = cm.sum(axis=1) - np.diag(cm)
-                TP = np.diag(cm)
-                TN = cm.sum() - (FP + FN + TP)
+                #FP = cm.sum(axis=0) - np.diag(cm)  
+                #FN = cm.sum(axis=1) - np.diag(cm)
+                #TP = np.diag(cm)
+                #TN = cm.sum() - (FP + FN + TP)
+                TP, FP, TN, FN = self.__calculate_tp_fp_tn_fn(cm)
                 
                 result = {
-                    'positive_negative_data': {
-                        'total': {
-                            'TP': sum(TP),
-                            'TN': sum(TN),
-                            'FP': sum(FP),
-                            'FN': sum(FN)
-                        }
+                    'total': {
+                        'TP': np.sum(TP),
+                        'TN': np.sum(TN),
+                        'FP': np.sum(FP),
+                        'FN': np.sum(FN)
                     },
-                    'p_value_testing': {
-                        'p_valor':p_valor,
-                        'Cont': Cont
-                    }
+                    'per_class': {}
+                    #'p_value_testing': {
+                        #'p_valor':p_valor,
+                        #'Cont': Cont
+                    #}
                 }
-                
+                '''
                 index = 0
                 for className in classNames:
                     classNameLower = className.lower()
@@ -214,8 +214,17 @@ class Controller():
                     predictionResults['TN'] = TN[index]
                     predictionResults['FP'] = FP[index]
                     predictionResults['FN'] = FN[index]
-                    result['positive_negative_data'][classNameLower] = predictionResults
+                    result['per_class'][classNameLower] = predictionResults
                     index += 1 
+                '''
+                for i, className in enumerate(classNames):
+                    classnameLowered = className.lower()
+                    result['per_class'][classnameLowered] = {
+                        'TP': TP[i],
+                        'FP': FP[i],
+                        'TN': TN[i],
+                        'FN': FN[i]
+                    }
 
                 return result
 
@@ -285,11 +294,6 @@ class Controller():
         helpMessage += '\t\tthe configuration will be modified to this new model type.\n'
         helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.MODEL_TYPES) + '\n\n'
         helpMessage += '\t\tExample: python main.py -mt autoinforme\n\n'
-        helpMessage += '\t-st\tPrint the current score type selected. \n'
-        helpMessage += '\t\tIf the following parameter [MODEL TYPE] is a score type, \n'
-        helpMessage += '\t\tthe configuration will be modified to this new score type.\n'
-        helpMessage += '\t\tThe possible values are: ' + ', '.join(constants.SCORE_OPTIONS) + '\n\n'
-        helpMessage += '\t\tExample: python main.py -st accuracy\n\n'
         helpMessage += '\t-lst\tReturn an object of list of save files. If a model type [MODEL TYPE] is provided,\n'
         helpMessage += '\t\tit returns all the save files of that model.\n'
         helpMessage += '\t\tOtherwise, it returns an object with all the save files of all model types.\n\n'
@@ -306,3 +310,15 @@ class Controller():
         helpMessage += '\t\tExample: python main.py -p datasets/autoinforme/dataset5.csv\n\n'
 
         return helpMessage
+    
+    def __calculate_tp_fp_tn_fn(self, conf_matrix):
+        num_classes = conf_matrix.shape[0]
+        tp = np.diag(conf_matrix)
+        fp = np.sum(conf_matrix, axis=0) - tp
+        fn = np.sum(conf_matrix, axis=1) - tp
+        tn = []
+        for i in range(num_classes):
+            temp_conf_matrix = np.delete(np.delete(conf_matrix, i, axis=0), i, axis=1)
+            tn.append(np.sum(temp_conf_matrix))
+
+        return tp, fp, tn, fn
