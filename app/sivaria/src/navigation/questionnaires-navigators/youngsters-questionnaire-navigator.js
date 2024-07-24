@@ -653,7 +653,7 @@ export const YoungstersStackNavigator = ({navigation}) => {
                     ) : 
                     (
                         <Pressable onPress={handleSubmit} style={styles.button}>
-                            <Text style={styles.buttonText}>SUBMIT</Text>
+                            <Text style={styles.buttonText}>ENVIAR</Text>
                         </Pressable> 
                     )
                 }

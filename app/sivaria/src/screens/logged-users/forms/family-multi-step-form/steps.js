@@ -47,22 +47,7 @@ const yesNoData = [
     { label:'Sí', value: 'si' },
     { label:'No', value: 'no' },
 ];
-const selfPerceptionData = [
-    { label:'0', value: '0' },
-    { label:'1', value: '1' },
-    { label:'2', value: '2' },
-    { label:'3', value: '3' },
-    { label:'4', value: '4' },
-    { label:'5', value: '5' },
-    { label:'6', value: '6' },
-];
-const discriminationTypes = [
-    { label: 'Ninguno', value: 'ninguno'},
-    { label: 'Género', value: 'genero' },
-    { label: 'Raza', value: 'raza'},
-    { label: 'Orientación sexual', value: 'orientacion_sexual'},
-    { label: 'Otro', value: 'otro' },
-];
+
 const zeroToFourOptions = [
     { label:'0', value: '0' },
     { label:'1', value: '1' },
@@ -89,21 +74,24 @@ const oneToSevenOptions = [
     { label:'7', value: '7' },
 ];
 
+const oneToFourOptions = [
+    { label:'1', value: '1' },
+    { label:'2', value: '2' },
+    { label:'3', value: '3' },
+    { label:'4', value: '4' },
+];
+
 const Step1 = ({ stepData, setStepData }) => {
     //const [localState, setLocalState] = useState(stepData.step1 || '');
-    const [localState, setLocalState] = useState({
+    const [localState, setLocalState] = useState({ 
+        idChild: stepData.step1.idChild || '',
         course: stepData.step1.course || '',
-        age: stepData.step1.age || '',
-        gender: stepData.step1.gender || '',
-        trans: stepData.step1.trans || '',
     });
 
     useEffect(() => {
         setLocalState({
+            idChild: stepData.step1.idChild || '',
             course: stepData.step1.course || '',
-            age: stepData.step1.age || '',
-            gender: stepData.step1.gender || '',
-            trans: stepData.step1.trans || '',
         });
     }, [stepData.step1]);
 
@@ -118,56 +106,28 @@ const Step1 = ({ stepData, setStepData }) => {
 
     return (
         <>
-            {/*
-            <View>
-                <Text>Step 1</Text>
-                <TextInput
-                    style={styles.input}
-                    value={localState}
-                    onChangeText={handleInputChange}
-                />
-            </View>
-            */}
             <View style={{padding: 20, backgroundColor: 'white'}}>
                 <View style={{padding: 5}}>
+                    <Text style={{fontWeight:'bold'}}>Identificador (ID) Participante 
+                        (siglas de nombre y apellidos de su hijo/a seguida de su 
+                        fecha de nacimiento en seis dígitos ddmmaa; por ejemplo Juan Antonio Mesa Rodríguez 
+                        nacido el 25/07/2015 = JAMR25072015):</Text>
+                    <Text style={{fontWeight:'bold'}}>Identificador (ID) Participante:</Text>
+                    <SivariaInput 
+                        placeholder={'ID Participante'}
+                        value={stepData.step1.idChild}
+                        onChangeText={text => handleInputChange('idChild', text )}
+                        autoCorrect={false}
+                        autoCapitalize={'none'} 
+                        inputMode={'text'}
+                    />
+                </View>
+                <View style={{padding: 5}}>
                     <Text style={{fontWeight:'bold'}}>Curso:</Text>
-                    {/*<Dropdown 
-                        items={courses}
-                        placeholder={{ label: 'Selecciona un curso...', value: 'ninguno' }}
-                        value={stepData.step1.course}
-                        onValueChange={text => handleInputChange( 'course', text )}
-                    />*/}
                     <SivariaRadioButton 
                         data={courses} 
                         option={stepData.step1.course} 
                         onSelect={text => handleInputChange('course', text)}
-                    />
-                </View>
-                <View style={{padding:5}}>
-                    <Text style={{fontWeight:'bold'}}>Edad (en años):</Text>
-                    <SivariaInput 
-                        placeholder={'Edad'}
-                        value={stepData.step1.age}
-                        onChangeText={text => handleInputChange('age', text )}
-                        autoCorrect={false}
-                        autoCapitalize={'none'} 
-                        inputMode={'numeric'}
-                    />
-                </View>
-                <View style={{padding:5}}>
-                    <Text style={{fontWeight:'bold'}}>Sexo:</Text>
-                    <SivariaRadioButton 
-                        data={genderData} 
-                        option={stepData.step1.gender} 
-                        onSelect={text => handleInputChange('gender', text)}
-                    />
-                </View>
-                <View style={{padding:5}}>
-                    <Text style={{fontWeight:'bold'}}>¿Te consideras una persona trans?:</Text>
-                    <SivariaRadioButton 
-                        data={transData} 
-                        option={stepData.step1.trans} 
-                        onSelect={text => handleInputChange('trans', text)}
                     />
                 </View>
             </View>
@@ -177,24 +137,42 @@ const Step1 = ({ stepData, setStepData }) => {
 
 const Step2 = ({ stepData, setStepData }) => {
     const [localState, setLocalState] = useState({
-        jobSituationFather: stepData.step2.jobSituationFather || '',
-        jobSituationMother: stepData.step2.jobSituationMother || '',
-        academicLevelFather: stepData.step2.academicLevelFather || '',
-        academicLevelMother: stepData.step2.academicLevelMother || '',
-        academicPerformance: stepData.step2.academicPerformance || '',
-        previousPsychiatricTreatment: stepData.step2.previousPsychiatricTreatment || '',
-        chronicDisease: stepData.step2.chronicDisease || '',
+        sena104: stepData.step2.sena104 || '',
+        sena117: stepData.step2.sena117 || '',
+        sena118: stepData.step2.sena118 || '',
+        sena121: stepData.step2.sena121 || '',
+        sena123: stepData.step2.sena123 || '',
+        sena124: stepData.step2.sena124 || '',
+        sena125: stepData.step2.sena125 || '',
+        sena135: stepData.step2.sena135 || '',
+        sena137: stepData.step2.sena137 || '',
+        sena138: stepData.step2.sena138 || '',
+        sena139: stepData.step2.sena139 || '',
+        sena140: stepData.step2.sena140 || '',
+        sena145: stepData.step2.sena145 || '',
+        sena146: stepData.step2.sena146 || '',    
+        sena148: stepData.step2.sena148 || '',
+        sena154: stepData.step2.sena154 || '',
     });
 
     useEffect(() => {
         setLocalState({
-            jobSituationFather: stepData.step2.jobSituationFather || '',
-            jobSituationMother: stepData.step2.jobSituationMother || '',
-            academicLevelFather: stepData.step2.academicLevelFather || '',
-            academicLevelMother: stepData.step2.academicLevelMother || '',
-            academicPerformance: stepData.step2.academicPerformance || '',
-            previousPsychiatricTreatment: stepData.step2.previousPsychiatricTreatment || '',
-            chronicDisease: stepData.step2.chronicDisease || '',
+            sena104: stepData.step2.sena104 || '',
+            sena117: stepData.step2.sena117 || '',
+            sena118: stepData.step2.sena118 || '',
+            sena121: stepData.step2.sena121 || '',
+            sena123: stepData.step2.sena123 || '',
+            sena124: stepData.step2.sena124 || '',
+            sena125: stepData.step2.sena125 || '',
+            sena135: stepData.step2.sena135 || '',
+            sena137: stepData.step2.sena137 || '',
+            sena138: stepData.step2.sena138 || '',
+            sena139: stepData.step2.sena139 || '',
+            sena140: stepData.step2.sena140 || '',
+            sena145: stepData.step2.sena145 || '',
+            sena146: stepData.step2.sena146 || '',    
+            sena148: stepData.step2.sena148 || '',
+            sena154: stepData.step2.sena154 || '',
         });
     }, [stepData.step2]);
 
@@ -209,39 +187,119 @@ const Step2 = ({ stepData, setStepData }) => {
 
     return (
         <View style={{padding:20, backgroundColor: 'white'}}>
+            <Text style={{fontWeight:'bold'}}>
+                SENA
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                A continuación encontrará varias frases que describen comportamientos o conductas que pueden
+                mostrar los adolescentes. Por favor, lea detenidamente cada una de ellas e indique con qué 
+                frecuencia su hijo/a o familiar ha mostrado esos comportamientos durante los últimos 6 meses
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                Para responder tendrá que elegir en cada frase una de las 5 opciones siguientes y marcarla:
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                1. Su hijo/a o familiar NUNCA o CASI NUNCA muestra esa conducta.
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                2. Su hijo/a o familiar POCAS VECES muestra esa conducta.                
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                3. Su hijo/a o familiar ALGUNAS VECES muestra esa conducta.
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                4. Su hijo/a o familiar MUCHAS VECES muestra esa conducta.
+            </Text>
+            <Text style={{fontWeight:'bold'}}>
+                5. Su hijo/a o familiar SIEMPRE o CASI SIEMPRE muestra esa conducta.
+            </Text>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu padre:</Text>
-                <SivariaRadioButton option={stepData.step2.jobSituationFather} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationFather', text)}/>
+                <Text style={{fontWeight:'bold'}}>104. Sus compañeros de clase le aíslan.</Text>
+                <SivariaRadioButton option={stepData.step2.sena104} data={oneToFiveOptions} onSelect={text => handleInputChange('sena104', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu madre:</Text>
-                <SivariaRadioButton option={stepData.step2.jobSituationMother} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationMother', text)}/>
+                <Text style={{fontWeight:'bold'}}>117. Se mete en peleas.</Text>
+                <SivariaRadioButton option={stepData.step2.sena117} data={oneToFiveOptions} onSelect={text => handleInputChange('sena117', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Indica los estudios de tu padre o figura parental 1:</Text>
-                <SivariaRadioButton option={stepData.step2.academicLevelFather} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelFather', text)}/>
+                <Text style={{fontWeight:'bold'}}>118. Se queja de estar enfermo aunque el médico dice que todo está bien.</Text>
+                <SivariaRadioButton option={stepData.step2.sena118} data={oneToFiveOptions} onSelect={text => handleInputChange('sena118', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Indica los estudios de tu madre o figura parental 2:</Text>
-                <SivariaRadioButton option={stepData.step2.academicLevelMother} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelMother', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Señala cuál crees que es tu rendimiento académico en los dos últimos años:</Text>
-                <SivariaRadioButton option={stepData.step2.academicPerformance} data={academicPerformanceData} onSelect={text => handleInputChange('academicPerformance', text)}/>
+                <Text style={{fontWeight:'bold'}}>121. Creo que consume drogas.</Text>
+                <SivariaRadioButton option={stepData.step2.sena121} data={oneToFiveOptions} onSelect={text => handleInputChange('sena121', text)}/>
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
-                    Señala si tienes en la actualidad o has tenido previamente tratamiento psiquiátrico y/o psicológico 
-                    (por ejemplo, me han diagnosticado depresión o ansiedad):
+                    123. Se divierte molestando a otros.
                 </Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step2.previousPsychiatricTreatment} onSelect={text => handleInputChange('previousPsychiatricTreatment', text)}/>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena123} onSelect={text => handleInputChange('sena123', text)}/>
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
-                    Indica si padeces alguna enfermedad crónica desde hace por lo menos un año 
-                    (por ejemplo: me han diagnosticado, diabetes, epilepsia...):
+                    124. Hace cosas ilegales.    
                 </Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step2.chronicDisease} onSelect={text => handleInputChange('chronicDisease', text)}/>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena124} onSelect={text => handleInputChange('sena124', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    125. Se integra con facilidad en los grupos.    
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena125} onSelect={text => handleInputChange('sena125', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    135. Se preocupa por cosas sin importancia.    
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena135} onSelect={text => handleInputChange('sena135', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    137. Se esfuerza en sus estudios.    
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena137} onSelect={text => handleInputChange('sena137', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    138. Su mirada es triste, sin brillo.    
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena138} onSelect={text => handleInputChange('sena138', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    139. Es sociable.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena139} onSelect={text => handleInputChange('sena139', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    140. Le cuesta controlar sus emociones.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena140} onSelect={text => handleInputChange('sena140', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    145. Le da demasiadas vueltas a las cosas.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena145} onSelect={text => handleInputChange('sena145', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    146. Se obsesionan con adelgazar.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena146} onSelect={text => handleInputChange('sena146', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    148. Dice que tiene náuseas o ganas de vomitar.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena148} onSelect={text => handleInputChange('sena148', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>
+                    154. Es simpático con los que le rodean.
+                </Text>
+                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step2.sena154} onSelect={text => handleInputChange('sena154', text)}/>
             </View>
         </View>
     );
@@ -249,24 +307,38 @@ const Step2 = ({ stepData, setStepData }) => {
 
 const Step3 = ({ stepData, setStepData }) => {
     const [localState, setLocalState] = useState({
-        femaleSelfPerception: stepData.step3.femaleSelfPerception || '',
-        maleSelfPerception: stepData.step3.maleSelfPerception || '',
-        femaleOthersPerception: stepData.step3.femaleOthersPerception || '',
-        maleOthersPerception: stepData.step3.maleOthersPerception || '',
-        weight: stepData.step3.weight || '',
-        height: stepData.step3.height || '',
-        discriminationType: stepData.step3.discriminationType || '',
+        family12: stepData.step3.family12 || '',
+        family13: stepData.step3.family13 || '',
+        jobSituationFather: stepData.step3.jobSituationFather || '',
+        jobSituationMother: stepData.step3.jobSituationMother || '',
+        academicLevelFather: stepData.step3.academicLevelFather || '',
+        academicLevelMother: stepData.step3.academicLevelMother || '',
+        family1: stepData.step3.family1 || '',
+        family2: stepData.step3.family2 || '',
+        family3: stepData.step3.family3 || '',
+        family4: stepData.step3.family4 || '',
+        family5: stepData.step3.family5 || '',
+        family6: stepData.step3.family6 || '',
+        family7: stepData.step3.family7 || '',
+        family8: stepData.step3.family8 || '',
     });
 
     useEffect(() => {
         setLocalState({
-            femaleSelfPerception: stepData.step3.femaleSelfPerception || '',
-            maleSelfPerception: stepData.step3.maleSelfPerception || '',
-            femaleOthersPerception: stepData.step3.femaleOthersPerception || '',
-            maleOthersPerception: stepData.step3.maleOthersPerception || '',
-            weight: stepData.step3.weight || '',
-            height: stepData.step3.height || '',
-            discriminationType: stepData.step3.discriminationType || '',
+            family12: stepData.step3.family12 || '',
+            family13: stepData.step3.family13 || '',
+            jobSituationFather: stepData.step3.jobSituationFather || '',
+            jobSituationMother: stepData.step3.jobSituationMother || '',
+            academicLevelFather: stepData.step3.academicLevelFather || '',
+            academicLevelMother: stepData.step3.academicLevelMother || '',
+            family1: stepData.step3.family1 || '',
+            family2: stepData.step3.family2 || '',
+            family3: stepData.step3.family3 || '',
+            family4: stepData.step3.family4 || '',
+            family5: stepData.step3.family5 || '',
+            family6: stepData.step3.family6 || '',
+            family7: stepData.step3.family7 || '',
+            family8: stepData.step3.family8 || '',
         });
     }, [stepData.step3]);
 
@@ -281,53 +353,90 @@ const Step3 = ({ stepData, setStepData }) => {
 
     return (
         <View style={{padding:20, backgroundColor: 'white'}}>
+            <Text style={{fontWeight:'bold'}}>
+                Por favor, conteste o señale la casilla correspondiente en cada una de las cuestiones
+                formluadas a continuación:
+            </Text>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>En general, ¿cómo te ves a ti mismo/a? (responde a ambas escalas: masculino y femenina). Evalúe de 0 a 6,
-                donde 0 significa Nada en absoluto y 6 completamente:</Text>
-                <Text>Femenina</Text>
-                <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.femaleSelfPerception} onSelect={text => handleInputChange('femaleSelfPerception', text)}/>
-                <Text>Masculino</Text>
-                <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.maleSelfPerception} onSelect={text => handleInputChange('maleSelfPerception', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>En general, ¿cómo crees que te ve la mayoría de la gente? (responde a ambas escalas: masculino y femenina). Evalúe de 0 a 6,
-                donde 0 significa Nada en absoluto y 6 completamente:</Text>
-                <Text>Femenina</Text>
-                <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.femaleOthersPerception} onSelect={text => handleInputChange('femaleOthersPerception', text)}/>
-                <Text>Masculino</Text>
-                <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.maleOthersPerception} onSelect={text => handleInputChange('maleOthersPerception', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Cuánto pesas? (poner valor aproximado en kg):</Text>
+                <Text>
+                    Indique los ingresos familiares familiares mensuales en euros (aproximado):
+                </Text>
                 <SivariaInput 
-                    placeholder={'Peso'}
-                    value={stepData.step3.weight}
-                    onChangeText={text => handleInputChange('weight', text )}
+                    placeholder={'Ingreso familiar mensual'}
+                    value={stepData.step3.family12}
+                    onChangeText={text => handleInputChange('family12', text )}
                     autoCorrect={false}
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
-                />                             
+                />    
             </View>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Cuánto mides? (poner valor aproximado en cm):</Text>
+                <Text style={{fontWeight:'bold'}}>
+                    ¿Considera que poseen una situación económica familiar precaria?
+                </Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.femaleSelfPerception} onSelect={text => handleInputChange('family13', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu padre:</Text>
+                <SivariaRadioButton option={stepData.step3.jobSituationFather} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationFather', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu madre:</Text>
+                <SivariaRadioButton option={stepData.step3.jobSituationMother} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationMother', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>Indica los estudios de tu padre o figura parental 1:</Text>
+                <SivariaRadioButton option={stepData.step3.academicLevelFather} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelFather', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text style={{fontWeight:'bold'}}>Indica los estudios de tu madre o figura parental 2:</Text>
+                <SivariaRadioButton option={stepData.step3.academicLevelMother} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelMother', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indique la edad de tu padre en el momento de tu nacimiento (años):</Text>
                 <SivariaInput 
-                    placeholder={'Altura'}
-                    value={stepData.step3.height}
-                    onChangeText={text => handleInputChange('height', text )}
+                    placeholder={'Edad padre'}
+                    value={stepData.step3.family1}
+                    onChangeText={text => handleInputChange('family1', text )}
                     autoCorrect={false}
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
-                />                        
+                />
             </View>
             <View style={{padding:5}}>
-                <Text style={{fontWeight:'bold'}}>Indica el tipo de discriminación sufrido. Si no has sufrido ninguno, pon Ninguno:</Text>
-                {/*<Dropdown 
-                    items={discriminationTypes}
-                    placeholder={{ label: 'Selecciona una opción...', value: 'ninguno' }}
-                    value={stepData.step3.discriminationType}
-                    onValueChange={text => handleInputChange('discriminationType', text )}
-                /> */}
-                <SivariaRadioButton data={discriminationTypes} option={stepData.step3.discriminationType} onSelect={text => handleInputChange('discriminationType', text)}/>
+                <Text>Indique la edad de tu madre en el momento de tu nacimiento (años):</Text>
+                <SivariaInput 
+                    placeholder={'Edad madre'}
+                    value={stepData.step3.family2}
+                    onChangeText={text => handleInputChange('family2', text )}
+                    autoCorrect={false}
+                    autoCapitalize={'none'} 
+                    inputMode={'numeric'}
+                />
+            </View>
+            <View style={{padding:5}}>
+                <Text>Conviven padre y madre en el hogar habitual con su hijo/a</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family3} onSelect={text => handleInputChange('family3', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indique si los padres están separados o divorciados</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family4} onSelect={text => handleInputChange('family4', text)}/>
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indica si alguna de las figuras parentales ha recibido tratamiento psicológico o psiquiátrico:</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family5} onSelect={text => handleInputChange('family5', text)}/>                
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indica si alguna de las figuras parentales ha recibido tratamiento por consumo de drogas o alcohol</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family6} onSelect={text => handleInputChange('family6', text)}/>                
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indica si las relaciones con su hijo/a son conflictivas o problemáticas (tensión, rechazo, desinterés, peleas frecuentes...):</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family7} onSelect={text => handleInputChange('family7', text)}/>                
+            </View>
+            <View style={{padding:5}}>
+                <Text>Indica si la familia ha sido reconstruida</Text>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family8} onSelect={text => handleInputChange('family8', text)}/>                
             </View>
         </View>
     );
@@ -335,41 +444,42 @@ const Step3 = ({ stepData, setStepData }) => {
 
 const Step4 = ({ stepData, setStepData }) => {
     const [localState, setLocalState] = useState({
-        vb1: stepData.step4.vb1 || '', 
-        vb2: stepData.step4.vb2 || '',
-        vb4: stepData.step4.vb4 || '',
-        ab1: stepData.step4.ab1 || '',
-        ab2: stepData.step4.ab2 || '',
-        ab4: stepData.step4.ab4 || '',
-        cybv1: stepData.step4.cybv1 || '',
-        cybv2: stepData.step4.cybv2 || '',
-        cybv3: stepData.step4.cybv3 || '',
-        cybb1: stepData.step4.cybb1 || '',
-        cybb2: stepData.step4.cybb2 || '',
-        cybb3: stepData.step4.cybb3 || '',
+        parq1: stepData.step4.parq1 || '', 
+        parq2: stepData.step4.parq2 || '',
+        parq3: stepData.step4.parq3 || '',
+        parq4: stepData.step4.parq4 || '',
+        parq5: stepData.step4.parq5 || '',
+        parq6: stepData.step4.parq6 || '',
+        parq7: stepData.step4.parq7 || '',
+        parq8: stepData.step4.parq8 || '',
+        parq9: stepData.step4.parq9 || '',
+        parq10: stepData.step4.parq10 || '',
+        parq11: stepData.step4.parq11 || '',
+        parq12: stepData.step4.parq12 || '',
+        parq13: stepData.step4.parq13 || '',
+        parq14: stepData.step4.parq14 || '',
     });
 
     useEffect(() => {
         setLocalState({
-            vb1: stepData.step4.vb1 || '', 
-            vb2: stepData.step4.vb2 || '',
-            vb4: stepData.step4.vb4 || '',
-            ab1: stepData.step4.ab1 || '',
-            ab2: stepData.step4.ab2 || '',
-            ab4: stepData.step4.ab4 || '',
-            cybv1: stepData.step4.cybv1 || '',
-            cybv2: stepData.step4.cybv2 || '',
-            cybv3: stepData.step4.cybv3 || '',
-            cybb1: stepData.step4.cybb1 || '',
-            cybb2: stepData.step4.cybb2 || '',
-            cybb3: stepData.step4.cybb3 || '',
+            parq1: stepData.step4.parq1 || '', 
+            parq2: stepData.step4.parq2 || '',
+            parq3: stepData.step4.parq3 || '',
+            parq4: stepData.step4.parq4 || '',
+            parq5: stepData.step4.parq5 || '',
+            parq6: stepData.step4.parq6 || '',
+            parq7: stepData.step4.parq7 || '',
+            parq8: stepData.step4.parq8 || '',
+            parq9: stepData.step4.parq9 || '',
+            parq10: stepData.step4.parq10 || '',
+            parq11: stepData.step4.parq11 || '',
+            parq12: stepData.step4.parq12 || '',
+            parq13: stepData.step4.parq13 || '',
+            parq14: stepData.step4.parq14 || '',
         });
     }, [stepData.step4]);
 
     const handleInputChange = (field, value) => {
-        // Change function to handleInputChange(text)
-        //setLocalState(text);
-        //setStepData((prevData) => ({ ...prevData, step1: text }));
         const updatedState = { ...localState, [field]: value };
         setLocalState(updatedState);
         setStepData((prevData) => ({ ...prevData, step4: updatedState }));
@@ -378,85 +488,111 @@ const Step4 = ({ stepData, setStepData }) => {
     return (
         <View style={{padding:20, backgroundColor: 'white'}}>
             <Text style={{fontWeight:'bold'}}>
-                EBIP-Q y del ECIP-Q
+                PARQ
             </Text>
             <Text style={{fontWeight:'bold'}}>
-                A continuación, le pediremos que identifique 
-                con qué frecuencia ha tenido alguna de 
-                estas experiencias en los últimos dos (2) meses, evalúe de 0 a 4,
-                donde 0 significa nunca y 4 siempre.
+                Hay cuatro casillas después de cada frase. Responda en función de si en su caso el enunciado
+                es básicamente:
+                1. Básicamente incierto ("Casi nunca verdad").
+                2. Cierto ocasionalmente ("A veces verdad").
+                3. Cierto frecuentemente ("Muchas veces verdad"). 
+                4. Cierto ("casi siempre verdad").
             </Text>
             <View style={{padding:5}}>
-                <Text>VB1. Alguien me ha golpeado, me ha pateado o me ha empujado</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb1} onSelect={text => handleInputChange('vb1', text)}/>
+                <Text>1. Digo cosas buenas sobre mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq1} onSelect={text => handleInputChange('parq1', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>VB2. Alguien me ha insultado</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb2} onSelect={text => handleInputChange('vb2', text)}/>
+                <Text>2. Presto atención a mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq2} onSelect={text => handleInputChange('parq2', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>VB4. Alguien me ha amenazado</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb4} onSelect={text => handleInputChange('vb4', text)}/>
+                <Text>3. Me preocupo de que mi hijo/a sepa exactamente lo que puede o no puede hacer</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq3} onSelect={text => handleInputChange('parq3', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>AB1. He golpeado, pateado o empujado a alguien</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab1} onSelect={text => handleInputChange('ab1', text)}/>
+                <Text>4. Hago que mi hijo/a confíe en mí</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq4} onSelect={text => handleInputChange('parq4', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>AB2. He insultado he dicho palabras malsonantes a alguien porque quería hacerle daño</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab2} onSelect={text => handleInputChange('ab2', text)}/>                
+                <Text>5. Pego a mi hijo/a cuando se lo merece</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq5} onSelect={text => handleInputChange('parq5', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>AB4. He amenazado a alguien</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab4} onSelect={text => handleInputChange('ab4', text)}/>                
+                <Text>6. Mi hijo/a es un gran incordio para mí</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq6} onSelect={text => handleInputChange('parq6', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybV1. Alguien me ha dicho palabras malsonantes o me ha insultado usando el email o SMS</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv1} onSelect={text => handleInputChange('cybv1', text)}/>                
+                <Text>7. Siempre le digo a mi hijo/a cómo debe comportarse</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq7} onSelect={text => handleInputChange('parq7', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybV2. Alguien le ha dicho a otros palabras malsonantes sobre mí usando Internet o SMS</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv2} onSelect={text => handleInputChange('cybv2', text)}/>                
+                <Text>8. Castigo a mi hijo/a serveramente cuando estoy enfadado/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq8} onSelect={text => handleInputChange('parq8', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybV3. Alguien me ha amenazado a través de mensajes en Interne o SMS</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv3} onSelect={text => handleInputChange('cybv3', text)}/>                
+                <Text>9. Estoy demasiado ocupado/a para contestar las preguntas a mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq9} onSelect={text => handleInputChange('parq9', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybB1. He dicho palabras malsonantes a alguien o le he insultado usando SMS o mensajes en Internet</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb1} onSelect={text => handleInputChange('cybb1', text)}/>                
+                <Text>10. No le gusto a mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq10} onSelect={text => handleInputChange('parq10', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybB2. He dicho palabras malsonantes sobre alguien a otras personas en mensajes por Internet o por SMS</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb2} onSelect={text => handleInputChange('cybb2', text)}/>                
+                <Text>11. Estoy realmente interesado/A en los asuntos de mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq11} onSelect={text => handleInputChange('parq11', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>CybB3. He amenazado a alguien a través de SMS o mensajes en Internet</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb3} onSelect={text => handleInputChange('cybb3', text)}/>                
+                <Text>12. Digo muchas cosas desagradables a mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq12} onSelect={text => handleInputChange('parq12', text)}/>                
+            </View>
+            <View style={{padding:5}}>
+                <Text>13. Presto atención a mi hijo/a cuando me pide ayuda</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq13} onSelect={text => handleInputChange('parq13', text)}/>                
+            </View>
+            <View style={{padding:5}}>
+                <Text>14. Insisto en que mi hijo/a haga exactamente lo que le digo</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step4.parq14} onSelect={text => handleInputChange('parq14', text)}/>                
             </View>
         </View>
     );
 };
 const Step5 = ({ stepData, setStepData }) => {
     const [localState, setLocalState] = useState({
-        rrss1: stepData.step5.rrss1 || '', 
-        rrss2: stepData.step5.rrss2 || '', 
-        rrss3: stepData.step5.rrss3 || '', 
-        rrss4: stepData.step5.rrss4 || '', 
-        rrss5: stepData.step5.rrss5 || '', 
-        rrss6: stepData.step5.rrss6 || '', 
-        rrss7: stepData.step5.rrss7 || '', 
+        parq15: stepData.step5.parq15 ||  '',
+        parq16: stepData.step5.parq16 ||  '',
+        parq17: stepData.step5.parq17 ||  '',
+        parq18: stepData.step5.parq18 ||  '',
+        parq19: stepData.step5.parq19 ||  '',
+        parq20: stepData.step5.parq20 ||  '',
+        parq21: stepData.step5.parq21 ||  '',
+        parq22: stepData.step5.parq22 ||  '',
+        parq23: stepData.step5.parq23 ||  '',
+        parq24: stepData.step5.parq24 ||  '',
+        parq25: stepData.step5.parq25 ||  '',
+        parq26: stepData.step5.parq26 ||  '',
+        parq27: stepData.step5.parq27 ||  '',
+        parq28: stepData.step5.parq28 ||  '',
+        parq29: stepData.step5.parq29 ||  '',
     });
 
     useEffect(() => {
         setLocalState({
-            rrss1: stepData.step5.rrss1 || '', 
-            rrss2: stepData.step5.rrss2 || '', 
-            rrss3: stepData.step5.rrss3 || '', 
-            rrss4: stepData.step5.rrss4 || '', 
-            rrss5: stepData.step5.rrss5 || '', 
-            rrss6: stepData.step5.rrss6 || '', 
-            rrss7: stepData.step5.rrss7 || '', 
+            parq15: stepData.step5.parq15 ||  '',
+            parq16: stepData.step5.parq16 ||  '',
+            parq17: stepData.step5.parq17 ||  '',
+            parq18: stepData.step5.parq18 ||  '',
+            parq19: stepData.step5.parq19 ||  '',
+            parq20: stepData.step5.parq20 ||  '',
+            parq21: stepData.step5.parq21 ||  '',
+            parq22: stepData.step5.parq22 ||  '',
+            parq23: stepData.step5.parq23 ||  '',
+            parq24: stepData.step5.parq24 ||  '',
+            parq25: stepData.step5.parq25 ||  '',
+            parq26: stepData.step5.parq26 ||  '',
+            parq27: stepData.step5.parq27 ||  '',
+            parq28: stepData.step5.parq28 ||  '',
+            parq29: stepData.step5.parq29 ||  '',
         });
     }, [stepData.step5]);
 
@@ -471,1043 +607,65 @@ const Step5 = ({ stepData, setStepData }) => {
 
     return (
         <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight:'bold'}}>
-                RRSS
-            </Text>
-            <Text style={{fontWeight:'bold'}}>
-                A continuación, encontrarás un serie de preguntas relacionadas con las nuevas tecnologías. 
-                Contesta de la forma más sincera posible.
-            </Text>
             <View style={{padding:5}}>
-                <Text>1. ¿Has visto imágenes o leído últimamente sobre autolesión o suicidio en algún medio audiovisual?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss1} onSelect={text => handleInputChange('rrss1', text)}/>
+                <Text>15. Hago que mi hijo/a sienta que le quiero y le necesito</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq15} onSelect={text => handleInputChange('parq15', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>2. ¿Has buscado alguna vez información o te has metido en un foro sobre el suicidio y/o autolesión en Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss2} onSelect={text => handleInputChange('rrss2', text)}/>
+                <Text>16. Presto muchísima atención a mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq16} onSelect={text => handleInputChange('parq16', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>3. ¿Alguna vez has sentido la necesidad de hacerte daño y has compartido tu pensamiento a través de alguna red social o Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss3} onSelect={text => handleInputChange('rrss3', text)}/>
+                <Text>17. Daño los sentimientos de mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq17} onSelect={text => handleInputChange('parq17', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>4. ¿Alguna vez has sentido angustia, tristeza, desesperación, o te has sentido solo, lo has compartido o has buscado ayuda en Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss4} onSelect={text => handleInputChange('rrss4', text)}/>
+                <Text>18. Olvido cosas importantes de mi hijo/a que debería recordar</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq18} onSelect={text => handleInputChange('parq18', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>5. ¿Alguna vez has sentido la tentación de hacerte daño después de ver algún tipo de contenido en Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss5} onSelect={text => handleInputChange('rrss5', text)}/>                
+                <Text>19. Cuando mi hijo/a se comporta mal le hago sentir que no le quiero</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq19} onSelect={text => handleInputChange('parq19', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>6. ¿Alguna vez has sentido la tentación de hacerte daño y has buscado ayuda en Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss6} onSelect={text => handleInputChange('rrss6', text)}/>                
+                <Text>20. Dejo que mi hijo/a haga lo que quiera</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq20} onSelect={text => handleInputChange('parq20', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>7. ¿Conoces a alguien que haya compartido alguna foto, pensamiento o comportamiento autolesivo en Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss7} onSelect={text => handleInputChange('rrss7', text)}/>                
+                <Text>21. Hago que mi hijo/a se sienta importante</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq21} onSelect={text => handleInputChange('parq21', text)}/>                
             </View>
-        </View>
-    );
-};
-const Step6 = ({ stepData, setStepData }) => {
-    
-    const [localState, setLocalState] = useState({
-        mcad1: stepData.step6.mcad1 || '', 
-        mcad2: stepData.step6.mcad2 || '',
-        mcad3: stepData.step6.mcad3 || '',
-        mcad4: stepData.step6.mcad4 || '',
-        mcad5: stepData.step6.mcad5 || '',
-        mcad6: stepData.step6.mcad6 || '',
-        mcad7: stepData.step6.mcad7 || '',
-        mcad8: stepData.step6.mcad8 || '',
-        mcad9: stepData.step6.mcad9 || '',
-        mcad10: stepData.step6.mcad10 || '',
-        mcad11: stepData.step6.mcad11 || '',
-        mcad12: stepData.step6.mcad12 || '',
-    });
-
-    useEffect(() => {
-        setLocalState({
-            mcad1: stepData.step6.mcad1 || '', 
-            mcad2: stepData.step6.mcad2 || '',
-            mcad3: stepData.step6.mcad3 || '',
-            mcad4: stepData.step6.mcad4 || '',
-            mcad5: stepData.step6.mcad5 || '',
-            mcad6: stepData.step6.mcad6 || '',
-            mcad7: stepData.step6.mcad7 || '',
-            mcad8: stepData.step6.mcad8 || '',
-            mcad9: stepData.step6.mcad9 || '',
-            mcad10: stepData.step6.mcad10 || '',
-            mcad11: stepData.step6.mcad11 || '',
-            mcad12: stepData.step6.mcad12 || '',
-        });
-    }, [stepData.step6]);
-
-    const handleInputChange = (field, value) => {
-        // Change function to handleInputChange(text)
-        //setLocalState(text);
-        //setStepData((prevData) => ({ ...prevData, step1: text }));
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step6: updatedState }));
-    };
-
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight:'bold'}}>
-                MULTICAGE CAD-4
-            </Text>
-            <Text style={{fontWeight:'bold'}}>
-                Por favor, responde Sí/No a las siguientes preguntas
-            </Text>
             <View style={{padding:5}}>
-                <Text>1. ¿Has pensado alguna vez que deberías beber menos alcohol?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad1} onSelect={text => handleInputChange('mcad1', text)}/>
+                <Text>22. Atemorizo o amenazo a mi hijo/a para hablar sobre ello</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq22} onSelect={text => handleInputChange('parq22', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>2. ¿Te has sentido molesto/a cuando alguna persona te ha criticado tu manera o forma de beber alcohol?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad2} onSelect={text => handleInputChange('mcad2', text)}/>
+                <Text>23. Me preocupo sobre lo que piensa y le gusta a mi hijo/a para hablar sobre ello</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq23} onSelect={text => handleInputChange('parq23', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>3. ¿Te has sentido culpable alguna vez por tu manera o forma de beber alcohol?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad3} onSelect={text => handleInputChange('mcad3', text)}/>
+                <Text>24. Siento que los demás niños/as son mejores que mi hijo/a</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq24} onSelect={text => handleInputChange('parq24', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>4. ¿Alguna vez lo primero que has hecho por la mañana es beber alguna bebida alcohólica para relajarte o para eliminar la resaca?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad4} onSelect={text => handleInputChange('mcad4', text)}/>
+                <Text>25. Hago saber a mi hijo/a que no es querido</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq25} onSelect={text => handleInputChange('parq25', text)}/>
             </View>
             <View style={{padding:5}}>
-                <Text>5. ¿Has pensado alguna vez que deberías consumir menos drogas?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad5} onSelect={text => handleInputChange('mcad5', text)}/>
+                <Text>26. Quiero controlar cualquier cosa que mi hijo/a haga</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq26} onSelect={text => handleInputChange('parq26', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>6. ¿Niegas el consumo de drogas a familiares, amigos o compañeros para evitar que te critiquen?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad6} onSelect={text => handleInputChange('mcad6', text)}/>
+                <Text>27. Hago saber a mi hijo/a cuando hace algo que me molesta</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq27} onSelect={text => handleInputChange('parq27', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>7. ¿Has tenido problemas psicológicos, económicos, laborales o familiares a causa del consumo de drogas?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad7} onSelect={text => handleInputChange('mcad7', text)}/>
+                <Text>28. Sólo presto atención a mi hijo7a cuando hace algo que me molesta</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq28} onSelect={text => handleInputChange('parq28', text)}/>                
             </View>
             <View style={{padding:5}}>
-                <Text>8. ¿Te sientes a veces impulsado a consumir drogas aunque hayas decidido no hacerlo?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad8} onSelect={text => handleInputChange('mcad8', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. ¿Dedicas más tiempo del que crees que deberías a estar conectado a Internet con objetivos distintos a los de tu trabajo?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad9} onSelect={text => handleInputChange('mcad9', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. ¿Se han quejado tus familiares de las horas que dedicas a Internet?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad10} onSelect={text => handleInputChange('mcad10', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>11. ¿Te resulta duro permanecer alejado/a de Internet varios días seguidos?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad11} onSelect={text => handleInputChange('mcad11', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>12. ¿Tienes problemas para controlar el impulso de conectarte a Internet o has intentado sin éxito reducir el tiempo que dedicas a estar conectado/a?</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad12} onSelect={text => handleInputChange('mcad12', text)}/>
-            </View>
-        </View>
-    );
-};
-const Step7 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        cerqs1: stepData.step7.cerqs1 || '', 
-        cerqs2: stepData.step7.cerqs2 || '',
-        cerqs3: stepData.step7.cerqs3 || '',
-        cerqs4: stepData.step7.cerqs4 || '',
-        cerqs5: stepData.step7.cerqs5 || '',
-        cerqs6: stepData.step7.cerqs6 || '',
-        cerqs7: stepData.step7.cerqs7 || '',
-        cerqs8: stepData.step7.cerqs8 || '',
-        cerqs9: stepData.step7.cerqs9 || '',
-        cerqs10: stepData.step7.cerqs10 || '',
-        cerqs11: stepData.step7.cerqs11 || '',
-        cerqs12: stepData.step7.cerqs12 || '',
-        cerqs13: stepData.step7.cerqs13 || '',
-        cerqs14: stepData.step7.cerqs14 || '',
-        cerqs15: stepData.step7.cerqs15 || '',
-        cerqs16: stepData.step7.cerqs16 || '',
-        cerqs17: stepData.step7.cerqs17 || '',
-        cerqs18: stepData.step7.cerqs18 || '',
-    });
-
-    useEffect(() => {
-        setLocalState({
-            cerqs1: stepData.step7.cerqs1 || '', 
-            cerqs2: stepData.step7.cerqs2 || '',
-            cerqs3: stepData.step7.cerqs3 || '',
-            cerqs4: stepData.step7.cerqs4 || '',
-            cerqs5: stepData.step7.cerqs5 || '',
-            cerqs6: stepData.step7.cerqs6 || '',
-            cerqs7: stepData.step7.cerqs7 || '',
-            cerqs8: stepData.step7.cerqs8 || '',
-            cerqs9: stepData.step7.cerqs9 || '',
-            cerqs10: stepData.step7.cerqs10 || '',
-            cerqs11: stepData.step7.cerqs11 || '',
-            cerqs12: stepData.step7.cerqs12 || '',
-            cerqs13: stepData.step7.cerqs13 || '',
-            cerqs14: stepData.step7.cerqs14 || '',
-            cerqs15: stepData.step7.cerqs15 || '',
-            cerqs16: stepData.step7.cerqs16 || '',
-            cerqs17: stepData.step7.cerqs17 || '',
-            cerqs18: stepData.step7.cerqs18 || '',
-        });
-    }, [stepData.step7]);
-
-    const handleInputChange = (field, value) => {
-        // Change function to handleInputChange(text)
-        //setLocalState(text);
-        //setStepData((prevData) => ({ ...prevData, step1: text }));
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step7: updatedState }));
-    };
-
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight:'bold'}}>
-                CERQ-S
-            </Text>
-            <Text style={{fontWeight:'bold'}}>
-                Todos nos enfrentamos en algún momento con acontacimiento que resultan negativos o desagradables,
-                y cada uno de nosotros responde ante ellos de una forma personal. 
-                En las siguientes frases te pedimos que indiques lo que piensas habitualmente cuando
-                te enfrentas a una experiencia negativa o desagradable. 
-                Por favor, señala la opción que más se aproxime a tus pensamientos habituales en esos momentos.
-                Evalúe de 1 a 5, donde 1 significa casi nunca y 5 casi siempre.
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Siento que soy el único culpable de lo que ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs1} onSelect={text => handleInputChange('cerqs1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Creo que tengo que acpear lo que ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs2} onSelect={text => handleInputChange('cerqs2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Pienso a menudo en cómo me siento en relación con lo que me ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs3} onSelect={text => handleInputChange('cerqs3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Me parece que otros son culpables de lo ocurrido</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs4} onSelect={text => handleInputChange('cerqs4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Me siento único/a responsable de lo ocurrido</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs5} onSelect={text => handleInputChange('cerqs5', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Creo que tengo que aceptar la situación</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs6} onSelect={text => handleInputChange('cerqs6', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. Me preocupa lo que piense y sienta sobre lo que me ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs7} onSelect={text => handleInputChange('cerqs7', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Pienso en cosas agradables que nada tienen que ver con lo que me ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs8} onSelect={text => handleInputChange('cerqs8', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. Pienso en cuál sería la mejor forma de enfrentarme a la situación</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs9} onSelect={text => handleInputChange('cerqs9', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. Sigo pensando en lo terrible que ha sido lo que me ha pasado</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs10} onSelect={text => handleInputChange('cerqs10', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>11. Me parece que otros son responsables de lo que ha ocurrido</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs11} onSelect={text => handleInputChange('cerqs11', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>12. Pienso en algo agradable en vez de pensar en lo ocurrido</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs12} onSelect={text => handleInputChange('cerqs12', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>13. Creo que la situación tiene también su lado positivo</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs13} onSelect={text => handleInputChange('cerqs13', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>14. Creo que no ha sido tan malo en comparación a otras cosas</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs14} onSelect={text => handleInputChange('cerqs14', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>15. Pienso en un plan acerca de lo mejor que podría hacer</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs15} onSelect={text => handleInputChange('cerqs15', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>16. Busco los aspectos positivos de la cuestión</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs16} onSelect={text => handleInputChange('cerqs16', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>17. Me digo que hay cosas peores en la vida</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs17} onSelect={text => handleInputChange('cerqs17', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>18. Pienso continuamente en lo horrible que ha sido la situación</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs18} onSelect={text => handleInputChange('cerqs18', text)}/>                
-            </View>
-        </View>
-    );
-};
-const Step8 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        ati1: stepData.step8.ati1 || '',
-        ati2: stepData.step8.ati2 || '',
-        ati3: stepData.step8.ati3 || '',
-        ati4: stepData.step8.ati4 || '',
-        ati5: stepData.step8.ati5 || '',
-        ati6: stepData.step8.ati6 || '',
-        ate1: stepData.step8.ate1 || '',
-        ate2: stepData.step8.ate2 || '',
-        ate3: stepData.step8.ate3 || '',
-        ate4: stepData.step8.ate4 || '',
-        ate5: stepData.step8.ate5 || '',
-        ate6: stepData.step8.ate6 || '',
-        ate7: stepData.step8.ate7 || '',
-        ate8: stepData.step8.ate8 || '',
-        ate9: stepData.step8.ate9 || '',
-        ate10: stepData.step8.ate10 || '',
-    });
-
-    useEffect(() => {
-        setLocalState({
-            ati1: stepData.step8.ati1 || '',
-            ati2: stepData.step8.ati2 || '',
-            ati3: stepData.step8.ati3 || '',
-            ati4: stepData.step8.ati4 || '',
-            ati5: stepData.step8.ati5 || '',
-            ati6: stepData.step8.ati6 || '',
-            ate1: stepData.step8.ate1 || '',
-            ate2: stepData.step8.ate2 || '',
-            ate3: stepData.step8.ate3 || '',
-            ate4: stepData.step8.ate4 || '',
-            ate5: stepData.step8.ate5 || '',
-            ate6: stepData.step8.ate6 || '',
-            ate7: stepData.step8.ate7 || '',
-            ate8: stepData.step8.ate8 || '',
-            ate9: stepData.step8.ate9 || '',
-            ate10: stepData.step8.ate10 || '',
-        });
-    }, [stepData.step8]);
-
-    const handleInputChange = (field, value) => {
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step8: updatedState }));
-    };
-
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight: 'bold'}}>
-                Escalas ATD
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                A continuación, te pedimos que indiques en una escala del 0 al 4 en qué medida
-                las frases siguientes se corresponden con tus pensamientos y sentimientos.
-                Señala la opción de respuesta según la siguiente escala:
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                0 "No se corresponden en absoluto"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                1 "Se corresponden un poco"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                2 "Se corresponden moderadamente"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                3 "Se corresponden bastante"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                4 "Se corresponden extremadamente"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                ATI
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Quiero escapar de mí mismo/a</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati1} onSelect={text => handleInputChange('ati1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Me siento impotente para cambiarme a mí mismo/a</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati2} onSelect={text => handleInputChange('ati2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Me gustaría escapar de mis pensamientos y sentimientos</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati3} onSelect={text => handleInputChange('ati3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Me siento atrapado dentro de mí mismo/a</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati4} onSelect={text => handleInputChange('ati4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Me gustaría huir de lo que soy y empezar de nuevo</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati5} onSelect={text => handleInputChange('ati5', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Siento que estoy en un pozo del que no puedo salir</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati6} onSelect={text => handleInputChange('ati6', text)}/>
-            </View>
-            <Text style={{fontWeight:'bold'}}>
-                ATE
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Estoy en una situación en la que me siento atrapado/a</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate1} onSelect={text => handleInputChange('ate1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Deseo con todas mis fuerzas escapar de mi vida</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate2} onSelect={text => handleInputChange('ate2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Estoy en una relación de la que no puedo salir/ Mantengo un tipo de relaciones en mi vida de las que no puedo salir</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate3} onSelect={text => handleInputChange('ate3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. A menudo tengo la sensación de que me gustaría huir</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate4} onSelect={text => handleInputChange('ate4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Me siento importante para cambiar las cosas</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate5} onSelect={text => handleInputChange('ate5', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Me siento atrapado por mis obligaciones</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate6} onSelect={text => handleInputChange('ate6', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. No veo forma de salir de mi situación actual</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate7} onSelect={text => handleInputChange('ate7', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Me gustaría alejarme de las personas más importantes de mi vida</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate8} onSelect={text => handleInputChange('ate8', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. Tengo un fuerte deseo de alejarme y mantenerme alejado de donde estoy</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate9} onSelect={text => handleInputChange('ate9', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. Me siento atrapado por otras personas</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate10} onSelect={text => handleInputChange('ate10', text)}/>
-            </View>
-        </View>
-    );
-};
-
-const Step9 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        ed1: stepData.step9.ed1 || '',
-        ed2: stepData.step9.ed2 || '',
-        ed3: stepData.step9.ed3 || '',
-        ed4: stepData.step9.ed4 || '',
-        ed5: stepData.step9.ed5 || '',
-        ed6: stepData.step9.ed6 || '',
-        ed7: stepData.step9.ed7 || '',
-        ed8: stepData.step9.ed8 || '',
-        ed9: stepData.step9.ed9 || '',
-        ed10: stepData.step9.ed10 || '',
-        ed11: stepData.step9.ed11 || '',
-        ed12: stepData.step9.ed12 || '',
-        ed13: stepData.step9.ed13 || '',
-        ed14: stepData.step9.ed14 || '',
-        ed15: stepData.step9.ed15 || '',
-        ed16: stepData.step9.ed16 || '',
-        er1: stepData.step9.er1 || '',
-        er2: stepData.step9.er2 || '',
-        er3: stepData.step9.er3 || '',
-        er4: stepData.step9.er4 || '',
-        er5: stepData.step9.er5 || '',
-        er6: stepData.step9.er6 || '',
-        er7: stepData.step9.er7 || '',
-        er8: stepData.step9.er8 || '',
-        er9: stepData.step9.er9 || '',
-        er10: stepData.step9.er10 || '',
-    });
-
-    useEffect(() => {
-        setLocalState({
-            ed1: stepData.step9.ed1 || '',
-            ed2: stepData.step9.ed2 || '',
-            ed3: stepData.step9.ed3 || '',
-            ed4: stepData.step9.ed4 || '',
-            ed5: stepData.step9.ed5 || '',
-            ed6: stepData.step9.ed6 || '',
-            ed7: stepData.step9.ed7 || '',
-            ed8: stepData.step9.ed8 || '',
-            ed9: stepData.step9.ed9 || '',
-            ed10: stepData.step9.ed10 || '',
-            ed11: stepData.step9.ed11 || '',
-            ed12: stepData.step9.ed12 || '',
-            ed13: stepData.step9.ed13 || '',
-            ed14: stepData.step9.ed14 || '',
-            ed15: stepData.step9.ed15 || '',
-            ed16: stepData.step9.ed16 || '',
-            er1: stepData.step9.er1 || '',
-            er2: stepData.step9.er2 || '',
-            er3: stepData.step9.er3 || '',
-            er4: stepData.step9.er4 || '',
-            er5: stepData.step9.er5 || '',
-            er6: stepData.step9.er6 || '',
-            er7: stepData.step9.er7 || '',
-            er8: stepData.step9.er8 || '',
-            er9: stepData.step9.er9 || '',
-            er10: stepData.step9.er10 || '',
-        });
-    }, [stepData.step9]);
-
-    const handleInputChange = (field, value) => {
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step9: updatedState }));
-    };
-
-    
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight: 'bold'}}>
-                ED
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                A continuación, te pedimos que que respondas a cada una de las afirmaciones
-                siguientes señalando la opción de respuestas que mejor se acerque a cómo te has sentido
-                en los últimos siete días. Para ello señala la opción de respuesta según la siguiente escala:
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                0 "Nunca"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                1 "Casi nunca"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                2 "A veces"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                3 "Muchas veces"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                4 "Siempre o todo el tiempo"
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Siento que he fracasado en la vida:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed1} onSelect={text => handleInputChange('ed1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Siento que soy una persona exitosa:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed2} onSelect={text => handleInputChange('ed2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Me siento derrotado por la vida:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed3} onSelect={text => handleInputChange('ed3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Siento que básicamente soy un/a ganador/a:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed4} onSelect={text => handleInputChange('ed4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Siento que he perdido mi lugar en el mundo:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed5} onSelect={text => handleInputChange('ed5', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Siento que la vida me ha tratado como un saco de boxeo:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed6} onSelect={text => handleInputChange('ed6', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. Me siento impotente:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed7} onSelect={text => handleInputChange('ed7', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Siento que me han arrebatado la confianza en mí mismo/a:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed8} onSelect={text => handleInputChange('ed8', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. Me siento capaz de afrontar lo que la vida me depare:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed9} onSelect={text => handleInputChange('ed9', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. Siento que he tocado fondo:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed10} onSelect={text => handleInputChange('ed10', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>11. Me siento completamente anulado/a:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed11} onSelect={text => handleInputChange('ed11', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>12. Siento que soy un/a perdedor/a en la vida:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed12} onSelect={text => handleInputChange('ed12', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>13. Siento que me he rendido:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed13} onSelect={text => handleInputChange('ed13', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>14. Me siento acabado/a:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed14} onSelect={text => handleInputChange('ed14', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>15. Siento que he perdido batallas importantes en la vida:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed15} onSelect={text => handleInputChange('ed15', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>16. Siento que no hay nada por lo que luchar en la vida:</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed16} onSelect={text => handleInputChange('ed16', text)}/>
-            </View>
-            <Text style={{fontWeight: 'bold'}}>
-                ER
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                Por favor. lea cada frase e indica en qué medida está de acuerdo con cada una de ellas
-                antes de la intervención psicológica y en el momento actual según la siguiente escala: 
-                0 = Totalmente en desacuerdo y 4 = Totalmente de acuerdo
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Sé adaptarme a los cambios</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er1} onSelect={text => handleInputChange('er1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Puedo manejar cualquier situación</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er2} onSelect={text => handleInputChange('er2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Veo el lado positivo de las cosas</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er3} onSelect={text => handleInputChange('er3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Me puedo manejar bien a pesar de la presión o el estrés</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er4} onSelect={text => handleInputChange('er4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Después de un grave contratiempo</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er5} onSelect={text => handleInputChange('er5', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Consigo alcanzar mis metas a pesar de las dificultades</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er6} onSelect={text => handleInputChange('er6', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. Puedo mantener la concentración bajo presión</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er7} onSelect={text => handleInputChange('er7', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Dificílmente me desanimo por los fracasos</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er8} onSelect={text => handleInputChange('er8', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. Me defino como una persona fuerte</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er9} onSelect={text => handleInputChange('er9', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. Puedo manejar los sentimientos desagradables</Text>
-                <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er10} onSelect={text => handleInputChange('er10', text)}/>
-            </View>
-        </View>
-    );
-};
-
-const Step10 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        inq1: stepData.step10.inq1 || '',
-        inq2: stepData.step10.inq2 || '',
-        inq3: stepData.step10.inq3 || '',
-        inq4: stepData.step10.inq4 || '',
-        inq5: stepData.step10.inq5 || '',
-        inq6: stepData.step10.inq6 || '',
-        inq7: stepData.step10.inq7 || '',
-        inq8: stepData.step10.inq8 || '',
-        inq9: stepData.step10.inq9 || '',
-        inq10: stepData.step10.inq10 || '',
-        inq11: stepData.step10.inq11 || '',
-        inq12: stepData.step10.inq12 || '',
-        inq13: stepData.step10.inq13 || '',
-        inq14: stepData.step10.inq14 || '',
-        inq15: stepData.step10.inq15 || '',
-    });
-
-    useEffect(() => {
-        setLocalState({
-            inq1: stepData.step10.inq1 || '',
-            inq2: stepData.step10.inq2 || '',
-            inq3: stepData.step10.inq3 || '',
-            inq4: stepData.step10.inq4 || '',
-            inq5: stepData.step10.inq5 || '',
-            inq6: stepData.step10.inq6 || '',
-            inq7: stepData.step10.inq7 || '',
-            inq8: stepData.step10.inq8 || '',
-            inq9: stepData.step10.inq9 || '',
-            inq10: stepData.step10.inq10 || '',
-            inq11: stepData.step10.inq11 || '',
-            inq12: stepData.step10.inq12 || '',
-            inq13: stepData.step10.inq13 || '',
-            inq14: stepData.step10.inq14 || '',
-            inq15: stepData.step10.inq15 || '',
-        });
-    }, [stepData.step10]);
-
-    const handleInputChange = (field, value) => {
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step10: updatedState }));
-    };
-
-    
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight: 'bold'}}>
-                INQ
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                Por favor responde a cada una de las siguientes preguntas de acuerdo con lo que tú
-                crees en este momento de tu vida y según tu propia experiencia, no con lo que debería o
-                podría ser cierto en general o para los demás. Responde basándote en cómo te has sentido en estos
-                momentos de tu vida, señalando el número de la escala que mejor coincida con lo que sientes. 
-                No hay respuestas correctas ni incorrectas, la mejor respuesta es la que mejor refleje lo que
-                tú sientes y piensas.
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                1 "Nada en absoluto"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                2 "Casi nada"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                3 "Un poco"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                4 "No estoy seguro/a"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                5 "Moderadamente"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                6 "Bastante"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                7 "Extremadamente"
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Los que me rodean estarían mejor si me fuera</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq1} onSelect={text => handleInputChange('inq1', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Los que me rodean serían más felices sin mí</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq2} onSelect={text => handleInputChange('inq2', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Creo que soy una carga para la sociedad</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq3} onSelect={text => handleInputChange('inq3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Creo que mi muerte sería un alivio para los demás</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq4} onSelect={text => handleInputChange('inq4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Creo que los que me rodean, desearían deshacerse de mí</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq5} onSelect={text => handleInputChange('inq5', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Creo que empeoro las cosas para los que me rodean</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq6} onSelect={text => handleInputChange('inq6', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. Los demás se preocupan por mí</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq7} onSelect={text => handleInputChange('inq7', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Siento que encajo, que he encontrado mi lugar en el mundo</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq8} onSelect={text => handleInputChange('inq8', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>9. Me relaciono muy poco con mis seres queridos</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq9} onSelect={text => handleInputChange('inq9', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>10. Tengo la suerte de tener muchos/as amigos/as que me cuidan y apoyan</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq10} onSelect={text => handleInputChange('inq10', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>11. Me siento desconectado de los demás</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq11} onSelect={text => handleInputChange('inq11', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>12. A menudo me siento como un extraño cuando quedo con gente</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq12} onSelect={text => handleInputChange('inq12', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>13. Siento que hay personas a las que puedo recurrir en momentos de necesidad</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq13} onSelect={text => handleInputChange('inq13', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>14. Me siento cerca de otras personas</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq14} onSelect={text => handleInputChange('inq14', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>15. Cada día tengo al menos una interacción (con alguien) que puede considerarse satisfactoria</Text>
-                <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq15} onSelect={text => handleInputChange('inq15', text)}/>
-            </View>
-        </View>
-    );
-};
-
-const Step11 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        sena19: stepData.step11.sena19 || '',
-        sena23: stepData.step11.sena23 || '',
-        sena69: stepData.step11.sena69 || '',
-        sena99: stepData.step11.sena99 || '',
-        sena103: stepData.step11.sena103 || '',
-        sena111: stepData.step11.sena111 || '',
-        sena112: stepData.step11.sena112 || '',
-        sena115: stepData.step11.sena115 || '',
-        sena117: stepData.step11.sena117 || '',
-        sena129: stepData.step11.sena129 || '',
-        sena137: stepData.step11.sena137 || '',
-        sena139: stepData.step11.sena139 || '',
-        sena141: stepData.step11.sena141 || '',
-        sena146: stepData.step11.sena146 || '',    
-        sena150: stepData.step11.sena150 || '',
-        sena188: stepData.step11.sena188 || '',
-        injury1: stepData.step11.injury1 || '',
-
-    });
-
-    useEffect(() => {
-        setLocalState({
-            sena19: stepData.step11.sena19 || '',
-            sena23: stepData.step11.sena23 || '',
-            sena69: stepData.step11.sena69 || '',
-            sena99: stepData.step11.sena99 || '',
-            sena103: stepData.step11.sena103 || '',
-            sena111: stepData.step11.sena111 || '',
-            sena112: stepData.step11.sena112 || '',
-            sena115: stepData.step11.sena115 || '',
-            sena117: stepData.step11.sena117 || '',
-            sena129: stepData.step11.sena129 || '',
-            sena137: stepData.step11.sena137 || '',
-            sena139: stepData.step11.sena139 || '',
-            sena141: stepData.step11.sena141 || '',
-            sena146: stepData.step11.sena146 || '',    
-            sena150: stepData.step11.sena150 || '',
-            sena188: stepData.step11.sena188 || '',
-            injury1: stepData.step11.injury1 || '',
-        });
-    }, [stepData.step11]);
-
-    const handleInputChange = (field, value) => {
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step11: updatedState }));
-    };
-
-    
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight: 'bold'}}>
-                SENA
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                Encontrarás varias frases sobre pensamientos y sentimientos que puedes 
-                tener y también sobre cosas que haces o te han pasado. 
-                Nos gustaría que leyeras detenidamente cada una de ellas y nos dijeras si lo que dice la frase te pasa a ti.
-                Evalúa las frases siguiendo la siguiente escala
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                1 "Nunca o casi nunca"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                2 "Pocas veces"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                3 "Algunas veces"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>
-                4 "Muchas veces"
-            </Text>
-            <Text style={{fontWeight: 'bold'}}>            
-                5 "Siempre o casi siempre"
-            </Text>
-            <View style={{padding:5}}>
-                <Text>19. Mis padres me pegan</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena19} onSelect={text => handleInputChange('sena19', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>23. Grito cuando me enfado o enojo</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena23} onSelect={text => handleInputChange('sena23', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>69. Me cuesta controlar mis emociones</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena69} onSelect={text => handleInputChange('sena69', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>99. Tengo problemas en casa</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena99} onSelect={text => handleInputChange('sena99', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>103. Amenazo a otros para conseguir lo que quiero</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena103} onSelect={text => handleInputChange('sena103', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>111. Tengo ganas de llorar</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena111} onSelect={text => handleInputChange('sena111', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>112. Tengo ataques de nervios o de ansiedad</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena112} onSelect={text => handleInputChange('sena112', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>115. Me insultan en el colegio, instituto o universidad</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena115} onSelect={text => handleInputChange('sena115', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>117. Me cuesta concentrarme</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena117} onSelect={text => handleInputChange('sena117', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>129. Me angustian o agobian mis problemas</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena129} onSelect={text => handleInputChange('sena129', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>137. Me siento solo/a</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena137} onSelect={text => handleInputChange('sena137', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>139. Pego a otros cuando me enfado o enojo</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena139} onSelect={text => handleInputChange('sena139', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>141. Pienso que mi vida no tiene sentido</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena141} onSelect={text => handleInputChange('sena141', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>146. Hago locuras para divertirme</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena146} onSelect={text => handleInputChange('sena146', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>150. Mis profesores dicen que no presto atención en clase</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena150} onSelect={text => handleInputChange('sena150', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>188. Tengo amigos de verdad</Text>
-                <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena188} onSelect={text => handleInputChange('sena188', text)}/>
-            </View>
-            <Text style={{fontWeight: 'bold'}}>
-                Información sobre autolesión
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. ¿Durante el último año te has implicado intencionadamente daño (por ejemplo: cortarte o arañarte la piel, golpearte o morderte a ti mismo,...)?:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step11.injury1} onSelect={text => handleInputChange('injury1', text)}/>
-            </View>
-        </View>
-    );
-};
-
-const Step12 = ({ stepData, setStepData }) => {
-    const [localState, setLocalState] = useState({
-        family1: stepData.step12.family1 || '',
-        family2: stepData.step12.family2 || '',
-        family3: stepData.step12.family3 || '',
-        family4: stepData.step12.family4 || '',
-        family5: stepData.step12.family5 || '',
-        family6: stepData.step12.family6 || '',
-        family7: stepData.step12.family7 || '',
-        family8: stepData.step12.family8 || '',
-        /*
-        fatherAge: stepData.step12.fatherAge || '',
-        motherAge: stepData.step12.motherAge || '',
-        divorcedParents: stepData.step12.divorcedParents || '',
-        singleParentFamily: stepData.step12.singleParentFamily || '',
-        psiquiatricTreatmentParent: stepData.step12.psiquiatricTreatmentParent || '',
-        addictionParent: stepData.step12.addictionParent || '',
-        conflictingRelationshipsChildParents: stepData.step12.conflictingRelationshipsChildParents || '',
-        reconstructedFamily: stepData.step12.reconstructedFamily || '',
-        */
-    });
-
-    useEffect(() => {
-        setLocalState({
-            family1: stepData.step12.family1 || '',
-            family2: stepData.step12.family2 || '',
-            family3: stepData.step12.family3 || '',
-            family4: stepData.step12.family4 || '',
-            family5: stepData.step12.family5 || '',
-            family6: stepData.step12.family6 || '',
-            family7: stepData.step12.family7 || '',
-            family8: stepData.step12.family8 || '',
-            /*
-            fatherAge: stepData.step12.fatherAge || '',
-            motherAge: stepData.step12.motherAge || '',
-            divorcedParents: stepData.step12.divorcedParents || '',
-            singleParentFamily: stepData.step12.singleParentFamily || '',
-            psiquiatricTreatmentParent: stepData.step12.psiquiatricTreatmentParent || '',
-            addictionParent: stepData.step12.addictionParent || '',
-            conflictingRelationshipsChildParents: stepData.step12.conflictingRelationshipsChildParents || '',
-            reconstructedFamily: stepData.step12.reconstructedFamily || '',
-            */
-        });
-    }, [stepData.step12]);
-
-    const handleInputChange = (field, value) => {
-        // Change function to handleInputChange(text)
-        //setLocalState(text);
-        //setStepData((prevData) => ({ ...prevData, step1: text }));
-        const updatedState = { ...localState, [field]: value };
-        setLocalState(updatedState);
-        setStepData((prevData) => ({ ...prevData, step12: updatedState }));
-    };
-
-    return (
-        <View style={{padding:20, backgroundColor: 'white'}}>
-            <Text style={{fontWeight:'bold'}}>
-                A continuación, nos gustaría que respondas algunas preguntas sobre tu familia.
-            </Text>
-            <View style={{padding:5}}>
-                <Text>1. Indique la edad de tu padre en el momento de tu nacimiento (años):</Text>
-                <SivariaInput 
-                    placeholder={'Edad padre'}
-                    value={stepData.step12.family1}
-                    onChangeText={text => handleInputChange('family1', text )}
-                    autoCorrect={false}
-                    autoCapitalize={'none'} 
-                    inputMode={'numeric'}
-                />
-            </View>
-            <View style={{padding:5}}>
-                <Text>2. Indique la edad de tu madre en el momento de tu nacimiento (años):</Text>
-                <SivariaInput 
-                    placeholder={'Edad madre'}
-                    value={stepData.step12.family2}
-                    onChangeText={text => handleInputChange('family2', text )}
-                    autoCorrect={false}
-                    autoCapitalize={'none'} 
-                    inputMode={'numeric'}
-                />
-            </View>
-            <View style={{padding:5}}>
-                <Text>3. Convives con tus padres en la misma casa habitualmente:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step7.cerqs3} onSelect={text => handleInputChange('family3', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>4. Indica si tus padres están separados o divorciados:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step12.family4} onSelect={text => handleInputChange('family4', text)}/>
-            </View>
-            <View style={{padding:5}}>
-                <Text>5. Indica si alguno de tus padres ha recibido tratamiento psicológico o psiquiátrico:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step12.family5} onSelect={text => handleInputChange('family5', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>6. Indica si alguno de tus padres ha recibido tratamiento por consumo de drogas o alcohol</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step12.family6} onSelect={text => handleInputChange('family6', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>7. Indica si las relaciones con tus padres son conflictivas o problemáticas (tensión, rechazo, desinterés, peleas frecuentes...):</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step12.family7} onSelect={text => handleInputChange('family7', text)}/>                
-            </View>
-            <View style={{padding:5}}>
-                <Text>8. Consideras que tu familia está reconstruida:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step12.family8} onSelect={text => handleInputChange('family8', text)}/>                
+                <Text>29. Trato a mi hijo/a amablemente y con cariño</Text>
+                <SivariaRadioButton data={oneToFourOptions} option={stepData.step5.parq29} onSelect={text => handleInputChange('parq29', text)}/>                
             </View>
         </View>
     );
@@ -1538,4 +696,4 @@ const styles = StyleSheet.create({
 });
 // Repite esto para todos los componentes de tus pasos hasta Step10
 
-export { Step1, Step2, Step3, Step4, Step5, Step6, Step7, Step8, Step9, Step10, Step11, Step12 };
+export { Step1, Step2, Step3, Step4, Step5 };

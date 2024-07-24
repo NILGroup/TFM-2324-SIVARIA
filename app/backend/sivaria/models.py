@@ -35,7 +35,9 @@ class AppUser(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    birth_date = models.DateField(blank=True, null=True, default=None)
+    assigned_to = models.CharField(max_length=15, unique=True, null=True, blank=True)
 
     USERNAME_FIELD = 'email'  # Establece el campo de email para la autenticación
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -72,10 +74,8 @@ class EmailTemplate(models.Model):
     def __str__(self) -> str:
         return f'EmailTemplate: {self.code}'
 
-class SENA(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+class SenaForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     sena19 = models.IntegerField(blank=True, null=True, default=None)
     sena23 = models.IntegerField(blank=True, null=True, default=None)
     sena69 = models.IntegerField(blank=True, null=True, default=None)
@@ -93,11 +93,11 @@ class SENA(models.Model):
     sena150 = models.IntegerField(blank=True, null=True, default=None)
     sena188 = models.IntegerField(blank=True, null=True, default=None)
 
+    def __str__(self) -> str:
+        return f'SENA: {self.id}'
 
-class INQ(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+class InqForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     inq1 = models.IntegerField(null=True, blank=True, default=None)
     inq2 = models.IntegerField(null=True, blank=True, default=None)
     inq3 = models.IntegerField(null=True, blank=True, default=None)
@@ -114,39 +114,43 @@ class INQ(models.Model):
     inq14 = models.IntegerField(null=True, blank=True, default=None)
     inq15 = models.IntegerField(null=True, blank=True, default=None)
 
-class RRSS(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
-    rrss1 = models.IntegerField(null=True, blank=True, default=None)
-    rrss2 = models.IntegerField(null=True, blank=True, default=None)
-    rrss3 = models.IntegerField(null=True, blank=True, default=None)
-    rrss4 = models.IntegerField(null=True, blank=True, default=None)
-    rrss5 = models.IntegerField(null=True, blank=True, default=None)
-    rrss6 = models.IntegerField(null=True, blank=True, default=None)
-    rrss7 = models.IntegerField(null=True, blank=True, default=None)
+    def __str__(self) -> str:
+        return f'INQ: {self.id}'
     
-class MULTICAGE_CAD_4(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
-    mcad1 = models.IntegerField(null=True, blank=True, default=None)
-    mcad2 = models.IntegerField(null=True, blank=True, default=None)
-    mcad3 = models.IntegerField(null=True, blank=True, default=None)
-    mcad4 = models.IntegerField(null=True, blank=True, default=None)
-    mcad5 = models.IntegerField(null=True, blank=True, default=None)
-    mcad6 = models.IntegerField(null=True, blank=True, default=None)
-    mcad7 = models.IntegerField(null=True, blank=True, default=None)
-    mcad8 = models.IntegerField(null=True, blank=True, default=None)
-    mcad9 = models.IntegerField(null=True, blank=True, default=None)
-    mcad10= models.IntegerField(null=True, blank=True, default=None)
-    mcad11 = models.IntegerField(null=True, blank=True, default=None)
-    mcad12 = models.IntegerField(null=True, blank=True, default=None)
+class RrssForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    rrss1 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss2 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss3 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss4 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss5 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss6 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    rrss7 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    
+    def __str__(self) -> str:
+        return f'RRSS: {self.id}'
+    
+class MulticageCad4Form(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    mcad1 = models.CharField(max_length=2,null=True, blank=True, default=None)
+    mcad2 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad3 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad4 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad5 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad6 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad7 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad8 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad9 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad10= models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad11 = models.CharField(max_length=2, null=True, blank=True, default=None)
+    mcad12 = models.CharField(max_length=2, null=True, blank=True, default=None)
 
-class EBIPQ_ECIPQ(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'MULTICAGE CAD-4: {self.id}'
+    
+class EbipqEcipqForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     vb1 = models.IntegerField(null=True, blank=True, default=None)
     vb2 = models.IntegerField(null=True, blank=True, default=None)
     vb4 = models.IntegerField(null=True, blank=True, default=None)
@@ -160,10 +164,11 @@ class EBIPQ_ECIPQ(models.Model):
     cybb2 = models.IntegerField(null=True, blank=True, default=None)
     cybb3 = models.IntegerField(null=True, blank=True, default=None)
 
-class CERQS(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'EBIPQ y ECIPQ: {self.id}'
+    
+class CerqsForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     cerqs1 = models.IntegerField(null=True, blank=True, default=None)
     cerqs2 = models.IntegerField(null=True, blank=True, default=None)
     cerqs3 = models.IntegerField(null=True, blank=True, default=None)
@@ -183,10 +188,39 @@ class CERQS(models.Model):
     cerqs17 = models.IntegerField(null=True, blank=True, default=None)
     cerqs18 = models.IntegerField(null=True, blank=True, default=None)
 
-class ED(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'CERQ-S: {self.id}'
+    
+class AtiForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    ati1 = models.IntegerField(null=True, blank=True, default=None)
+    ati2 = models.IntegerField(null=True, blank=True, default=None)
+    ati3 = models.IntegerField(null=True, blank=True, default=None)
+    ati4 = models.IntegerField(null=True, blank=True, default=None)
+    ati5 = models.IntegerField(null=True, blank=True, default=None)
+    ati6 = models.IntegerField(null=True, blank=True, default=None)
+
+    def __str__(self) -> str:
+        return f'ATI: {self.id}'
+    
+class AteForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    ate1 = models.IntegerField(null=True, blank=True, default=None)
+    ate2 = models.IntegerField(null=True, blank=True, default=None)
+    ate3 = models.IntegerField(null=True, blank=True, default=None)
+    ate4 = models.IntegerField(null=True, blank=True, default=None)
+    ate5 = models.IntegerField(null=True, blank=True, default=None)
+    ate6 = models.IntegerField(null=True, blank=True, default=None)
+    ate7 = models.IntegerField(null=True, blank=True, default=None)
+    ate8 = models.IntegerField(null=True, blank=True, default=None)
+    ate9 = models.IntegerField(null=True, blank=True, default=None)
+    ate10= models.IntegerField(null=True, blank=True, default=None)
+
+    def __str__(self) -> str:
+        return f'ATE: {self.id}'
+    
+class EdForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     ed1 = models.IntegerField(null=True, blank=True, default=None)
     ed2 = models.IntegerField(null=True, blank=True, default=None)
     ed3 = models.IntegerField(null=True, blank=True, default=None)
@@ -204,10 +238,11 @@ class ED(models.Model):
     ed15 = models.IntegerField(null=True, blank=True, default=None)
     ed16 = models.IntegerField(null=True, blank=True, default=None)
 
-class ER(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'ED: {self.id}'
+    
+class ErForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     er1 = models.IntegerField(null=True, blank=True, default=None)
     er2 = models.IntegerField(null=True, blank=True, default=None)
     er3 = models.IntegerField(null=True, blank=True, default=None)
@@ -219,48 +254,38 @@ class ER(models.Model):
     er9 = models.IntegerField(null=True, blank=True, default=None)
     er10= models.IntegerField(null=True, blank=True, default=None)
 
-class FAMILY(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
-    family1 = models.IntegerField(null=True, blank=True, default=None)
-    family2 = models.IntegerField(null=True, blank=True, default=None)
-    family3 = models.IntegerField(null=True, blank=True, default=None)
-    family4 = models.IntegerField(null=True, blank=True, default=None)
-    family5 = models.IntegerField(null=True, blank=True, default=None)
-    family6 = models.IntegerField(null=True, blank=True, default=None)
-    family7 = models.IntegerField(null=True, blank=True, default=None)
-    family8 = models.IntegerField(null=True, blank=True, default=None)
-    family9 = models.IntegerField(null=True, blank=True, default=None)
-    family10= models.IntegerField(null=True, blank=True, default=None)
-    family11 = models.IntegerField(null=True, blank=True, default=None)
-    family12 = models.IntegerField(null=True, blank=True, default=None)
-    family13 = models.IntegerField(null=True, blank=True, default=None)
+    def __str__(self) -> str:
+        return f'ER: {self.id}'
+    
+class FamilySubForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    padre_adolescente = models.CharField(max_length=2, null=True, blank=True, default=None)
+    madre_adolescente = models.CharField(max_length=2, null=True, blank=True, default=None)
+    familia_monoparental = models.CharField(max_length=2, null=True, blank=True, default=None)
+    padres_divorciados = models.CharField(max_length=2, null=True, blank=True, default=None)
+    tratamiento_psicologico_padre_madre = models.CharField(max_length=2, null=True, blank=True, default=None)
+    adiccion_padre_madre = models.CharField(max_length=2, null=True, blank=True, default=None)
+    relaciones_conflictivas_hijo_padre_madre = models.CharField(max_length=2, null=True, blank=True, default=None)
+    familia_reconstruida = models.CharField(max_length=2, null=True, blank=True, default=None)
+    supervision_parental_insuficiente = models.CharField(max_length=2, null=True, blank=True, default=None)
+    maltrato_al_adolescente = models.CharField(max_length=2, null=True, blank=True, default=None)
+    maltrato_a_la_pareja = models.CharField(max_length=2, null=True, blank=True, default=None)
+    ingreso_familiar_mensual = models.FloatField(null=True, blank=True, default=None)
+    situacion_economica_precaria = models.CharField(max_length=2, null=True, blank=True, default=None)
+    duelo = models.CharField(max_length=2, null=True, blank=True, default=None)
 
-class INJURY(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
-    inq1 = models.IntegerField(null=True, blank=True, default=None)
-    inq2 = models.IntegerField(null=True, blank=True, default=None)
-    inq3 = models.IntegerField(null=True, blank=True, default=None)
-    inq4 = models.IntegerField(null=True, blank=True, default=None)
-    inq5 = models.IntegerField(null=True, blank=True, default=None)
-    inq6 = models.IntegerField(null=True, blank=True, default=None)
-    inq7 = models.IntegerField(null=True, blank=True, default=None)
-    inq8 = models.IntegerField(null=True, blank=True, default=None)
-    inq9 = models.IntegerField(null=True, blank=True, default=None)
-    inq10= models.IntegerField(null=True, blank=True, default=None)
-    inq11 = models.IntegerField(null=True, blank=True, default=None)
-    inq12 = models.IntegerField(null=True, blank=True, default=None)
-    inq13 = models.IntegerField(null=True, blank=True, default=None)
-    inq14 = models.IntegerField(null=True, blank=True, default=None)
-    inq15 = models.IntegerField(null=True, blank=True, default=None)
+    def __str__(self) -> str:
+        return f'FAMILY: {self.id}'
+    
+class InjuryForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    injury1 = models.CharField(max_length=2, null=True, blank=True, default=None)
 
-class PARQ(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'INJURY: {self.id}'
+    
+class ParqForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     parq1 = models.IntegerField(null=True, blank=True, default=None)
     parq2 = models.IntegerField(null=True, blank=True, default=None)
     parq3 = models.IntegerField(null=True, blank=True, default=None)
@@ -291,10 +316,11 @@ class PARQ(models.Model):
     parq28 = models.IntegerField(null=True, blank=True, default=None)
     parq29 = models.IntegerField(null=True, blank=True, default=None)
 
-class SOCIAL_DATA(models.Model):
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    code = models.CharField(max_length=20)
-    date = models.DateTimeField(blank=True, null=True, default=None)
+    def __str__(self) -> str:
+        return f'PARQ: {self.id}'
+    
+class SocialDataForm(models.Model):
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     course = models.CharField(max_length=30, null=True, blank=True, default=None)
     age = models.IntegerField(null=True, blank=True, default=None)
     gender = models.CharField(max_length=30, null=True, blank=True, default=None)
@@ -304,8 +330,8 @@ class SOCIAL_DATA(models.Model):
     academic_level_father = models.CharField(max_length=30, null=True, blank=True, default=None)
     academic_level_mother = models.CharField(max_length=30, null=True, blank=True, default=None)
     academic_performance = models.CharField(max_length=30, null=True, blank=True, default=None)
-    previous_psychiatric_treatment= models.IntegerField(null=True, blank=True, default=None)
-    chronic_disease = models.IntegerField(null=True, blank=True, default=None)
+    previous_psychiatric_treatment= models.CharField(max_length=2, null=True, blank=True, default=None)
+    chronic_disease = models.CharField(max_length=2, null=True, blank=True, default=None)
     female_self_perception = models.IntegerField(null=True, blank=True, default=None)
     male_self_perception = models.IntegerField(null=True, blank=True, default=None)
     female_others_perception = models.IntegerField(null=True, blank=True, default=None)
@@ -313,3 +339,76 @@ class SOCIAL_DATA(models.Model):
     weight = models.FloatField(null=True, blank=True, default=None)
     height = models.FloatField(null=True, blank=True, default=None)
     discrimination_type = models.CharField(max_length=30, null=True, blank=True, default=None)
+
+    def __str__(self) -> str:
+        return f'SOCIAL DATA: {self.id}'
+    
+class SenaFamilyForm(models.Model):    
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    sena104 = models.IntegerField(blank=True, null=True, default=None)
+    sena117 = models.IntegerField(blank=True, null=True, default=None)
+    sena118 = models.IntegerField(blank=True, null=True, default=None)
+    sena121 = models.IntegerField(blank=True, null=True, default=None)
+    sena123 = models.IntegerField(blank=True, null=True, default=None)
+    sena124 = models.IntegerField(blank=True, null=True, default=None)
+    sena125 = models.IntegerField(blank=True, null=True, default=None)
+    sena135 = models.IntegerField(blank=True, null=True, default=None)
+    sena137 = models.IntegerField(blank=True, null=True, default=None)
+    sena138 = models.IntegerField(blank=True, null=True, default=None)
+    sena139 = models.IntegerField(blank=True, null=True, default=None)
+    sena140 = models.IntegerField(blank=True, null=True, default=None)
+    sena145 = models.IntegerField(blank=True, null=True, default=None)
+    sena146 = models.IntegerField(blank=True, null=True, default=None)    
+    sena148 = models.IntegerField(blank=True, null=True, default=None)
+    sena154 = models.IntegerField(blank=True, null=True, default=None)
+
+    def __str__(self) -> str:
+        return f'SENA FAMILY: {self.id}'
+
+class YoungForm(models.Model):
+    participant_young_form = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name='participant_young_form')
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    date = models.DateTimeField(blank=True, null=True)
+    social_data = models.ForeignKey(SocialDataForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    ebipq_ecipq = models.ForeignKey(EbipqEcipqForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    rrss = models.ForeignKey(RrssForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    mcad = models.ForeignKey(MulticageCad4Form, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    cerqs = models.ForeignKey(CerqsForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    ati = models.ForeignKey(AtiForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    ate = models.ForeignKey(AteForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    ed = models.ForeignKey(EdForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    er = models.ForeignKey(ErForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    inq = models.ForeignKey(InqForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    sena = models.ForeignKey(SenaForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    injury = models.ForeignKey(InjuryForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    family = models.ForeignKey(FamilySubForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    prediction = models.CharField(max_length=30, null=True, blank=True, default=None)
+
+    def __str__(self) -> str:
+        return f'Formulario de jóvenes: {self.code}'
+    
+class FamilyForm(models.Model):
+    participant_family_form = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name='participant_family_form')
+    to_user_family_form = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name='to_user_family_form')
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    date = models.DateTimeField(blank=True, null=True)
+    social_data = models.ForeignKey(SocialDataForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    family = models.ForeignKey(FamilySubForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    sena_family = models.ForeignKey(SenaFamilyForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    parq = models.ForeignKey(ParqForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    prediction = models.CharField(max_length=30, null=True, blank=True, default=None)
+    
+    def __str__(self) -> str:
+        return f'Formularios de familiares: {self.code}'
+    
+class ProfessionalForm(models.Model):
+    participant_professional_form = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name='participant_professional_form')
+    to_user_professional_form = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name='to_user_professional_form')
+    code = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    date = models.DateTimeField(blank=True, null=True)
+    social_data = models.ForeignKey(SocialDataForm, default=None, null=True, blank=True, on_delete=models.CASCADE) 
+    family = models.ForeignKey(FamilySubForm, default=None, null=True, blank=True, on_delete=models.CASCADE)
+    prediction = models.CharField(max_length=30, null=True, blank=True, default=None)
+    
+    def __str__(self) -> str:
+        return f'Formulario profesionales: {self.code}'

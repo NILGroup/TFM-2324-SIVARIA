@@ -17,6 +17,9 @@ from ...validators.service_validators import UserValidator
 import os 
 import sys
 import re
+
+from datetime import datetime
+
 '''
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -110,6 +113,14 @@ class UserService(object):
         except AppUser.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el mismo teléfono')
 
+    def get_user_by_code(self, code):
+        try:
+            return AppUser.objects.get(code=code)
+        except AppUser.DoesNotExist:
+            raise Http404('Usuario no encontrado') 
+        except AppUser.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el mismo código')
+
     def get_users_by_expo_token(self, token):
         try:
             return list(AppUser.objects.filter(expo_token=token))
@@ -125,6 +136,9 @@ class UserService(object):
         
     def get_user_by_phone_json(self, phone):
         return AppUserCompleteSerializer(self.get_user_by_phone(phone)).data
+    
+    def get_user_by_code_json(self, code):
+        return AppUserCompleteSerializer(self.get_user_by_phone(code)).data
 
     def hash_password(self, password):
         return make_password(password=password)
@@ -315,7 +329,6 @@ class ExpertSystemService(object):
         #argc = ['controller.py', '-st', 'accuracy']
         #_ = self.controller.execute(argc)
 
-
         #csv = self.__convertToDataframe__(user_data_sivaria)
         argc = ['controller.py', '-p', '--json', user_data_sivaria]
         # devuelve un dataframe
@@ -324,24 +337,528 @@ class ExpertSystemService(object):
         print(result)
         return result[0]
     
-    def mapData(self, user_id, sivaria_data, rol_slug):
-        decoded_bytes = base64.b64decode(sivaria_data)
-        json_str = decoded_bytes.decode('utf-8')
-        mapped_data = json.loads(json_str)
+    def map_data(self, user, sivaria_data, rol_slug):
+        form_instance = None
         
-        #mapped_data = None
         if rol_slug == 'joven':
-            mapped_data = self.__mapYoungData(sivaria_data=mapped_data)
-        elif rol_slug == 'familia':
-            mapped_data = self.__mapFamilyData(sivaria_data=mapped_data)
+            form_instance = self.__save_young_data(user, sivaria_data)
+            mapped_data = self.__map_young_data(sivaria_data=sivaria_data)
+        elif rol_slug == 'padre' or rol_slug == 'madre':
+            form_instance = self.__save_family_data(user, sivaria_data)
+            mapped_data = self.__map_family_data(sivaria_data=sivaria_data)
         elif rol_slug == 'profesional':
-            mapped_data = self.__mapProfessionalData(sivaria_data=mapped_data)
+            form_instance = self.__save_professional_data(user, sivaria_data)
+            mapped_data = self.__map_professional_data(sivaria_data=sivaria_data)
 
-        mapped_data['id'] = user_id
+        mapped_data['id'] = user.get('id', None)
         #print(mapped_data)
-        return base64.b64encode(json.dumps(mapped_data).encode('utf-8'))
+        return (form_instance,
+                mapped_data
+            )
+    
+    def __save_young_data(self, user, sivaria_data):
+        #user_service = UserService()
+        user_id = user.get('id', None)
+        #user = user_service.get_user_by_userId(userId=user_id)
+        
+        now = datetime.now()
+        versionDateTime = now.strftime("%Y%m%d%H%M%S")
+        
+        step1 = sivaria_data.get('step1', {})
+        step2 = sivaria_data.get('step2', {})
+        step3 = sivaria_data.get('step3', {})
 
-    def __mapYoungData(self, sivaria_data):
+        general_data = {}
+        general_data.update(step1)
+        general_data.update(step2)
+        general_data.update(step3)
+
+        social_data_form = {
+            'code': 'YSOCIAL'+str(user_id)+versionDateTime,
+            'course': general_data.get('course', None),
+            'age': general_data.get('age', None),
+            'gender': general_data.get('gender', None),
+            'trans': general_data.get('trans', None),
+            'job_situation_father': general_data.get('jobSituationFather', None),
+            'job_situation_mother': general_data.get('jobSituationMother', None),
+            'academic_level_father': general_data.get('academicLevelFather', None),
+            'academic_level_mother': general_data.get('academicLevelMother', None),
+            'academic_performance': general_data.get('academicPerformance', None),
+            'previous_psychiatric_treatment': general_data.get('previousPsychiatricTreatment', None),
+            'chronic_disease': general_data.get('chronicDisease', None),
+            'female_self_perception': general_data.get('femaleSelfPerception', None),
+            'male_self_perception': general_data.get('maleSelfPerception', None),
+            'female_others_perception': general_data.get('femaleOthersPerception', None),
+            'male_others_perception': general_data.get('maleOthersPerception', None),
+            'weight': general_data.get('weight', None),
+            'height': general_data.get('height', None),
+            'discrimination_type': general_data.get('discriminationType', None),
+        }
+
+        step4 = sivaria_data.get('step4', {})
+        ebipq_ecipq_data = {
+            'code': 'YEBIPQECIPQ'+str(user_id)+versionDateTime,
+            'vb1': step4.get('vb1', None), 
+            'vb2': step4.get('vb2', None),
+            'vb4': step4.get('vb4', None),
+            'ab1': step4.get('ab1', None),
+            'ab2': step4.get('ab2', None),
+            'ab4': step4.get('ab4', None),
+            'cybv1': step4.get('cybv1', None),
+            'cybv2': step4.get('cybv2', None),
+            'cybv3': step4.get('cybv3', None),
+            'cybb1': step4.get('cybb1', None),
+            'cybb2': step4.get('cybb2', None),
+            'cybb3': step4.get('cybb3', None),
+        }
+        step5 = sivaria_data.get('step5', {})
+        rrss_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'rrss1': step5.get('rrss1', None),
+            'rrss2': step5.get('rrss2', None),
+            'rrss3': step5.get('rrss3', None),
+            'rrss4': step5.get('rrss4', None),
+            'rrss5': step5.get('rrss5', None),
+            'rrss6': step5.get('rrss6', None),
+            'rrss7': step5.get('rrss7', None),
+        }
+        step6 = sivaria_data.get('step6', {})
+        mcad_data = {
+            'code': 'YMULTICAGECAD4'+str(user_id)+versionDateTime,
+            'mcad1': step6.get('mcad1', None),
+            'mcad2': step6.get('mcad2', None),
+            'mcad3': step6.get('mcad3', None),
+            'mcad4': step6.get('mcad4', None),
+            'mcad5': step6.get('mcad5', None),
+            'mcad6': step6.get('mcad6', None),
+            'mcad7': step6.get('mcad7', None),
+            'mcad8': step6.get('mcad8', None),
+            'mcad9': step6.get('mcad9', None),
+            'mcad10': step6.get('mcad10', None),
+            'mcad11': step6.get('mcad11', None),
+            'mcad12': step6.get('mcad12', None),
+        }
+        step7 = sivaria_data.get('step7', {})
+        cerqs_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'cerqs1': step7.get('cerqs1', None), 
+            'cerqs2': step7.get('cerqs2', None),
+            'cerqs3': step7.get('cerqs3', None),
+            'cerqs4': step7.get('cerqs4', None),
+            'cerqs5': step7.get('cerqs5', None),
+            'cerqs6': step7.get('cerqs6', None),
+            'cerqs7': step7.get('cerqs7', None),
+            'cerqs8': step7.get('cerqs8', None),
+            'cerqs9': step7.get('cerqs9', None),
+            'cerqs10': step7.get('cerqs10', None),
+            'cerqs11': step7.get('cerqs11', None),
+            'cerqs12': step7.get('cerqs12', None),
+            'cerqs13': step7.get('cerqs13', None),
+            'cerqs14': step7.get('cerqs14', None),
+            'cerqs15': step7.get('cerqs15', None),
+            'cerqs16': step7.get('cerqs16', None),
+            'cerqs17': step7.get('cerqs17', None),
+            'cerqs18': step7.get('cerqs18', None),
+        }
+        step8 = sivaria_data.get('step8', {})
+        ati_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'ati1': step8.get('ati1', None),
+            'ati2': step8.get('ati2', None),
+            'ati3': step8.get('ati3', None),
+            'ati4': step8.get('ati4', None),
+            'ati5': step8.get('ati5', None),
+            'ati6': step8.get('ati6', None),
+        }
+        ate_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'ate1': step8.get('ate1', None),
+            'ate2': step8.get('ate2', None),
+            'ate3': step8.get('ate3', None),
+            'ate4': step8.get('ate4', None),
+            'ate5': step8.get('ate5', None),
+            'ate6': step8.get('ate6', None),
+            'ate7': step8.get('ate7', None),
+            'ate8': step8.get('ate8', None),
+            'ate9': step8.get('ate9', None),
+            'ate10': step8.get('ate10', None),
+        }
+        step9 = sivaria_data.get('step9', {})
+        ed_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'ed1':step9.get('ed1', None),
+            'ed2':step9.get('ed2', None),
+            'ed3':step9.get('ed3', None),
+            'ed4':step9.get('ed4', None),
+            'ed5':step9.get('ed5', None),
+            'ed6':step9.get('ed6', None),
+            'ed7':step9.get('ed7', None),
+            'ed8':step9.get('ed8', None),
+            'ed9':step9.get('ed9', None),
+            'ed10':step9.get('ed10', None),
+            'ed11':step9.get('ed11', None),
+            'ed12':step9.get('ed12', None),
+            'ed13':step9.get('ed13', None),
+            'ed14':step9.get('ed14', None),
+            'ed15':step9.get('ed15', None),
+            'ed16':step9.get('ed16', None),
+        }
+        er_data = {
+            'code': 'YRRSS'+str(user_id)+versionDateTime,
+            'er1':step9.get('er1', None),
+            'er2':step9.get('er2', None),
+            'er3':step9.get('er3', None),
+            'er4':step9.get('er4', None),
+            'er5':step9.get('er5', None),
+            'er6':step9.get('er6', None),
+            'er7':step9.get('er7', None),
+            'er8':step9.get('er8', None),
+            'er9':step9.get('er9', None),
+            'er10':step9.get('er10', None),
+        }
+        inq_data = sivaria_data.get('step10', {})
+        inq_data['code'] = 'YINQ'+str(user_id)+versionDateTime
+
+        step11 = sivaria_data.get('step11', {})
+        sena_data = {
+            'code': 'YSENA'+str(user_id)+versionDateTime,
+            'sena19': step11.get('sena19', None),
+            'sena23': step11.get('sena23', None),
+            'sena69': step11.get('sena69', None),
+            'sena99': step11.get('sena99', None),
+            'sena103': step11.get('sena103', None),
+            'sena111': step11.get('sena111', None),
+            'sena112': step11.get('sena112', None),
+            'sena115': step11.get('sena115', None),
+            'sena117': step11.get('sena117', None),
+            'sena129': step11.get('sena129', None),
+            'sena137': step11.get('sena137', None),
+            'sena139': step11.get('sena139', None),
+            'sena141': step11.get('sena141', None),
+            'sena146': step11.get('sena146', None),
+            'sena150': step11.get('sena150', None),
+            'sena188': step11.get('sena188', None),
+        }
+
+        injury_data = {
+            'code': 'YINJURY'+str(user_id)+versionDateTime,
+            'injury1': step11.get('injury1', None),
+        }
+        step12 = sivaria_data.get('step12', {})
+        family_data = {
+            'code': 'YFAMILY'+str(user_id)+versionDateTime,
+            'padre_adolescente': step12.get('family1', None),
+            'madre_adolescente': step12.get('family2', None),
+            'padres_divorciados': step12.get('family3', None),
+            'familia_monoparental': step12.get('family4', None),
+            'tratamiento_psicologico_padre_madre': step12.get('family5', None),
+            'adiccion_padre_madre': step12.get('family6', None),
+            'relaciones_conflictivas_hijo_padre_madre': step12.get('family7', None),
+            'familia_reconstruida': step12.get('family8', None),
+            'supervision_parental_insuficiente': step12.get('family9', None),
+            'maltrato_al_adolescente': step12.get('family10', None),
+            'maltrato_a_la_pareja': step12.get('family11', None),
+            'ingreso_familiar_mensual': step12.get('family12', None),
+            'situacion_economica_precaria': step12.get('family13', None),
+            'duelo': step12.get('family14', None),
+        }
+
+        social_data_serializer = SocialDataSerializer(data=social_data_form)
+        ebipq_ecipq_serializer = EbipqEcipqSerializer(data=ebipq_ecipq_data)
+        rrss_serializer = RrssSerializer(data=rrss_data)
+        mcad_serializer = MulticageCad4Serializer(data=mcad_data)
+        cerqs_serializer = CerqsSerializer(data=cerqs_data)
+        ati_serializer = AtiSerializer(data=ati_data)
+        ate_serializer = AteSerializer(data=ate_data)
+        ed_serializer = EdSerializer(data=ed_data)
+        er_serializer = ErSerializer(data=er_data)
+        inq_serializer = InqSerializer(data=inq_data)
+        sena_serializer = SenaSerializer(data=sena_data)
+        injury_serializer = InjurySerializer(data=injury_data)
+        family_serializer = FamilySerializer(data=family_data)  
+        
+        if (social_data_serializer.is_valid() and
+            ebipq_ecipq_serializer.is_valid() and
+            rrss_serializer.is_valid() and
+            mcad_serializer.is_valid() and
+            cerqs_serializer.is_valid() and
+            ati_serializer.is_valid() and
+            ate_serializer.is_valid() and
+            ed_serializer.is_valid() and
+            er_serializer.is_valid() and
+            inq_serializer.is_valid() and
+            sena_serializer.is_valid() and
+            injury_serializer.is_valid() and
+            family_serializer.is_valid()
+        ):
+            social_data = social_data_serializer.save()
+            ebipq_ecipq = ebipq_ecipq_serializer.save()
+            rrss = rrss_serializer.save()
+            mcad = mcad_serializer.save()
+            cerqs = cerqs_serializer.save()
+            ati = ati_serializer.save()
+            ate = ate_serializer.save()
+            ed = ed_serializer.save()
+            er = er_serializer.save()
+            inq = inq_serializer.save()
+            sena = sena_serializer.save()
+            injury = injury_serializer.save()
+            family = family_serializer.save()
+            
+            code = 'Y'+str(user_id)+versionDateTime
+            young_form_data = {
+                'participant_young_form': user_id,
+                'date': now,
+                'code': code,
+                'social_data': social_data.id,
+                'ebipq_ecipq': ebipq_ecipq.id,
+                'rrss': rrss.id,
+                'mcad': mcad.id,
+                'cerqs': cerqs.id,
+                'ati': ati.id,
+                'ate': ate.id,
+                'ed': ed.id,
+                'er': er.id,
+                'inq': inq.id,
+                'sena': sena.id,
+                'injury': injury.id,
+                'family': family.id,
+            }
+            
+            young_serializer = YoungFormSerializer(data=young_form_data)
+            if (young_serializer.is_valid()):
+                young_form = young_serializer.save()
+                print('Young data saved successfully.\n')
+                return young_form
+
+    def __save_family_data(self, user, sivaria_data):
+        user_service = UserService()
+        #print(sivaria_data)
+    
+        rol = user.get('rol' , None)
+        rol_slug = rol.get('slug')
+        family_code = 'P' if rol_slug == 'padre' else 'M'
+        #print('CODIGO DEL NIÑO: ' + str(child_code))
+        
+        step1 = sivaria_data.get('step1', None)
+        child_code = step1.get('idChild', None)
+        child = user_service.get_user_by_code(code=child_code)
+
+        user_id = user.get('id', None)
+
+        
+        now = datetime.now()
+        versionDateTime = now.strftime("%Y%m%d%H%M%S")
+        
+        step1 = sivaria_data.get('step1', {})
+        step3 = sivaria_data.get('step3', {})
+
+        general_data = {}
+        general_data.update(step1)
+        general_data.update(step3)
+
+        social_data_form = {
+            'code': family_code+'SOCIAL'+str(user_id)+versionDateTime,
+            'course': general_data.get('course', None),
+            'job_situation_father': general_data.get('jobSituationFather', None),
+            'job_situation_mother': general_data.get('jobSituationMother', None),
+            'academic_level_father': general_data.get('academicLevelFather', None),
+            'academic_level_mother': general_data.get('academicLevelMother', None),
+        }
+
+        step2 = sivaria_data.get('step2', {})
+        sena_family_data = {
+            'code': family_code+'SENAFAMILY'+str(user_id)+versionDateTime,
+            'sena104': step2.get('sena104', None),
+            'sena117': step2.get('sena117', None),
+            'sena118': step2.get('sena118', None),
+            'sena121': step2.get('sena121', None),
+            'sena123': step2.get('sena123', None),
+            'sena124': step2.get('sena124', None),
+            'sena125': step2.get('sena125', None),
+            'sena135': step2.get('sena135', None),
+            'sena137': step2.get('sena137', None),
+            'sena138': step2.get('sena138', None),
+            'sena139': step2.get('sena139', None),
+            'sena140': step2.get('sena140', None),
+            'sena145': step2.get('sena145', None),
+            'sena146': step2.get('sena146', None),
+            'sena148': step2.get('sena148', None),
+            'sena154': step2.get('sena154', None),
+        }
+
+        family_data = {
+            'code': family_code+'FAMILY'+str(user_id)+versionDateTime,
+            'padre_adolescente': step3.get('family1', None),
+            'madre_adolescente': step3.get('family2', None),
+            'padres_divorciados': step3.get('family3', None),
+            'familia_monoparental': step3.get('family4', None),
+            'tratamiento_psicologico_padre_madre': step3.get('family5', None),
+            'adiccion_padre_madre': step3.get('family6', None),
+            'relaciones_conflictivas_hijo_padre_madre': step3.get('family7', None),
+            'familia_reconstruida': step3.get('family8', None),
+            'ingreso_familiar_mensual': step3.get('family12', None),
+            'situacion_economica_precaria': step3.get('family13', None),
+        }
+
+        step4 = sivaria_data.get('step4', {})
+        step5 = sivaria_data.get('step5', {})
+
+        parq_data_complete = {}
+        parq_data_complete.update(step4)
+        parq_data_complete.update(step5)
+
+        parq_data = {
+            'code': family_code+'PARQ'+str(user_id)+versionDateTime,
+            'parq1' : parq_data_complete.get('parq1', None),
+            'parq2' : parq_data_complete.get('parq2', None),
+            'parq3' : parq_data_complete.get('parq3', None),
+            'parq4' : parq_data_complete.get('parq4', None),
+            'parq5' : parq_data_complete.get('parq5', None),
+            'parq6' : parq_data_complete.get('parq6', None),
+            'parq7' : parq_data_complete.get('parq7', None),
+            'parq8' : parq_data_complete.get('parq8', None),
+            'parq9' : parq_data_complete.get('parq9', None),
+            'parq10': parq_data_complete.get('parq10', None),
+            'parq11': parq_data_complete.get('parq11', None),
+            'parq12': parq_data_complete.get('parq12', None),
+            'parq13': parq_data_complete.get('parq13', None),
+            'parq14': parq_data_complete.get('parq14', None),
+            'parq15': parq_data_complete.get('parq15', None),
+            'parq16': parq_data_complete.get('parq16', None),
+            'parq17': parq_data_complete.get('parq17', None),
+            'parq18': parq_data_complete.get('parq18', None),
+            'parq19': parq_data_complete.get('parq19', None),
+            'parq20': parq_data_complete.get('parq20', None),
+            'parq21': parq_data_complete.get('parq21', None),
+            'parq22': parq_data_complete.get('parq22', None),
+            'parq23': parq_data_complete.get('parq23', None),
+            'parq24': parq_data_complete.get('parq24', None),
+            'parq25': parq_data_complete.get('parq25', None),
+            'parq26': parq_data_complete.get('parq26', None),
+            'parq27': parq_data_complete.get('parq27', None),
+            'parq28': parq_data_complete.get('parq28', None),
+            'parq29': parq_data_complete.get('parq29', None),
+        }
+
+        social_data_serializer = SocialDataSerializer(data=social_data_form)
+        sena_family_serializer = SenaFamilySerializer(data=sena_family_data)
+        family_serializer = FamilySerializer(data=family_data)  
+        parq_serializer = ParqSerializer(data=parq_data) 
+        
+        if (social_data_serializer.is_valid() and
+            sena_family_serializer.is_valid() and
+            family_serializer.is_valid() and
+            parq_serializer.is_valid()
+        ):
+            social_data = social_data_serializer.save()
+            sena_family = sena_family_serializer.save()
+            family = family_serializer.save()
+            parq = parq_serializer.save()
+            
+            code = family_code+str(user_id)+versionDateTime
+            family_form_data = {
+                'participant_family_form': user_id,
+                'to_user_family_form': child.id,
+                'date': now,
+                'code': code,
+                'social_data': social_data.id,
+                'family': family.id,
+                'sena_family': sena_family.id,
+                'parq': parq.id,
+            }
+            
+            family_serializer = FamilyFormSerializer(data=family_form_data)
+            if (family_serializer.is_valid()):
+                family_form = family_serializer.save()
+                print('Family form data saved successfully.\n')
+                return family_form
+            
+    def __save_professional_data(self, user, sivaria_data):
+        user_service = UserService()
+        #print(sivaria_data)
+        code = 'PR'
+        #print('CODIGO DEL NIÑO: ' + str(child_code))
+        
+        step1 = sivaria_data.get('step1', None)
+        print(step1)
+        patient_code = step1.get('idPatient', None)
+        patient = user_service.get_user_by_code(code=patient_code)
+
+        user_id = user.get('id', None)
+
+        now = datetime.now()
+        versionDateTime = now.strftime("%Y%m%d%H%M%S")
+        
+        # CREANDO JSON PARA LA EL GUARDADO EN BBDD
+        step1 = sivaria_data.get('step1', {})
+        step2 = sivaria_data.get('step2', {})
+
+        general_data = {}
+        general_data.update(step1)
+        general_data.update(step2)
+
+        social_data_form = {
+            'code': code+'SOCIAL'+str(user_id)+versionDateTime,
+            'course': general_data.get('course'),
+            'job_situation_father': general_data.get('jobSituationFather', None),
+            'job_situation_mother': general_data.get('jobSituationMother', None),
+            'academic_level_father': general_data.get('academicLevelFather', None),
+            'academic_level_mother': general_data.get('academicLevelMother', None),
+        }
+
+        family_data_complete = {}
+        step2 = sivaria_data.get('step2', {})
+        step3 = sivaria_data.get('step3', {})
+        
+        family_data_complete.update(step2)
+        family_data_complete.update(step3)
+
+        family_data = {
+            'code': code+'FAMILY'+str(user_id)+versionDateTime,
+            'padre_adolescente': family_data_complete.get('family1', None),
+            'madre_adolescente': family_data_complete.get('family2', None),
+            'padres_divorciados': family_data_complete.get('family3', None),
+            'familia_monoparental': family_data_complete.get('family4', None),
+            'tratamiento_psicologico_padre_madre': family_data_complete.get('family5', None),
+            'adiccion_padre_madre': family_data_complete.get('family6', None),
+            'relaciones_conflictivas_hijo_padre_madre': step3.get('family7', None),
+            'familia_reconstruida': family_data_complete.get('family8', None),
+            'familia_reconstruida': family_data_complete.get('family9', None),
+            'familia_reconstruida': family_data_complete.get('family10', None),
+            'familia_reconstruida': family_data_complete.get('family11', None),
+            'ingreso_familiar_mensual': family_data_complete.get('family12', None),
+            'situacion_economica_precaria': family_data_complete.get('family13', None),
+            'duelo': family_data_complete.get('family14', None),
+        }
+
+        social_data_serializer = SocialDataSerializer(data=social_data_form)
+        family_serializer = FamilySerializer(data=family_data)  
+        
+        if (social_data_serializer.is_valid() and
+            family_serializer.is_valid()
+        ):
+            social_data = social_data_serializer.save()
+            family = family_serializer.save()
+            
+            code = code+str(user_id)+versionDateTime
+            professional_form_data = {
+                'participant_professional_form': user_id,
+                'to_user_professional_form': patient.id,
+                'date': now,
+                'code': code,
+                'social_data': social_data.id,
+                'family': family.id,
+            }
+            
+            professional_serializer = ProfessionalFormSerializer(data=professional_form_data)
+            if (professional_serializer.is_valid()):
+                professional_form = professional_serializer.save()
+                print('Professional form data saved successfully.\n')
+                return professional_form
+
+
+    def __map_young_data(self, sivaria_data):
 
         #try:
         step1 = sivaria_data.get('step1', {})
@@ -355,7 +872,6 @@ class ExpertSystemService(object):
 
         bullying_victima, bullying_perpetrador, cyberbullying_victima, cyberbullying_perpetrador = self.__get_ebipq_ecipq(sivaria_data.get('step4', {}))
 
-    
         rrss1, rrss2, rrss3, rrss4, rrss5, rrss6, rrss7 = self.__get_rrss(sivaria_data.get('step5', {}))
 
         adiccion_alcohol, adiccion_sustancias, adiccion_internet = self.__get_multicage_cad4(sivaria_data.get('step6', {}))
@@ -374,7 +890,7 @@ class ExpertSystemService(object):
         
         injury = self.__get_fasm(sivaria_data.get('step11', {}))
 
-        family1, family2, family3, family4, family5, family6, family7, family8 = self.__get_family(sivaria_data.get('step12', {}))
+        family1, family2, family3, family4, family5, family6, family7, family8, _, _, _, _, _, _ = self.__get_family(sivaria_data.get('step12', {}))
 
         #except Exception as e:
             #raise Exception(str(e))
@@ -442,13 +958,30 @@ class ExpertSystemService(object):
             'contacto_informacion_autolesion': rrss6,
             'denuncia_autolesion_internet': rrss7,
         }
-    def __mapFamilyData(self, sivaria_data):
+    def __map_family_data(self, sivaria_data):
         #id,curso,situacion_laboral_madre,situacion_laboral_padre,nivel_profesional_madre,nivel_profesional_padre,problemas_interiorizados,problemas_exteriorizados,problemas_contexto,problemas_recursos_psicologicos,madre_adolescente,padre_adolescente,padres_divorciados,familia_monoparental,tratamiento_psicologico_padre_madre,adiccion_padre_madre,relaciones_conflictivas_hijo_padre_madre,familia_reconstruida,aceptacion_rechazo_parental,control_parental,situacion_economica_precaria,ingreso_familiar_mensual,desenlace
-        general_variables = self.__get_sociodemographic_variables({})
+        
+        step1 = sivaria_data.get('step1', {})
+        step3 = sivaria_data.get('step3', {})
 
-        sena1, sena2, sena3, sena4 = self.__get_sena(sivaria_data.get('step11', {}))
+        general_data = {}
+        general_data.update(step1)
+        general_data.update(step3)
+        general_variables = self.__get_sociodemographic_variables(general_data)
 
-        family1, family2, family3, family4, family5, family6, family7, family8 = self.__get_family(sivaria_data.get('step12', {}))
+        general_variables = self.__get_sociodemographic_variables(general_data)
+
+        sena1, sena2, sena3, sena4 = self.__get_sena(sivaria_data.get('step2', {}), family=1)
+
+        family1, family2, family3, family4, family5, family6, family7, family8, _, _, _, family12, family13, _ = self.__get_family(sivaria_data.get('step3', {}))
+
+        step4 = sivaria_data.get('step4', {})
+        step5 = sivaria_data.get('step5', {})
+
+        parq_data = {}
+        parq_data.update(step4)
+        parq_data.update(step5)
+        aceptacion_rechazo_parental, control_parental = self.__get_parq(parq_data)
 
         return {
             'curso': general_variables.get('curso'),
@@ -456,12 +989,6 @@ class ExpertSystemService(object):
             'situacion_laboral_padre': general_variables.get('situacion_laboral_padre'),
             'nivel_profesional_madre': general_variables.get('nivel_profesional_madre'),
             'nivel_profesional_padre': general_variables.get('nivel_profesional_padre'),
-            'nivel_autopercepcion_masculina': general_variables.get('nivel_autopercepcion_masculina'),
-            'nivel_autopercepcion_femenina': general_variables.get('nivel_autopercepcion_femenina'),
-            'nivel_percepcion_masculina_externa': general_variables.get('nivel_percepcion_masculina_externa'),
-            'nivel_percepcion_femenina_externa': general_variables.get('nivel_percepcion_femenina_externa'),
-            'tratamiento_psiquiatrico_previo': general_variables.get('tratamiento_psiquiatrico_previo'),
-            'enfermedad_cronica': general_variables.get('enfermedad_cronica'),
 
             'problemas_interiorizados': sena1,
             'problemas_exteriorizados': sena2,
@@ -477,18 +1004,32 @@ class ExpertSystemService(object):
             'relaciones_conflictivas_hijo_padre_madre': family7,
             'familia_reconstruida': family8,
 
-            'aceptacion_rechazo_parental': '',
-            'control_parental': '',
-            'situacion_economica_precaria': '',
-            'ingreso_familiar_mensual': '',
+            'aceptacion_rechazo_parental': aceptacion_rechazo_parental,
+            'control_parental': control_parental,
+            'situacion_economica_precaria': family13,
+            'ingreso_familiar_mensual': family12,
 
         }
     
-    def __mapProfessionalData(self, sivaria_data):
+    def __map_professional_data(self, sivaria_data):
         #id,curso,situacion_laboral_madre,situacion_laboral_padre,nivel_profesional_madre,nivel_profesional_padre,situacion_economica_precaria,ingreso_familiar_mensual,tratamiento_psiquiatrico_previo,problemas_interiorizados,problemas_exteriorizados,problemas_contexto,problemas_recursos_psicologicos,madre_adolescente,padre_adolescente,padres_divorciados,familia_monoparental,tratamiento_psicologico_padre_madre,adiccion_padre_madre,relaciones_conflictivas_hijo_padre_madre,familia_reconstruida,supervision_parental_insuficiente,maltrato_al_adolescente,maltrato_a_la_pareja,duelo,desenlace
-        general_variables = self.__get_sociodemographic_variables({})
 
-        family1, family2, family3, family4, family5, family6, family7, family8 = self.__get_family(sivaria_data.get('step12', {}))
+        step1 = sivaria_data.get('step1', None)
+        step2 = sivaria_data.get('step2', None)
+        step3 = sivaria_data.get('step3', None)
+
+        general_data = {}
+        general_data.update(step1)
+        general_data.update(step2)
+        general_variables = self.__get_sociodemographic_variables(general_data)
+        
+        family_data = {}
+        step2 = sivaria_data.get('step2', None)
+        step3 = sivaria_data.get('step3', None)
+        family_data.update(step2)
+        family_data.update(step3)
+
+        family1, family2, family3, family4, family5, family6, family7, family8, family9 , family10, family11, family12, family13, family14 = self.__get_family(family_data)
 
         return {
             'curso': general_variables.get('curso'),
@@ -496,6 +1037,9 @@ class ExpertSystemService(object):
             'situacion_laboral_padre': general_variables.get('situacion_laboral_padre'),
             'nivel_profesional_madre': general_variables.get('nivel_profesional_madre'),
             'nivel_profesional_padre': general_variables.get('nivel_profesional_padre'),
+            'situacion_economica_precaria': family13,
+            'ingreso_familiar_mensual': family12,
+            'tratamiento_psiquiatrico_previo': general_variables.get('tratamiento_psiquiatrico_previo'),
             
             'madre_adolescente': family1,
             'padre_adolescente': family2,
@@ -506,12 +1050,10 @@ class ExpertSystemService(object):
             'relaciones_conflictivas_hijo_padre_madre': family7,
             'familia_reconstruida': family8,
 
-            'supervision_parental_insuficiente': '',
-            'maltrato_al_adolescente': '',
-            'maltrato_a_la_pareja': '',
-            'duelo': '',
-            'situacion_economica_precaria': '',
-            'ingreso_familiar_mensual': '',
+            'supervision_parental_insuficiente': family9,
+            'maltrato_al_adolescente': family10,
+            'maltrato_a_la_pareja': family11,
+            'duelo': family14,
         }
 
     def __get_sociodemographic_variables(self, data):
@@ -601,13 +1143,60 @@ class ExpertSystemService(object):
 
         return (adiccion_alcohol, adiccion_sustancias, adiccion_internet)
     
-    def __get_sena(self, data):
+    def __get_sena(self, data, family = 0):
         
         try:
-            sena_interiorizado = int(data.get('sena111', 0)) + int(data.get('sena112', 0)) + int(data.get('sena137', 0)) + int(data.get('sena141', 0))
-            sena_exteriorizado = int(data.get('sena23', 0)) + int(data.get('sena103', 0)) + int(data.get('sena139', 0)) + int(data.get('sena146', 0))
-            sena_contexto = int(data.get('sena19', 0)) + int(data.get('sena99', 0)) + int(data.get('sena115', 0)) + int(data.get('sena150', 0))
-            sena_recursos_psicologicos = int(data.get('sena69', 0)) + int(data.get('sena117', 0)) + int(data.get('sena129', 0)) + int(data.get('sena188', 0))
+            sena_interiorizado =  ((
+                int(data.get('sena111', 0)) + 
+                int(data.get('sena112', 0)) + 
+                int(data.get('sena137', 0)) + 
+                int(data.get('sena141', 0))
+            ) if family == 0 else 
+            (
+                int(data.get('sena135', 0)) + 
+                int(data.get('sena138', 0)) + 
+                int(data.get('sena140', 0)) + 
+                int(data.get('sena145', 0))
+            ))
+
+            sena_exteriorizado = ((
+                int(data.get('sena23', 0)) + 
+                int(data.get('sena103', 0)) + 
+                int(data.get('sena139', 0)) + 
+                int(data.get('sena146', 0))
+            ) if family == 0 else 
+            (
+                int(data.get('sena117', 0)) + 
+                int(data.get('sena121', 0)) + 
+                int(data.get('sena123', 0)) + 
+                int(data.get('sena124', 0))        
+            ))
+
+            sena_contexto = ((
+                int(data.get('sena19', 0)) + 
+                int(data.get('sena99', 0)) + 
+                int(data.get('sena115', 0)) + 
+                int(data.get('sena150', 0))
+            ) if family == 0 else 
+            (
+                int(data.get('sena104', 0)) + 
+                int(data.get('sena118', 0)) + 
+                int(data.get('sena125', 0)) + 
+                int(data.get('sena148', 0))
+            ))
+
+            sena_recursos_psicologicos = ((
+                int(data.get('sena69', 0)) + 
+                int(data.get('sena117', 0)) + 
+                int(data.get('sena129', 0)) + 
+                int(data.get('sena188', 0))
+            ) if family == 0 else 
+            (
+                int(data.get('sena137', 0)) + 
+                int(data.get('sena139', 0)) + 
+                int(data.get('sena146', 0)) + 
+                int(data.get('sena154', 0))
+            ))
         except ValueError as e:
             raise ValueError('Hay un valor o valores vacíos dentro del cuestionario SENA')
     
@@ -813,21 +1402,34 @@ class ExpertSystemService(object):
 
         padre_adolescente = 'si' if int(data.get('family1', 21)) < 21 else 'no'
         madre_adolescente = 'si' if int(data.get('family2', 21)) < 21 else 'no'
-        padres_divorciados = data.get('family4', 'no')
         familia_monoparental = data.get('family3', 'no')
+        padres_divorciados = data.get('family4', 'no')
         tratamiento_psicologico_padre_madre = data.get('family5', 'no')
         adiccion_padre_madre = data.get('family6', 'no')
         relaciones_conflictivas_hijo_padre_madre = data.get('family7', 'no')
         familia_reconstruida = data.get('family8', 'no')
+        supervision_parental_insuficiente = data.get('family9', 'no')
+        maltrato_al_adolescente = data.get('family10', 'no')
+        maltrato_a_la_pareja = data.get('family11', 'no')
+        ingreso_familiar_mensual = self.__decodeMonthlyFamiliarIncome(float(data.get('family12', 0)))
+        situacion_economica_precaria = data.get('family13', 'no')
+        duelo = data.get('family14', 'no')
 
         return (madre_adolescente,
-        padre_adolescente,
-        padres_divorciados,
-        familia_monoparental,
-        tratamiento_psicologico_padre_madre,
-        adiccion_padre_madre,
-        relaciones_conflictivas_hijo_padre_madre,
-        familia_reconstruida)
+            padre_adolescente,
+            padres_divorciados,
+            familia_monoparental,
+            tratamiento_psicologico_padre_madre,
+            adiccion_padre_madre,
+            relaciones_conflictivas_hijo_padre_madre,
+            familia_reconstruida,
+            supervision_parental_insuficiente,
+            maltrato_al_adolescente,
+            maltrato_a_la_pareja,
+            ingreso_familiar_mensual,
+            situacion_economica_precaria,
+            duelo
+        )
 
     def __get_rrss(self, data):
         # da error si alguno de las variables es = ''
@@ -846,6 +1448,71 @@ class ExpertSystemService(object):
                 tener_conocidos_que_comparten_autolesion_internet,
                 contacto_informacion_autolesion,
                 denuncia_autolesion_internet)
+
+    def __get_parq(self, data):
+        print(data)
+        parq1_reversed = self.__reverse_scale(5, int(data.get('parq1', 0)))
+        parq3_reversed = self.__reverse_scale(5, int(data.get('parq3', 0)))
+        parq7_reversed = self.__reverse_scale(5, int(data.get('parq7', 0)))
+        parq10_reversed = self.__reverse_scale(5, int(data.get('parq10', 0)))
+        parq13_reversed = self.__reverse_scale(5, int(data.get('parq13', 0)))
+        parq18_reversed = self.__reverse_scale(5, int(data.get('parq18', 0)))
+        parq23_reversed = self.__reverse_scale(5, int(data.get('parq23', 0)))
+        parq29_reversed = self.__reverse_scale(5, int(data.get('parq29', 0)))
+        
+        afecto = (
+            parq1_reversed +
+            parq3_reversed +
+            parq7_reversed +
+            parq10_reversed +
+            parq13_reversed +
+            parq18_reversed +
+            parq23_reversed +
+            parq29_reversed
+        )
+        
+        hostilidad = (
+            int(data.get('parq4', 0)) + 
+            int(data.get('parq8', 0)) + 
+            int(data.get('parq12', 0)) + 
+            int(data.get('parq14', 0)) + 
+            int(data.get('parq20', 0)) + 
+            int(data.get('parq24', 0))
+        )
+
+        indiferencia = (
+            int(data.get('parq9', 0)) + 
+            int(data.get('parq15', 0)) + 
+            int(data.get('parq17', 0)) + 
+            int(data.get('parq22', 0)) + 
+            int(data.get('parq25', 0)) + 
+            int(data.get('parq28', 0))
+        )
+        rechazo_indiferenciado = (
+            int(data.get('parq3', 0)) + 
+            int(data.get('parq16', 0)) + 
+            int(data.get('parq19', 0)) + 
+            int(data.get('parq21', 0))
+        )
+
+        aceptacion_rechazo_parental_score = (
+            afecto + 
+            hostilidad + 
+            indiferencia + 
+            rechazo_indiferenciado
+        )
+
+        control = (
+            int(data.get('parq2', 0)) + 
+            int(data.get('parq5', 0)) + 
+            int(data.get('parq6', 0)) + 
+            int(data.get('parq11', 0)) + 
+            int(data.get('parq27', 0))
+        )
+        aceptacion_rechazo_parental = 'Aceptacion' if aceptacion_rechazo_parental_score > 60 else 'Rechazo'
+        control_parental = 'si' if control > 10 else 'no'
+        return (aceptacion_rechazo_parental,
+                control_parental)
 
     def __reverse_scale(self, limit, value):
         if limit < value:
@@ -883,6 +1550,18 @@ class ExpertSystemService(object):
             return "180-189"
         elif height >= 190:
             return "x>=190".upper()
+        else:
+            return False
+        
+    def __decodeMonthlyFamiliarIncome(self, income):
+        if income <= 999:
+            return "X<=999"
+        elif income >= 1000 and income < 1500:
+            return "1000-1499"
+        elif income >= 1500 and income < 1999:
+            return "1500-1999"
+        elif income >= 2000:
+            return "X>=2000"
         else:
             return False
 

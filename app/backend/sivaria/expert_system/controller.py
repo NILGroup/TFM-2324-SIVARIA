@@ -246,8 +246,9 @@ class Controller():
                     json_encoded = args[3]
                     json_str = base64.b64decode(json_encoded)
                     new_data = json.loads(json_str.decode('utf-8'))
+                    print(new_data)
                     df = pd.json_normalize(new_data)
-            
+
                 newDF = Decoder.codeDataset(df)
                 expertSystem.setModelType(modelType)
                 

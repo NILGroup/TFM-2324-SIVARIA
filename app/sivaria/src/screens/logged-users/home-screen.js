@@ -14,7 +14,6 @@ import { ModalTitle, ModalType } from '../../utils/enum-types-modal';
 
 import LoadingScreen from '../loading-screen';
 import { useToast } from 'react-native-toast-notifications';
-import { NavigationContainerRefContext } from '@react-navigation/native';
 import { UserContext } from '../../context/user-context';
 
 const HomeScreen = ({navigation}) => {
@@ -67,7 +66,7 @@ const HomeScreen = ({navigation}) => {
             navigation.navigate('ParentsQuestionnaireSivaria');
         }
         else if (userData.rolSlug == 'profesional') {
-            navigation.navigate('ProfessionalQuestionnaireSivaria');
+            navigation.navigate('ProfessionalsQuestionnaireSivaria');
         }
     }
 
@@ -79,6 +78,7 @@ const HomeScreen = ({navigation}) => {
 
     return (
       <Container>
+        {/*
         <View style={{flex:1, backgroundColor: 'white'}}>
             <View style={{flex:1, width: '100%', alignItems:'center', justifyContent: 'center'}}>
                 <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
@@ -86,6 +86,7 @@ const HomeScreen = ({navigation}) => {
                 </View>
             </View>
         </View>
+        */}
         <View style={{flex:1, backgroundColor: 'white'}}>
             <View style={{flex:1, width: '100%', alignItems:'center', justifyContent: 'center'}}>
                 <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
