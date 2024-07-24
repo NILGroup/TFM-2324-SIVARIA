@@ -1487,7 +1487,7 @@ const Step12 = ({ stepData, setStepData }) => {
             </View>
             <View style={{padding:5}}>
                 <Text>3. Convives con tus padres en la misma casa habitualmente:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step7.cerqs3} onSelect={text => handleInputChange('family3', text)}/>
+                <SivariaRadioButton data={yesNoData} option={stepData.step7.family3} onSelect={text => handleInputChange('family3', text)}/>
             </View>
             <View style={{padding:5}}>
                 <Text>4. Indica si tus padres están separados o divorciados:</Text>

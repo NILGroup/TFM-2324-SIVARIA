@@ -4,7 +4,7 @@ import pickle
 
 class Configurator(object):
     __modelType = None
-    __scoreType = None
+    #__scoreType = None
 
     def __init__(self):
         config = self.loadConfig()
@@ -13,14 +13,14 @@ class Configurator(object):
             modelType = config['modelType']
         except Exception:
             modelType = None
-
+        '''
         try:
             scoreType = config['scoreType']
         except Exception:
             scoreType = None
-
+        '''
         self.__modelType = modelType
-        self.__scoreType = scoreType
+        #self.__scoreType = scoreType
 
     def loadConfig(self):
         config = None
@@ -40,10 +40,9 @@ class Configurator(object):
 
         config = {
             'modelType': self.__modelType,
-            'scoreType': self.__scoreType
+            #'scoreType': self.__scoreType
         }
         pickle.dump(config, open(filename, 'wb'))
-
 
     def getModelType(self):
         return self.__modelType
@@ -54,7 +53,7 @@ class Configurator(object):
             raise ValueError('Given model type is not valid. Possible values:\n\n' + '\n'.join(constants.MODEL_TYPES))
 
         self.__modelType = modelType
-
+    '''
     def getScoreType(self):
         return self.__scoreType
 
@@ -64,3 +63,4 @@ class Configurator(object):
             raise ValueError('Given score type is not valid. Possible values:\n\n' + '\n'.join(constants.SCORE_OPTIONS))
 
         self.__scoreType = scoreType
+    '''

@@ -2,7 +2,7 @@ import os
 import pickle
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import copy
@@ -12,7 +12,7 @@ from ..expert_system import constants
 class ExpertSystem():
     __model = None
     __modelType = None
-    __scoreOption = None
+    #__scoreOption = None
 
     def __init__(self):
         pass
@@ -25,13 +25,13 @@ class ExpertSystem():
 
     def setModelType(self, modelType):
         self.__modelType = modelType
-
+    '''
     def getScoreOption(self):
         return self.__scoreOption
 
     def setScoreOption(self, scoreOption):
         self.__scoreOption = scoreOption
-
+    '''
     def divideDatasetTrainingTesting(self, dataframe):
         numberColumns = len(dataframe.columns) 
 
@@ -44,18 +44,32 @@ class ExpertSystem():
         return (X_train, X_test, y_train, y_test)
 
     def trainModel(self, X_train, y_train, classNames):
-        #try:
-        if not self.__modelType:
+        if self.__modelType is None:
             raise ValueError('Training process error: Model type not specified.\n\n' + '\n'.join(constants.MODEL_TYPES) + '\n')
     
-        if not self.__scoreOption:
-            raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
+        #if self.__scoreOption is None:
+            #raise ValueError('Training process error: Score type not specified for testing.\n\n' + '\n'.join(constants.SCORE_OPTIONS) + '\n')
 
         modelForTest = copy.deepcopy(self.__model)
 
-        self.__model.partial_fit(X_train, y_train, classes=classNames)
-        #except Exception as e:
-            #print(str(e))
+        param_grid = {
+            'var_smoothing': np.logspace(0, -9, num=100)
+        }
+        grid_search = GridSearchCV(estimator=self.__model, param_grid=param_grid, cv=5, verbose=1, scoring='accuracy')
+        grid_search.fit(X_train, y_train)
+
+        # Mejor parámetro encontrado por GridSearchCV
+        best_params = grid_search.best_params_
+
+        # Mejor modelo encontrado por GridSearchCV
+        best_model = grid_search.best_estimator_
+        #print(best_params)
+        print(best_model)
+
+        self.__model = best_model
+
+        #self.__model.partial_fit(X_train, y_train, classes=classNames)
+
         return modelForTest
     
     def predict(self, X_data):
@@ -73,17 +87,20 @@ class ExpertSystem():
         return ConfusionMatrixDisplay(confusion_matrix=cm,
                                       display_labels=classNames)
 
-    def saveModel(self, filePathByModelType, filename):
+    def saveModel(self, filePathByModelType, filename, metrics):
 
-        if not os.path.exists(constants.FILEPATH):
+        if os.path.exists(constants.FILEPATH) == False:
             os.mkdir(constants.FILEPATH)
 
-        if not os.path.exists(filePathByModelType):
+        if os.path.exists(filePathByModelType) == False:
             os.mkdir(filePathByModelType)
 
         # We save the file in a .pickle file
-        
-        pickle.dump(self.__model, open(filename, 'wb'))
+        data = {
+            'model': self.__model,
+            'metrics': metrics,
+        }
+        pickle.dump(data, open(filename, 'wb'))
 
     def testModel(self, modelForTest, y_pred, X_train, y_train, X_test, y_test):
         if not self.__modelType:
@@ -92,47 +109,28 @@ class ExpertSystem():
         if not self.__model:
             raise ValueError('Model not specified.')
 
-        if not self.__scoreOption:
-            raise ValueError('Score type not set.')
+        #if not self.__scoreOption:
+            #raise ValueError('Score type not set.')
 
-        #clf_NB = modelForTest
-        #clf_NB.fit(X_train, y_train)
-        #y_pred = clf_NB.predict(X_test)
-        Score_Ini = self.getScore(y_test, y_pred)
-        print('Selected score: ' + self.__scoreOption + ' = %.3f' % Score_Ini)
+        accuracy = accuracy_score(y_true=y_test, y_pred=y_pred)
+        precision = precision_score(y_true=y_test, y_pred=y_pred, average='weighted')
+        recall = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
+        f1 = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
+        
+        print('\n')
+        print('Accuracy = ' + str(accuracy))
+        print('Precision = ' + str(precision))
+        print('Recall = ' + str(recall))
+        print('F1 Score = ' + str(f1))
+        print('\n')
 
-        NumRepeticiones = 200 # hacemos 200 muestras con bootstrap
-        NumMuestras = X_train.shape[0] # el número de muestras totales en X_train
-        NumMuestrasTest = X_test.shape[0]
-        indices = np.arange(X_train.shape[0]) # un listado con los índices de X_train 1,2,...,NumMuestras
-        indicesTest = np.arange(X_test.shape[0])
-        clf_Boot = modelForTest
-        Cont = 0
-
-        #i=0
-
-        for _ in np.arange(NumRepeticiones):
-            indicesNew = np.random.choice(indices,NumMuestras,replace=True) #nuevos indices cogidos al azar
-            indicesNewTest = np.random.choice(indicesTest, NumMuestrasTest, replace=True)
-            X_train_Boot = X_train[indicesNew] # tomamos los datos X de esos indices
-            y_train_Boot = y_train[indicesNew] # y sus categorías
-
-            X_test_Boot = X_test[indicesNewTest]
-            y_test_Boot = y_test[indicesNewTest]
-            
-            clf_Boot.fit(X_train_Boot, y_train_Boot)
-
-            y_pred_Boot = clf_Boot.predict(X_test_Boot)
-            
-            #i+=1
-            
-            if self.getScore(y_test_Boot, y_pred_Boot) > Score_Ini:
-                Cont +=1
-
-        p_valor = (Cont+1)/(NumRepeticiones + 1)
-
-        return (p_valor, Cont)
-
+        return {
+            'accuracy': accuracy,
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1
+        }
+    '''
     def getScore(self, y_test, y_pred):
         score = 0
         
@@ -146,15 +144,22 @@ class ExpertSystem():
              score = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
              
         return score
-
+    '''
     def __buildModel(self, filename):
 
         # Si existe un modelo previamente guardado, se carga, sino, se crea uno nuevo
-        if filename and os.path.exists(filename):
+        if filename is not None and os.path.exists(filename):
             print('There exists a previously created model')
             print('Loading the model...')
-            clf_NB = pickle.load(open(filename, 'rb'))
+            data = pickle.load(open(filename, 'rb'))
+            clf_NB = data.get('model', None)
             print('Model loaded\n')
+            metrics = data.get('metrics', {})
+            print('Metrics:')
+            #print(metrics)
+            for name, metric in metrics.items():
+                print('\t'+str(name) + '= ' + str(metric))
+            print('\n')
         else:
             print('It does not exist a previous model.\nCreating a new model\n')
             clf_NB = GaussianNB()

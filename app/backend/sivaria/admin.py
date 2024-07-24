@@ -20,7 +20,7 @@ class AppUserAdmin(BaseUserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'rol')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'code', 'phone', 'birth_date','rol')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser')}),
     )
     # Añade el campo de contraseña para el formulario de creación de usuario
@@ -134,3 +134,23 @@ admin.site.register(Rol)
 admin.site.register(UserHasParent)
 admin.site.register(PushNotificationType)
 admin.site.register(EmailTemplate)
+
+admin.site.register(SenaForm)
+admin.site.register(InqForm)
+admin.site.register(RrssForm)
+admin.site.register(MulticageCad4Form)
+admin.site.register(EbipqEcipqForm)
+admin.site.register(CerqsForm)
+admin.site.register(AtiForm)
+admin.site.register(AteForm)
+admin.site.register(EdForm)
+admin.site.register(ErForm)
+admin.site.register(FamilySubForm)
+admin.site.register(InjuryForm)
+admin.site.register(ParqForm)
+admin.site.register(SocialDataForm)
+admin.site.register(SenaFamilyForm)
+
+admin.site.register(YoungForm)
+admin.site.register(FamilyForm)
+admin.site.register(ProfessionalForm)

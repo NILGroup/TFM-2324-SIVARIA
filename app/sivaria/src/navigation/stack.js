@@ -14,6 +14,8 @@ import ProfessionalsQuestionnaireSivariaScreen from "../screens/logged-users/que
 import ForgotPasswordScreen from "../screens/non-logged-users/forgot-password-screen";
 import RecoveryPasswordScreen from "../screens/non-logged-users/recovery-password-screen";
 import { YoungstersStackNavigator } from "./questionnaires-navigators/youngsters-questionnaire-navigator";
+import { FamiliesStackNavigator } from "./questionnaires-navigators/families-questionnaire-navigator";
+import { ProfessionalsStackNavigator } from "./questionnaires-navigators/professionals-questionnaire-navigator";
 
 const UserStack = createNativeStackNavigator();
 
@@ -31,8 +33,8 @@ export const UserStackNavigator = ({navigation}) => {
           <UserStack.Screen name="Dashboard" component={DashboardTabsScreen}/>     
           <UserStack.Screen name="EditData" component={EditDataScreen}/>
           <UserStack.Screen name="YoungstersQuestionnaireSivaria" component={YoungstersStackNavigator}/>
-          <UserStack.Screen name="ParentsQuestionnaireSivaria" component={ParentsQuestionnaireSivariaScreen}/>
-          <UserStack.Screen name="ProfessionalsQuestionnaireSivaria" component={ProfessionalsQuestionnaireSivariaScreen}/>
+          <UserStack.Screen name="ParentsQuestionnaireSivaria" component={FamiliesStackNavigator}/>
+          <UserStack.Screen name="ProfessionalsQuestionnaireSivaria" component={ProfessionalsStackNavigator}/>
         </>
       ) : (
         <>

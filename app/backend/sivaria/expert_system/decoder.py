@@ -26,11 +26,11 @@ class Decoder(object):
             
             newDF = Decoder.removeWhiteSpaces(newDF)
 
-            if is_numeric_dtype(newDF['edad']):
+            if 'edad' in newDF and is_numeric_dtype(newDF['edad']):
                 newDF['edad'] = newDF['edad'].apply(Decoder.newCodeAgeColumn)
-            if is_numeric_dtype(newDF['altura']):
+            if 'altura' in newDF and is_numeric_dtype(newDF['altura']):
                 newDF['altura'] = newDF['altura'].apply(Decoder.newCodeHeightColumn)
-            if is_numeric_dtype(newDF['peso']):
+            if 'peso' in newDF and is_numeric_dtype(newDF['peso']):
                 newDF['peso'] = newDF['peso'].apply(Decoder.newCodeWeightColumn)
         
         # Codificamos los valores de todas las columnas a vlores numéricos
@@ -161,6 +161,19 @@ class Decoder(object):
             return "2000-2499"
         elif income >= 2500:
             return "MAS DE 2500"
+        else:
+            return False
+        
+    @staticmethod
+    def newCodeMonthlyFamiliarIncome(income):
+        if income <= 999:
+            return "X<=999"
+        elif income >= 1000 and income < 1500:
+            return "1000-1499"
+        elif income >= 1500 and income < 1999:
+            return "1500-1999"
+        elif income >= 2000:
+            return "X>=2000"
         else:
             return False
     

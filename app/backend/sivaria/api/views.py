@@ -864,14 +864,18 @@ class ExpertSystem_APIView_Predict(APIView):
 
         rol_slug = rol.get('slug')
         
+        #GUARDAR DATOS EN BBDD (DENTRO DE LA FUNCIÓN)
+        
         #DECODIFICAR Y MAPEAR DATASET RECIBIDO DEL APP
         sivaria_mapping = True
-        mapped_data = user_data_sivaria if not sivaria_mapping else expert_system_service.mapData(user.get('id', None), user_data_sivaria, rol_slug)
-
         
-        #GUARDAR DATOS EN BBDD
-        
+        decoded_bytes = base64.b64decode(user_data_sivaria)
+        json_str = decoded_bytes.decode('utf-8')
+        sivaria_data_decoded = json.loads(json_str)
 
+        form_instance, expert_system_json = ((None, sivaria_data_decoded) if not sivaria_mapping 
+                                             else expert_system_service.map_data(user, sivaria_data_decoded, rol_slug))
+        #print(form_instance)
         #PREDICCION
 
         model_type = ''
@@ -885,8 +889,23 @@ class ExpertSystem_APIView_Predict(APIView):
         if model_type.lower() not in ['autoinforme', 'familia', 'profesional']:
             response['data'] = 'Tipo de modelo '+ model_type +' no encontrado.'
             return Response(response, status=status.HTTP_404_NOT_FOUND) 
-
-        desenlace = expert_system_service.predict(model_type, mapped_data)
+        
+        json_encoded = base64.b64encode(json.dumps(expert_system_json).encode('utf-8'))
+        desenlace = expert_system_service.predict(model_type, json_encoded)
+        
+        serializer = None
+        if rol_slug == 'joven':
+            serializer = YoungFormSerializer(form_instance, data={'prediction': desenlace}, partial=True)
+        elif rol_slug == 'madre' or rol_slug == 'padre':
+            serializer = FamilyFormSerializer(form_instance, data={'prediction': desenlace}, partial=True)
+        elif rol_slug == 'profesional':
+            serializer = ProfessionalFormSerializer(form_instance, data={'prediction': desenlace}, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+        
+        #return 'HOLA'
+            
         '''
         # Decoding data
 
@@ -951,40 +970,54 @@ class ExpertSystem_APIView_Predict(APIView):
             push_template_parents = push_notification_type_service.get_push_notification_type_by_slug_json(slug=code_parents)
             email_template_parents = email_template_service.get_email_template_by_code_json(code=code_parents)
             
-            if rol_slug == 'joven':
-                userId = user.get('id',None)
-            elif rol_slug == 'madre' or rol_slug == 'padre':
-                pass
-            elif rol_slug == 'profesional':
-                pass
-
-            user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(son_id=userId)
-            email_parent_1 = user_has_parent.get('email_parent_1',None)
-            email_parent_2 = user_has_parent.get('email_parent_2',None)
-
             #print(email_parent_1)
             #print(email_parent_2)
             to_mail = []
             to_push = []
-            if email_parent_1:
-                try:
-                    # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
-                    parent_1 = user_service.get_user_by_email_json(email=email_parent_1)
-                    expo_token = parent_1.get('expo_token', None)
-                    to_push.append(expo_token)
-                except:
-                    # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
-                    to_mail.append(email_parent_1)
+            if rol_slug == 'joven':
+                userId = user.get('id',None)
+                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(son_id=userId)
+                email_parent_1 = user_has_parent.get('email_parent_1',None)
+                email_parent_2 = user_has_parent.get('email_parent_2',None)
 
-            if email_parent_2:
+                if email_parent_1:
+                    try:
+                        # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                        parent_1 = user_service.get_user_by_email_json(email=email_parent_1)
+                        expo_token = parent_1.get('expo_token', None)
+                        to_push.append(expo_token)
+                    except:
+                        # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                        to_mail.append(email_parent_1)
+
+                if email_parent_2:
+                    try:
+                        # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                        parent_2 = user_service.get_user_by_email_json(email=email_parent_2)
+                        expo_token = parent_2.get('expo_token', None)
+                        to_push.append(expo_token)
+                    except:
+                        # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                        to_mail.append(email_parent_2)
+            elif rol_slug == 'madre' or rol_slug == 'padre':
+                    try:
+                        # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                        parent_expo_token = user.get('expo_token', None)
+                        to_push.append(parent_expo_token)
+                    except:
+                        # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                        parent_email = user.get('email', None)
+                        to_mail.append(parent_email)
+                
+            elif rol_slug == 'profesional':
                 try:
                     # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
-                    parent_2 = user_service.get_user_by_email_json(email=email_parent_2)
-                    expo_token = parent_2.get('expo_token', None)
-                    to_push.append(expo_token)
+                    professional_expo_token = user.get('expo_token', None)
+                    to_push.append(professional_expo_token)
                 except:
                     # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
-                    to_mail.append(email_parent_2)
+                    professional_email = user.get('email', None)                   
+                    to_mail.append(professional_email)
 
             #print(to_push)
             #print(to_mail)

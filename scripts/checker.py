@@ -105,7 +105,7 @@ class Checker(object):
 
         if config.getModelType() is None:
             raise CommandLineException('Model type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]')
-
+        '''
         if config.getScoreType() is None:
             raise CommandLineException('Score type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]')
-    
+        '''
