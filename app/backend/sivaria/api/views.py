@@ -251,14 +251,14 @@ class AppUser_APIView_Register(APIView):
         }
 
         if not request.data:
-            response['data'] = 'Petición vacía'
+            response['message'] = 'Petición vacía'
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         email = request.data.get('email', None)
         try:
             email_clean = user_service.clean_email(email)
         except AttributeError as e:
-            response['data'] = str(e)
+            response['message'] = str(e)
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -275,17 +275,18 @@ class AppUser_APIView_Register(APIView):
             'password': request.data.get('password', None),
             'phone': request.data.get('phone', None),
             'rol': rol_instance,
-            'expo_token': request.data.get('expo_token', None)
+            'expo_token': request.data.get('expo_token', None),
+            'birth_date': request.data.get('birth_date', None),
         }
 
         try:
             check_user_data = user_service.get_user_by_email(email=data['email'])
             if check_user_data:
-                response['data'] = 'Ya existe un usuario con este email.'
+                response['message'] = 'Ya existe un usuario con este email.'
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         except:
             pass
-
+        
         # Validate data, in this case, the serializar makes the validation job with is_valid function()
         # Email would be already validated by EmailField in model
         # Password will be validated by the validators set in AUTH_PASSWORD_VALIDATORS property in the settings.py file
@@ -295,39 +296,122 @@ class AppUser_APIView_Register(APIView):
         # The user is saved in AppUser table
         #serializer_response, saved = userService.save_user(data)
 
-        user = user_service.register_user(data=data)
-        if user:
-            if rol_slug == 'joven':
-                #user = userService.get_user_by_email_json(data['email'])
-                email_parent_1 = request.data.get('email_parent_1', None)
-                email_parent_2 = request.data.get('email_parent_2', None)
-                if email_parent_1 is None and email_parent_2 is None:
+        if rol_slug == 'joven':
+            #user = userService.get_user_by_email_json(data['email'])
+            email_parent_1 = request.data.get('email_parent_1', None)
+            email_parent_2 = request.data.get('email_parent_2', None)
+            email_responsible = request.data.get('email_responsible', None)
+            if not email_parent_1 and not email_parent_2:
+                response = {
+                    'status': 'error',
+                    'message': 'No se ha dado ningún email de ningún padre.'
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            
+            if not email_responsible:
+                response = {
+                    'status': 'error',
+                    'message': 'No se ha asignado ningún profesional a este usuario'
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            
+            responsible = user_service.get_user_by_email(email=email_responsible)
+            responsible_json = user_service.get_user_by_email_json(email=email_responsible)
+            responsible_rol = responsible_json.get('rol', None)
+            if responsible_rol:
+                rol_slug = responsible_rol.get('slug', None)
+                if rol_slug and rol_slug != 'profesional':
                     response = {
                         'status': 'error',
-                        'message': 'No se ha dado ningún email de ningún padre.'
+                        'message': 'El usuario asignado no tiene el rol de profesional'
                     }
                     return Response(response, status=status.HTTP_400_BAD_REQUEST)
-                
+
+            user = user_service.register_user(data=data)
+            if user:
                 uhpData = {
-                    'son': user,
+                    'child': user,
                     'email_parent_1': email_parent_1,
-                    'email_parent_2': email_parent_2
+                    'email_parent_2': email_parent_2,
+                    'responsible': responsible,
                 }
 
                 _ = user_has_parent_service.insert_user_has_parent(data=uhpData)
 
-
-            token, created = Token.objects.get_or_create(user=user)
-            response = {
-                'status': 'ok',
-                'message': 'Usuario registrado correctamente',
-                'token': token.key
-            }
-
-            return Response(response, status=status.HTTP_201_CREATED)
+        elif rol_slug == 'padre' or rol_slug == 'madre':
             
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        
+            email_child = request.data.get('email_child', None)
+            try:
+                child = user_service.get_user_by_email_json(email_child)
+            except Http404 as e:
+                error_message = str(e)
+                
+                response = {
+                    'status': 'error',
+                    'message': error_message + '. ' + 'No hay un usuario registrado con el email ' + email_child
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            
+            child_rol = child.get('rol')
+            if child_rol:
+                slug = child_rol.get('slug', None)
+                if slug and slug !='joven':
+                    response = {
+                        'status': 'error',
+                        'message': 'El usuario no está registrado como joven.'
+                    }
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
+                    
+                child_id = child.get('id')
+                #print(child)
+                try:
+                    user_has_parent = user_has_parent_service.get_user_has_parent_by_son(child_id)
+                    user_has_parent_data = {}
+                    email_parent_1 = user_has_parent.email_parent_1
+                    email_parent_2 = user_has_parent.email_parent_2
+                    if not email_parent_1:
+                        user_has_parent_data['email_parent_1'] = email_clean
+                    if not email_parent_2 and not user_has_parent_data.get('email_parent_1', None):
+                        user_has_parent_data['email_parent_2'] = email_clean
+                    else:
+                        response = {
+                            'status': 'error',
+                            'message': 'El hijo o hija ya tiene dos padres registrados dentro de la plataforma.'
+                        }
+                        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+                    #print(data)
+                    user = user_service.register_user(data=data)
+                    if user:
+                        #print(user_has_parent_data)
+                        #print(user_has_parent)
+                        serializer_message, success = user_has_parent_service.update_user_has_parent(user_has_parent, data=user_has_parent_data, partial=True)
+                        if not success:
+                            response = {
+                                'status': 'error',
+                                'message': 'Error durante la actualización de los datos de la relación del padre con el hijo.\n' + serializer_message 
+                            }
+                            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+                    
+                except Http404:
+                    user = user_service.register_user(data=data)
+                    if user:
+                        uhpData = {
+                            'child': child,
+                            'email_parent_1': email_clean,
+                        }
+                        _ = user_has_parent_service.insert_user_has_parent(data=uhpData)
+        else:
+            user = user_service.register_user(data=data)
+
+        token, created = Token.objects.get_or_create(user=user)
+        response = {
+            'status': 'ok',
+            'message': 'Usuario registrado correctamente',
+            'token': token.key
+        }
+
+        return Response(response, status=status.HTTP_201_CREATED)        
       
 '''
 http://127.0.0.1:8000/sivaria/v1/user/login
@@ -385,9 +469,10 @@ class AppUser_APIView_Login(APIView):
             if rol:
                 slug = rol.get('slug', None)
                 if slug and slug=='joven':
-                    user_has_parent_data = user_has_parent_service.get_user_has_parent_by_son_json(son_id=user_data['id'])
+                    user_has_parent_data = user_has_parent_service.get_user_has_parent_by_son_json(child_id=user_data['id'])
                     user_data['email_parent_1'] = user_has_parent_data.get('email_parent_1', None)
                     user_data['email_parent_2'] = user_has_parent_data.get('email_parent_2', None)
+                    user_data['responsible'] = user_has_parent_data.get('responsible', None)
             user_data.pop('password')
             user_data.pop('expo_token')
         except:
@@ -596,16 +681,47 @@ class AppUser_APIView_Detail_Email(APIView):
             if slug == 'joven':
                 user['email_parent_1'] = user_has_parent.get('email_parent_1', None)
                 user['email_parent_2'] = user_has_parent.get('email_parent_2', None) 
-
+                responsible_id = user_has_parent.get('responsible', None)
+                responsible = user_service.get_user_by_userId_json(responsible_id)
+                user['responsible'] = (None if not responsible 
+                                       else (
+                                           responsible.get('first_name') + ' ' + responsible.get('last_name') + 
+                                           ' - ' + responsible.get('email', None)
+                                           ))
+            elif slug == 'padre' or slug == 'madre':
+                #print(user)
+                user_has_parent_registers = user_has_parent_service.get_children_by_email_parent(email=user.get('email'))
+                #print(children)
+                children = []
+                '''
+                children_emails = []
+                for user in children:
+                    child = user_service.get_user_by_userId_json(children.id)
+                    children_emails.append(child.get('email', ''))
+                ''' 
+                for user_has_parent_register in user_has_parent_registers:
+                    children.append(user_has_parent_register.child.first_name + ' ' + user_has_parent_register.child.last_name + ' ('+ user_has_parent_register.child.code +')')
+                user['children'] = ','.join(children)
+            elif slug == 'profesional':
+                professional_id = user.get('id')
+                user_has_parent_registers=user_has_parent_service.get_children_by_responsible(responsible_id=professional_id)
+                assigned_children = []
+                for user_has_parent_register in user_has_parent_registers:
+                    assigned_children.append(user_has_parent_register.child.first_name + ' ' + user_has_parent_register.child.last_name + ' ('+ user_has_parent_register.child.code +')')
+                user['to_user'] = ','.join(assigned_children)
 
         titles = {
             'email': 'Email',
             'first_name': 'Nombre',
             'last_name': 'Apellidos',
             'phone': 'Teléfono',
+            'birth_date': 'Fecha de nacimiento', 
             'email_parent_1': 'Email pariente 1',
             'email_parent_2': 'Email pariente 2',
+            'responsible': 'Profesional asignado',
             'rol': 'Rol',
+            'children': 'Hijos',
+            'to_user': 'Pacientes asignados',
         }
 
         data = []
@@ -614,6 +730,12 @@ class AppUser_APIView_Detail_Email(APIView):
             title = titles.get(key, None)
             if title:
                 if key != 'rol':
+                    #print(value)
+                    #value = value if key != 'birth_date' else value.strftime('%d/%m/%Y')
+                    if key == 'birth_date' and value:
+                        year, month, day = value.split('-')
+                        value = day + '/' + month + '/' + year
+                    
                     singleData = {
                         'title': title,
                         'value': None if not value or value == '' else value,
@@ -821,8 +943,8 @@ class ExpertSystem_APIView_Predict(APIView):
 
         '''
         Debe hacer 3 cosas.
-        1. Guardar los datos del cuestionario en BBDD
-        2. Realizar predicción
+        1. Guardar los datos del cuestionario en BBDD (OK)
+        2. Realizar predicción (OK)
         3. Establecer las acciones dependiendo del tipo de riesgo devuelto de la predicción. (OK)
         '''
         response = {
@@ -919,20 +1041,20 @@ class ExpertSystem_APIView_Predict(APIView):
         print(newDF)
         '''
 
-        #argc = []
-        #result = controller.execute(argc)
-
         #ACCIONES DEL USUARIO (MANDAR EMAIL O PUSH A PROFESIONALES Y PADRES)
         #ENVIANDO PUSH A LOS PROFESIONALES
-        if desenlace and (desenlace == 'IDEACION' or desenlace == 'AUTOLESION' or desenlace == 'PLANIFICACION' or desenlace == 'INTENCION'):
+        # and (desenlace == 'IDEACION' or desenlace == 'AUTOLESION' or desenlace == 'PLANIFICACION' or desenlace == 'INTENCION')
+        if desenlace:
             rol = rol_service.get_rol_by_slug_json(slug='profesional')
             rolId = rol.get('id', None)
             #print(rolId)
-            professionals = user_service.get_all_users_by_rol(rol=rolId)
+            #professionals = user_service.get_all_users_by_rol(rol=rolId)
             #print(professionals)
 
             code = None
-            if desenlace == 'AUTOLESION':
+            if desenlace == 'NINGUNO':
+                code = 'riesgo_leve'
+            elif desenlace == 'AUTOLESION':
                 code = 'riesgo_moderado'
             elif desenlace == 'IDEACION':
                 code = 'riesgo_moderado'
@@ -946,12 +1068,87 @@ class ExpertSystem_APIView_Predict(APIView):
             push_template = push_notification_type_service.get_push_notification_type_by_slug_json(slug=code_professional)
             email_template = email_template_service.get_email_template_by_code_json(code=code_professional)
 
+            # ENVIO DE EMAIL Y PUSH AL PROFESIONAL ASIGNADO. DEPENDIENDO DE QUIEN COMPLETO EL CUESTIONARIO
             to_mail = []
             expo_tokens = []
+            '''
             for professional in professionals:
                 to_mail.append(professional.get('email', None))
                 expo_tokens.append(professional.get('expo_token', None))
-            
+            '''
+            email_professional = None
+            email_parent_1 = None
+            email_parent_2 = None
+            email_professional = None
+            expo_token_parent_1 = None
+            expo_token_parent_2 = None
+
+            if rol_slug == 'joven':
+                userId = user.get('id',None)
+                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(child_id=userId)
+                responsible_id = user_has_parent.get('responsible', '')
+                professional = user_service.get_user_by_userId_json(responsible_id)
+
+                email_parent_1 = user_has_parent.get('email_parent_1', None)
+                if email_parent_1:
+                    parent_1 = user_service.get_user_by_email_json(email_parent_1)
+                    expo_token_parent_1 = parent_1.get('expo_token', None)
+
+                email_parent_2 = user_has_parent.get('email_parent_2', None)
+                if email_parent_2:
+                    parent_2 = user_service.get_user_by_email_json(email_parent_2)
+                    expo_token_parent_2 = parent_2.get('expo_token', None)
+                
+                email_professional = professional.get('email', None)
+                expo_token_professional = professional.get('expo_token', None)
+
+            elif rol_slug == 'padre' or rol_slug == 'madre':
+                step1 = sivaria_data_decoded.get('step1', None)
+                child_code = step1.get('idChild', None)
+                child = user_service.get_user_by_code_json(child_code)
+                child_id = child.get('id')
+                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(child_id)
+                responsible_id = user_has_parent.get('responsible', '')
+                professional = user_service.get_user_by_userId_json(responsible_id)
+
+                email_parent_1 = user_has_parent.get('email_parent_1', None)
+                if email_parent_1:
+                    parent_1 = user_service.get_user_by_email_json(email_parent_1)
+                    expo_token_parent_1 = parent_1.get('expo_token', None)
+
+                email_parent_2 = user_has_parent.get('email_parent_2', None)
+                if email_parent_2:
+                    parent_2 = user_service.get_user_by_email_json(email_parent_2)
+                    expo_token_parent_2 = parent_2.get('expo_token', None)
+
+                email_professional = professional.get('email', None)
+                expo_token_professional = professional.get('expo_token', None)
+
+            elif rol_slug == 'profesional':
+                step1 = sivaria_data_decoded.get('step1', None)
+                child_code = step1.get('idPatient', None)
+                child = user_service.get_user_by_code_json(child_code)
+                child_id = child.get('id')
+                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(child_id)
+
+                email_parent_1 = user_has_parent.get('email_parent_1', None)
+                if email_parent_1:
+                    parent_1 = user_service.get_user_by_email_json(email_parent_1)
+                    expo_token_parent_1 = parent_1.get('expo_token', None)
+
+                email_parent_2 = user_has_parent.get('email_parent_2', None)
+                if email_parent_2:
+                    parent_2 = user_service.get_user_by_email_json(email_parent_2)
+                    expo_token_parent_2 = parent_2.get('expo_token', None)
+
+                email_professional = user.get('email', None)
+                expo_token_professional = user.get('expo_token', None)
+
+            if email_professional:
+                to_mail.append(email_professional)
+            if expo_token_professional:
+                expo_tokens.append(expo_token_professional)
+
             title = push_template.get('title' , None)
             message = push_template.get('body' , None)
             message = message.replace(r"{{desenlace}}", desenlace)
@@ -974,9 +1171,10 @@ class ExpertSystem_APIView_Predict(APIView):
             #print(email_parent_2)
             to_mail = []
             to_push = []
+            '''
             if rol_slug == 'joven':
                 userId = user.get('id',None)
-                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(son_id=userId)
+                user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(child_id=userId)
                 email_parent_1 = user_has_parent.get('email_parent_1',None)
                 email_parent_2 = user_has_parent.get('email_parent_2',None)
 
@@ -987,6 +1185,8 @@ class ExpertSystem_APIView_Predict(APIView):
                         expo_token = parent_1.get('expo_token', None)
                         to_push.append(expo_token)
                     except:
+                        pass
+                    finally:
                         # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
                         to_mail.append(email_parent_1)
 
@@ -997,6 +1197,8 @@ class ExpertSystem_APIView_Predict(APIView):
                         expo_token = parent_2.get('expo_token', None)
                         to_push.append(expo_token)
                     except:
+                        pass
+                    finally:
                         # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
                         to_mail.append(email_parent_2)
             elif rol_slug == 'madre' or rol_slug == 'padre':
@@ -1005,22 +1207,51 @@ class ExpertSystem_APIView_Predict(APIView):
                         parent_expo_token = user.get('expo_token', None)
                         to_push.append(parent_expo_token)
                     except:
+                        pass
+                    finally:
                         # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
                         parent_email = user.get('email', None)
                         to_mail.append(parent_email)
                 
             elif rol_slug == 'profesional':
                 try:
-                    # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
-                    professional_expo_token = user.get('expo_token', None)
-                    to_push.append(professional_expo_token)
-                except:
-                    # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
-                    professional_email = user.get('email', None)                   
-                    to_mail.append(professional_email)
+                    step1 = sivaria_data_decoded.get('step1', None)
+                    child_code = step1.get('idChild', None)
+                    child = user_service.get_user_by_code_json(child_code)
+                    child_id = child.get('id')
+                    user_has_parent = user_has_parent_service.get_user_has_parent_by_son_json(child_id)
+                    email_parent_1 = user_has_parent.get('email_parent_1', '')
+                    email_parent_2 = user_has_parent.get('email_parent_2', '')
 
+                    parent_1 = user_service.get_user_by_email_json(email_parent_1)
+                    parent_2 = user_service.get_user_by_email_json(email_parent_2)
+                    
+                    # SI EL PADRE O MADRE ESTA REGISTRADO EN LA APLICACION, SE LE ENVIA UN PUSH AL MOVIL
+                    parent_1_expo_token = parent_1.get('expo_token', None)
+                    parent_2_expo_token = parent_2.get('expo_token', None)
+                    
+                    to_push.append(parent_1_expo_token)
+                    to_push.append(parent_2_expo_token)
+                except:
+                    pass
+                finally:
+                    # SI EL PADRE O LA MADRE NO ESTAN REGISTRADOS EN LA APLICACION, SE LE ENVIA UN EMAIL
+                    to_mail.append(email_parent_1)                   
+                    to_mail.append(email_parent_2)
+            '''
             #print(to_push)
             #print(to_mail)
+
+            if expo_token_parent_1:
+                to_push.append(expo_token_parent_1)
+            if expo_token_parent_2:
+                to_push.append(expo_token_parent_2)
+
+            if email_parent_1:
+                to_mail.append(email_parent_1)
+            if email_parent_2:
+                to_mail.append(email_parent_2)
+
             if to_push:
                 title = push_template_parents.get('title', None)
                 message = push_template_parents.get('body', None)
@@ -1204,3 +1435,102 @@ class EmailRecoveryPasswordApiView(APIView):
         except Exception as e:
             error_message = str(e)
             return Response({'status': 'error', 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+'''
+http://127.0.0.1:8000/sivaria/v1/forms/getFormsDT
+{
+    "email": <str:user_email>
+}
+
+'''
+class Forms_APIView_GetFormsDT(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        user_service = UserService()
+        form_service = FormService()
+
+        response = {
+            'status': 'error',
+            'message': 'Error en la obtención de los registros',
+        }
+        #print(request.data)
+
+        email = request.data.get('email', None)
+        #print(email)
+        
+        try:
+            user_service.validate_email(email)
+        except:
+            response['data'] = 'Email vacío'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response['data'] = str(e)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+        #rol_data = rol_service.get_rol_by_id_json(rolId)
+        user = user_service.get_user_by_email_json(email=email_clean)
+        forms = form_service.get_forms_by_user_DT(user)   
+                
+        #rol_service.get_rol_by_id_json(rol)
+
+        response = {
+            'status': 'ok',
+            'message': 'Datos devueltos correctamente',
+            'data': forms,
+        }
+        return Response(response, status=status.HTTP_200_OK) 
+    
+'''
+http://127.0.0.1:8000/sivaria/v1/forms/getFormInfo
+{
+    "email": <str:user_email>,
+    "code": <str: form_code>
+}
+
+'''
+class Forms_APIView_GetFormInfo(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        rol_service = RolService()
+        user_service = UserService()
+        form_service = FormService()
+
+        email = request.data.get('email', None)
+        code = request.data.get('code', None)
+        
+        try:
+            user_service.validate_email(email)
+        except:
+            response['data'] = 'Email vacío'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response['data'] = str(e)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+        #rol_data = rol_service.get_rol_by_id_json(rolId)
+        user = user_service.get_user_by_email_json(email=email_clean)
+        form_info = form_service.get_form_info(user, code)   
+                
+        #rol_service.get_rol_by_id_json(rol)
+
+        response = {
+            'status': 'ok',
+            'message': 'Datos devueltos correctamente',
+            'data': form_info,
+        }
+        return Response(response, status=status.HTTP_200_OK) 

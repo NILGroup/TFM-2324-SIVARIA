@@ -10,6 +10,13 @@ from .models import *
 from .forms.forms import CustomAppUserCreationForm, CustomAppUserChangeForm
 # Register your models here.
 
+
+from django.conf.locale.es import formats as es_formats
+
+es_formats.DATETIME_FORMAT = "d/m/Y H:i:s"
+es_formats.DATE_FORMAT = "d/m/Y"
+
+
 class AppUserAdmin(BaseUserAdmin):
     # Los formularios para agregar y cambiar instancias de usuario
     form = CustomAppUserChangeForm

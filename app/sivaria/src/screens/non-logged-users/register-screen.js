@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Dimensions, Platform } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Platform, TextInput } from 'react-native';
 import Dropdown from '../../components/dropdown';
 import ShowHidePasswordInput from '../../components/show-hide-password-input';
 import axiosInstance from '../../utils/axios-config-web';
@@ -19,6 +19,9 @@ import useModal from '../../utils/modal-hook';
 import { useToast } from 'react-native-toast-notifications';
 import SivariaSpanishPhoneInput from '../../components/sivaria-spanish-phone-input';
 
+import { DatePickerInput } from 'react-native-paper-dates';
+import { PrivacyPolicyModal } from '../privacy-policy-modal';
+
 const { height } = Dimensions.get('window');
 
 const RegisterScreen = ({navigation}) => {
@@ -32,8 +35,16 @@ const RegisterScreen = ({navigation}) => {
     const [rol, setRol] = useState('');
     const [emailParent1, setEmailParent1] = useState('');
     const [emailParent2, setEmailParent2] = useState('');
+    const [emailResponsible, setEmailResponsible] = useState('');
+    const [emailChild, setEmailChild] = useState('');
 
-    const [roles, setRoles] = useState([]);
+    const [roles, setRoles] = useState([
+        { label: 'Padre', value: 'padre' },
+        { label: 'Madre', value: 'madre' },
+        { label: 'Profesional', value: 'profesional' },
+    ]);
+    
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -48,6 +59,18 @@ const RegisterScreen = ({navigation}) => {
     
     const { modalType, modalTitle, modalMessage, isVisible, setModalVisible, setVisibleModal } = useModal();
 
+    const [isVisiblePrivacyModal, setIsVisiblePrivacyModal] = useState(false);
+
+    //const [openDateModal, setOpenDateModal] = useState(false);
+    const [inputDate, setInputDate] = useState('');
+        
+    // Fecha mínima permitida
+    const minDate = new Date('1950-01-01');
+
+    // Calcula la fecha máxima permitida (hoy menos 12 años)
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() - 12);
+    /*
     useEffect(() => {
         const fetchRoles = async () => {
             await axiosInstance.get('/sivaria/v1/rol')
@@ -76,10 +99,10 @@ const RegisterScreen = ({navigation}) => {
         setIsLoading(true);
         fetchRoles();
       }, []
-    );
+    );*/
     
     useEffect(() => {
-        // AÑADIR VALIDACIONES
+
         if(firstName && 
             lastName &&
             email &&
@@ -88,12 +111,20 @@ const RegisterScreen = ({navigation}) => {
             phoneNumber &&
             rol &&
             emailParent1 &&
-            emailParent2) 
+            emailParent2 &&
+            emailResponsible &&
+            emailChild &&
+            inputDate
+        ) 
         {
             setIsDisabled(true);
         }
-    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2]);
+    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2, emailResponsible, inputDate]);
 
+    function validateEmail(email) {
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -114,6 +145,9 @@ const RegisterScreen = ({navigation}) => {
         if(!email) {            
             message += 'El campo del email está vacío.\n\n';
         }
+        if(!validateEmail(email)){
+            message += 'El formato del email es incorrecto.\n\n';
+        }
         if(password && confirmPassword && (password !== confirmPassword)) {
             message += 'Las dos contraseñas no coinciden.\n\n';
         }
@@ -129,13 +163,37 @@ const RegisterScreen = ({navigation}) => {
         else if(phoneNumber && !isNaN(phoneNumber) && (!phoneNumber.startsWith('6') && !phoneNumber.startsWith('7'))) {
             message += 'El número de teléfono introducido no empieza con 6 o 7';
         }
+        if(!inputDate) {
+            message += 'El campo de la fecha de nacimiento está vacío.\n\n';
+        }
         if(!rol) {            
             message += 'El campo del rol está vacío.\n\n';
         }
-        if(rol == 'joven' && !emailParent1 && !emailParent2) {            
+        if(rol === 'joven' && !emailParent1 && !emailParent2) {            
             message += 'Los campos de los emails están vacíos. Se debe rellenar al menos uno de ellos.\n\n';
         }
+        
+        if(rol === 'joven' && emailParent1 && !validateEmail(emailParent1)) {            
+            message += 'El formato del email de la figura parental 1 es incorrecto.\n\n';
+        }
+        if(rol === 'joven' && emailParent2 && !validateEmail(emailParent2)) {            
+            message += 'El formato del email de la figura parental 2 es incorrecto.\n\n';
+        }
 
+        if(rol === 'joven' && !emailResponsible) {            
+            message += 'El campo del email del profesional responsable está vacío.\n\n';
+        }
+        if(rol === 'joven' && emailResponsible && !validateEmail(emailResponsible)) {            
+            message += 'El formato del email del email del profesional responsable es incorrecto.\n\n';
+        }
+        if((rol === 'padre' || rol === 'madre') && !emailChild) {            
+            message += 'El campo del email del hijo está vacío.\n\n';
+        }
+        
+        if((rol === 'padre' || rol === 'madre') && emailChild && !validateEmail(emailChild)) {            
+            message += 'El formato del email del hijo es incorrecto.\n\n';
+        }
+        //console.log(message);
         if(message.length !== 0) {
             //setIsLoading(false);
             toast.show(
@@ -147,9 +205,17 @@ const RegisterScreen = ({navigation}) => {
             //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
         }
         else {
-            console.log('LOGEADO');
-            /*
+            //console.log('registrado');
+            
             setIsLoading(true);
+            let year = inputDate.getFullYear();
+            let month = inputDate.getMonth() + 1;
+            let day = inputDate.getDate();
+
+            month = month < 10 ? `0${month}` : month;
+            day = day < 10 ? `0${day}` : day;
+
+            dateFormatted = `${day}/${month}/${year}`;
             const data = {
                 first_name:firstName,
                 last_name:lastName,
@@ -157,21 +223,25 @@ const RegisterScreen = ({navigation}) => {
                 password:password,
                 phone:phoneNumber,
                 rol_slug:rol,
+                birth_date:dateFormatted,
             }
 
             if (rol == 'joven') {
-                // AÑADIR LOS EMAILS DE LOS PADRES
                 data.email_parent_1 = emailParent1;
                 data.email_parent_2 = emailParent2;
+                data.email_responsible = emailResponsible;
+            }
+            if (rol === 'madre' || rol === 'padre') {
+                data.email_child = emailChild;
             }
 
             if (Platform.OS !== 'web') {
                 data['expo_token'] = expoPushToken.data
             }
 
+            console.log(data);
             await axiosInstance.post('/sivaria/v1/user/register', data)
                 .then(function (response) {
-                    setIsLoading(false);
                     let message = 'El usuario se ha registrado correctamente';
                     //setVisibleModal(ModalType.Information, ModalTitle.InformationTitle, message);
                     toast.show(
@@ -183,8 +253,7 @@ const RegisterScreen = ({navigation}) => {
 
                 })
                 .catch(function (error) {
-                    setIsLoading(false);
-                    let message = 'Ha habido un error durante el proceso de registro del usuario. ' + error.response.data.data;
+                    let message = 'Ha habido un error durante el proceso de registro del usuario.\n' + error.response.data.message;
                     //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
                     //Alert.alert('Error', 'Error en el registro. Inténtelo de nuevo.')
                     toast.show(
@@ -194,7 +263,8 @@ const RegisterScreen = ({navigation}) => {
                         }
                     );
                 });
-                */
+                
+                setIsLoading(false);
         }
     }
 
@@ -205,22 +275,83 @@ const RegisterScreen = ({navigation}) => {
                 email && 
                 password && 
                 confirmPassword &&
-                rol
+                rol &&
+                inputDate
             ) {
-                const areFieldsFilled = firstName && lastName && email && password && confirmPassword && rol;
+                let areFieldsFilled = firstName && lastName && email && password && confirmPassword && rol && inputDate;
+                
+                //let year = inputDate.getFullYear();
+                //let month = inputDate.getMonth();
+                //let day = inputDate.getDate();
+                //console.log(year);
+                //console.log(month);
+                //console.log(day);
+                //areFieldsFilled = year && month && day;
 
                 if (!areFieldsFilled) {
                     setIsDisabled(true);
                     return;
                 }
 
-                const isRoleValid = rol === 'joven' ? (emailParent1 || emailParent2) : rol !== '0';
+                const isRoleValid = ((rol === 'joven') 
+                                    ? ((emailParent1 || emailParent2) && emailResponsible) 
+                                    : ((rol === 'madre' || rol === 'padre') 
+                                        ? (emailChild) 
+                                        : rol !== '0'));
 
                 setIsDisabled(!isRoleValid);
             }
         }
         enableRegisterButton();
-    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2]);
+    }, [firstName, lastName, email, password, confirmPassword, phoneNumber, rol, emailParent1, emailParent2, emailResponsible, emailChild, inputDate]);
+
+    // Calcula si la persona tiene más de 21 años
+    useEffect(() => {
+        if (inputDate) {
+            const today = new Date();
+            const birthDate = new Date(inputDate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+
+            if (
+                monthDifference < 0 ||
+                (monthDifference === 0 && today.getDate() < birthDate.getDate())
+            ) {
+                age--;
+            }
+            
+            if(age > 21){
+                setShowDropdown(true);
+                if(rol === 'joven') {
+                    setEmailParent1('');
+                    setEmailParent2('');
+                    setEmailResponsible('');
+                }    
+                else if (rol === 'padre' || rol === 'madre'){
+                    setEmailChild('');
+                }
+                setRol('');
+            }
+            else {
+                setShowDropdown(false);
+                setRol('joven');
+            }
+        }
+    }, [inputDate]);
+
+    // Calcula si la persona tiene más de 21 años
+    useEffect(() => {
+        if (rol) {
+            if(rol === 'joven') {
+                setEmailParent1('');
+                setEmailParent2('');
+                setEmailResponsible('');
+            }    
+            else if (rol === 'padre' || rol === 'madre'){
+                setEmailChild('');
+            }
+        }
+    }, [rol]);
 
     if(isLoading) {
         return (
@@ -238,6 +369,7 @@ const RegisterScreen = ({navigation}) => {
                 modalType={modalType}
                 message={modalMessage}
             />
+            <PrivacyPolicyModal isVisible={isVisiblePrivacyModal} setModalVisible={setIsVisiblePrivacyModal} />
             {/* Título */}
             <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
                 <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
@@ -294,14 +426,30 @@ const RegisterScreen = ({navigation}) => {
                             onChangeText={setPhoneNumber}
                         />
                     </View>
-                    <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
-                        <Dropdown 
-                            items={roles}
-                            placeholder={{ label: 'Selecciona un rol...', value: '0' }}
-                            value={rol}
-                            onValueChange={setRol}
-                        />
+                    <View style={{height:80,alignItems:'center', justifyContent: 'center'}}>
+                        <View style={{width:'80%'}}>
+                            <DatePickerInput
+                                locale="es"
+                                label="Fecha de nacimiento"
+                                value={inputDate}
+                                onChange={(d) => setInputDate(d)}
+                                inputMode="start"
+                                validRange={{startDate:minDate, endDate:maxDate}}
+                            />
+                        </View>
                     </View>
+                    {showDropdown && (
+                        <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
+                            <View style={{width:'80%'}}>
+                                <Dropdown 
+                                    items={roles}
+                                    placeholder={{ label: 'Selecciona un rol...', value: '0' }}
+                                    value={rol}
+                                    onValueChange={setRol}
+                                />
+                            </View>
+                        </View>
+                    )}
                     {rol === 'joven' && (
                     <>
                         <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
@@ -325,10 +473,38 @@ const RegisterScreen = ({navigation}) => {
                                 inputMode={'email'}
                             />
                         </View>
+
+                        <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
+                            <SivariaInput 
+                                placeholder={'Email de profesional responsable'}
+                                value={emailResponsible}
+                                onChangeText={setEmailResponsible}
+                                autoCorrect={false}
+                                autoCapitalize={'none'} 
+                                inputMode={'email'}
+                            />
+                        </View>
                     </>
                     )}
+                    {(rol === 'padre' || rol === 'madre' ) && (
+                        <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
+                            <SivariaInput 
+                                placeholder={'Email del hijo/a'}
+                                value={emailChild}
+                                onChangeText={setEmailChild}
+                                autoCorrect={false}
+                                autoCapitalize={'none'} 
+                                inputMode={'email'}
+                            />
+                        </View>
+                    )}
+                    <View style={{height:80,alignItems:'center', justifyContent: 'center'}}>
+                        <View style={{width: '80%', alignItems: 'center', justifyContent: 'center'}}>
+                            <Text style={{textDecorationLine:'underline'}} onPress={() => setIsVisiblePrivacyModal(true)}>Al registrarse, acepta nuestra Política de Privacidad. Pulse este texto para leerlo.</Text>
+                        </View>
+                    </View>
                     <View style={{height:80, alignItems:'center', justifyContent:'center'}}>
-                        <SivariaButton onPress={handleSubmit} message={'ENVIAR'} disabled={isDisabled}/>
+                        <SivariaButton onPress={(e) => handleSubmit(e)} message={'ENVIAR'} disabled={isDisabled}/>
                     </View>
 
                 </View>

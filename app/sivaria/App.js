@@ -13,6 +13,10 @@ import { UserContext } from './src/context/user-context';
 
 import useUserData from './src/utils/user-user-data-hook';
 
+import { PaperProvider } from 'react-native-paper';
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('es', enGB)
+
 //import { Bounce, ToastContainer } from 'react-toastify';
 //import 'react-toastify/dist/ReactToastify.css';
 
@@ -208,41 +212,43 @@ export default function App() {
         placement={Platform.OS === 'web' ? 'top' : 'bottom'}
         duration={2000}
       >
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-          <UserContext.Provider value={{ 
-            userId, setUserId,
-            firstName, setFirstName,
-            lastName, setLastName,
-            password, setPassword,
-            email, setEmail,
-            phoneNumber, setPhoneNumber,
-            rol, setRol,
-            rolSlug, setRolSlug,
-            emailParent1, setEmailParent1,
-            emailParent2, setEmailParent2 }}
-          >
-            <NavigationContainer
-              ref={navigationRef}
-              linking={linking}
-              fallback={fallback}
-              initialState={initialState}
-              onStateChange={(state) => {
-                //console.log('CAMBIO DE ESTADO');
-                //const previousRouteName = routeNameRef.current;
-                //const currentRouteName = navigationRef.current.getCurrentRoute().name;
-                //if (previousRouteName !== currentRouteName) {
-                  //console.log('NUEVO ESTADO = ' + currentRouteName);
-                //}
-                //routeNameRef.current = currentRouteName;
-                //setItemLocalStorage('currentRoute', currentRouteName);
-                setItemLocalStorage('currentRoute', JSON.stringify(state));
-                //AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
-              }}
+        <PaperProvider>
+          <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+            <UserContext.Provider value={{ 
+              userId, setUserId,
+              firstName, setFirstName,
+              lastName, setLastName,
+              password, setPassword,
+              email, setEmail,
+              phoneNumber, setPhoneNumber,
+              rol, setRol,
+              rolSlug, setRolSlug,
+              emailParent1, setEmailParent1,
+              emailParent2, setEmailParent2 }}
             >
-                <UserStackNavigator/>
-            </NavigationContainer>
-          </UserContext.Provider>
-        </AuthContext.Provider>
+              <NavigationContainer
+                ref={navigationRef}
+                linking={linking}
+                fallback={fallback}
+                initialState={initialState}
+                onStateChange={(state) => {
+                  //console.log('CAMBIO DE ESTADO');
+                  //const previousRouteName = routeNameRef.current;
+                  //const currentRouteName = navigationRef.current.getCurrentRoute().name;
+                  //if (previousRouteName !== currentRouteName) {
+                    //console.log('NUEVO ESTADO = ' + currentRouteName);
+                  //}
+                  //routeNameRef.current = currentRouteName;
+                  //setItemLocalStorage('currentRoute', currentRouteName);
+                  setItemLocalStorage('currentRoute', JSON.stringify(state));
+                  //AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
+                }}
+              >
+                  <UserStackNavigator/>
+              </NavigationContainer>
+            </UserContext.Provider>
+          </AuthContext.Provider>
+        </PaperProvider>
       </ToastProvider>
   );
 }

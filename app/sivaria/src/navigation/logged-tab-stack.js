@@ -6,6 +6,7 @@ import { Platform, Text } from "react-native";
 import stylesSivaria from "../styles/styles-sivaria";
 import { useContext } from "react";
 import { UserContext } from "../context/user-context";
+import HistoryScreen from "../screens/logged-users/history-screen";
 //import { createAppContainer } from "react-navigation"; 
 
 /*
@@ -37,6 +38,8 @@ export const HomeTabNavigator = createAppContainer(TabNavigator);
 
 const Tab = createBottomTabNavigator();
 
+//<AntDesign name="solution1" size={24} color="black" />
+
 export const DashboardTabsScreen = ({navigation}) => {
   const userData = useContext(UserContext);
   return (
@@ -50,6 +53,8 @@ export const DashboardTabsScreen = ({navigation}) => {
             switch(routeName) {
               case 'Home':
                 return <Text style={{color: color}}>Home</Text>;
+              case 'History':
+                  return <Text style={{color: color}}>Historial</Text>;
               case 'Profile':
                 return <Text style={{color: color}}>Perfil</Text>
             }
@@ -69,6 +74,9 @@ export const DashboardTabsScreen = ({navigation}) => {
                 case 'Home':
                   iconName = 'home';
                   break;
+                case 'History':
+                    iconName = 'solution1';
+                    break;
                 case 'Profile':
                   iconName = 'user'
                   break;
@@ -86,6 +94,12 @@ export const DashboardTabsScreen = ({navigation}) => {
             name="Home" 
             component={HomeScreen}
         />
+        {userData.rolSlug && userData.rolSlug !== 'joven' &&
+          (<Tab.Screen 
+              name="History" 
+              component={HistoryScreen}
+          />)
+        }
         <Tab.Screen 
             name="Profile" 
             component={ProfileScreen}

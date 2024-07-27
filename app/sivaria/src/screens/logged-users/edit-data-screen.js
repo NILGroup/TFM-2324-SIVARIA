@@ -57,7 +57,7 @@ const EditDataScreen = ({navigation, props}) => {
         if(!password && confirmPassword) {
             message += 'Se ha rellenado el campo de confirmación de contraseña, pero el campo de contraseña está vacío.\n\n';
         }
-        if(password && confirmPassword && (password === confirmPassword)) {
+        if(password && confirmPassword && (password !== confirmPassword)) {
             message += 'Ambos campos de contraseñas no coinciden.\n\n';
         }
 
@@ -105,9 +105,13 @@ const EditDataScreen = ({navigation, props}) => {
                     await setItemLocalStorage('phoneNumber', data['phone']);
                     userApp.setPhoneNumber(phoneNumber);
                 }
+                if ((password && confirmPassword && password === confirmPassword)) {
+                    await setItemLocalStorage('phoneNumber', data['phone']);
+                    userApp.setPhoneNumber(phoneNumber);
+                }
                 setIsLoading(false);
                 toast.show(
-                    'Datos actualizados correctamente',
+                    'Datos actualizados correctamente.\nActualiza la página del perfil para obtener los nuevos datos de tu usuario.',
                     {
                         type: 'success'
                     }
@@ -130,7 +134,7 @@ const EditDataScreen = ({navigation, props}) => {
 
     useEffect(() => {
         function enableEditButton(){
-            if(firstName || lastName || phoneNumber) {
+            if(firstName || lastName || phoneNumber || (password && confirmPassword)) {
                 setIsDisabled(false);
             }
             else {
@@ -138,7 +142,7 @@ const EditDataScreen = ({navigation, props}) => {
             }
         }
         enableEditButton();
-    }, [firstName, lastName, phoneNumber]);
+    }, [firstName, lastName, phoneNumber, password, confirmPassword]);
 
     if(isLoading) {
         return (
@@ -150,6 +154,7 @@ const EditDataScreen = ({navigation, props}) => {
       <Container>
         <View style={{flex:2, backgroundColor: '#006E51'}}>
             <View style={{flex:1, width: '100%', alignItems:'center', justifyContent: 'center'}}>
+                {/*
                 <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
                     <SivariaInput 
                         placeholder={'Nombre'}
@@ -168,6 +173,7 @@ const EditDataScreen = ({navigation, props}) => {
                         autoCapitalize={'none'} 
                     />
                 </View>
+                */}
                 <View style={{flex:1, width: '80%', alignItems:'center', justifyContent: 'center'}}>
                         <ShowHidePasswordInput 
                             placeholder='Contraseña' 

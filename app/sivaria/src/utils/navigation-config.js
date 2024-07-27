@@ -52,6 +52,7 @@ export const config = {
             initialRouteName: 'dashboard',
             screens: {
                 Home: "dashboard/home",
+                History: "dashboard/history",
                 Profile: "dashboard/profile",
             }
         },

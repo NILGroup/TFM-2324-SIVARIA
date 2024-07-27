@@ -37,7 +37,6 @@ class AppUser(AbstractUser):
 
     code = models.CharField(max_length=30, unique=True, null=True, blank=True)
     birth_date = models.DateField(blank=True, null=True, default=None)
-    assigned_to = models.CharField(max_length=15, unique=True, null=True, blank=True)
 
     USERNAME_FIELD = 'email'  # Establece el campo de email para la autenticación
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -48,14 +47,15 @@ class AppUser(AbstractUser):
         return f'User: {self.first_name} {self.last_name} - {self.email}'
 
 class UserHasParent(models.Model):
-    son = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    child = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     #id_parent_1 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     #id_parent_2 = models.ForeignKey(AppUser, on_delete=models.SET_NULL, allow_null=True)
     email_parent_1 = models.EmailField(null=True, default=None, blank=True)
     email_parent_2 = models.EmailField(null=True, default=None, blank=True)
+    responsible = models.ForeignKey(AppUser, on_delete=models.SET_NULL, null=True, default=None, blank=True, related_name='responsible')
 
     def __str__(self) -> str: 
-        return f'UserHasParent: {self.son.id} - {self.son.first_name} {self.son.last_name}'
+        return f'UserHasParent: {self.child.id} - {self.child.first_name} {self.child.last_name}'
 
 class PushNotificationType(models.Model):
     slug = models.CharField(max_length=50, unique=True, null=False)
