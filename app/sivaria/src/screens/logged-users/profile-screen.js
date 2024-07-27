@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert } from 'react-native';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert, RefreshControl } from 'react-native';
 import Dropdown from '../../components/dropdown';
 import ShowHidePasswordInput from '../../components/show-hide-password-input';
 import stylesSivaria from '../../styles/styles-sivaria';
@@ -23,6 +23,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { UserContext } from '../../context/user-context';
 
 import useUserData from '../../utils/user-user-data-hook';
+import { AntDesign } from '@expo/vector-icons';
 
 
 const ProfileScreen = ({navigation}) => {
@@ -39,99 +40,109 @@ const ProfileScreen = ({navigation}) => {
 
     const { updateUserStateVariables, removeUserStateVariables } = useUserData();
 
+    const [refreshing, setRefreshing] = useState(false);
+
+    async function fetchUserData() {
+        //console.log(userApp);
+        setIsLoading(true);
+        let email = await getItemLocalStorage('email');
+        await axiosInstance.get("/sivaria/v1/user/getUserByEmail/"+email)
+        .then(async function (response) {
+            data = response.data.data;
+            //console.log(data);
+            newData = {};
+            data.map((element) => {
+                newData[element.key] = element.value;
+            });
+
+            // Update local storage and state variables.
+            await setItemLocalStorage('email', newData['email']);
+            await setItemLocalStorage('firstName', newData['first_name']);
+            await setItemLocalStorage('lastName', newData['last_name']);
+            await setItemLocalStorage('phoneNumber', newData['phone']);
+            //console.log(newData);
+            let rolDescription = (newData['rol_description']) ? newData['rol_description'] : null;
+            await setItemLocalStorage('rol', rolDescription);  
+            let rolSlug = (rolDescription) ? rolDescription.toLowerCase() : null;
+            await setItemLocalStorage('rolSlug', rolSlug ?? ''); 
+            if(rolSlug === 'joven') {    
+                await setItemLocalStorage('emailParent1', newData['email_parent_1'] ?? '');
+                await setItemLocalStorage('emailParent2', newData['email_parent_2'] ?? '');
+            }
+            
+            setUserData(response.data.data);
+            setIsLoading(false);
+            //console.log(response.data.data);
+        })
+        .catch(function (error) {         
+            setIsLoading(false);
+            let message = 'Ha habido un error obteniendo los datos del usuario.';
+            toast.show(
+                message,
+                {
+                    type: 'danger'
+                }
+            );
+            //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
+        });
+        /*       
+        let data = [
+            {
+                title: "Nombre",
+                value: userApp.firstName ?? '',
+                key: "first_name"
+            },
+            {
+                title: "Apellidos",
+                value: userApp.lastName ?? '',
+                key: "last_name"
+            },
+            {
+                title: "Email",
+                value: userApp.email ?? '',
+                key: "email"
+            },
+            {
+                title: "Teléfono",
+                value: userApp.phone ?? '',
+                key: "phone"
+            },
+            {
+                title: "Rol",
+                value: userApp.rol ?? '',
+                key: "rol_description"
+            }
+        ]
+        if(userApp.rolSlug === 'joven') {
+            let extraData = [
+                {
+                    title: "Email madre o figura parental 1",
+                    value: userApp.emailParent1 ?? '',
+                    key: "email_parent_1"
+                },
+                {
+                    title: "Email padre o figura parental 1",
+                    value: userApp.emailParent2 ?? '',
+                    key: "email_parent_2"
+                }
+            ];
+            data = [...data, extraData];
+        }
+        //console.log(data);
+        setUserData(data);
+        setIsLoading(false);
+        */
+    }
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            fetchUserData();
+            setRefreshing(false);
+        }, 2000);
+      }, []);
 
     useEffect(() => {
-        async function fetchUserData() {
-            //console.log(userApp);
-            let email = await getItemLocalStorage('email');
-            await axiosInstance.get("/sivaria/v1/user/getUserByEmail/"+email)
-            .then(async function (response) {
-                data = response.data.data;
-                //console.log(response);
-                newData = {};
-                data.map((element) => {
-                    newData[element.key] = element.value;
-                });
-
-                // Update local storage and state variables.
-                await setItemLocalStorage('email', newData['email']);
-                await setItemLocalStorage('firstName', newData['first_name']);
-                await setItemLocalStorage('lastName', newData['last_name']);
-                await setItemLocalStorage('phoneNumber', newData['phone']);
-                //console.log(newData);
-                let rolDescription = (newData['rol_description']) ? newData['rol_description'] : null;
-                await setItemLocalStorage('rol', rolDescription);  
-                let rolSlug = (rolDescription) ? rolDescription.toLowerCase() : null;
-                await setItemLocalStorage('rolSlug', rolSlug ?? ''); 
-                if(rolSlug === 'joven') {    
-                    await setItemLocalStorage('emailParent1', newData['email_parent_1'] ?? '');
-                    await setItemLocalStorage('emailParent2', newData['email_parent_2'] ?? '');
-                }
-                
-                setUserData(response.data.data);
-                setIsLoading(false);
-                //console.log(response.data.data);
-            })
-            .catch(function (error) {         
-                setIsLoading(false);
-                let message = 'Ha habido un error obteniendo los datos del usuario.';
-                toast.show(
-                    message,
-                    {
-                        type: 'danger'
-                    }
-                );
-                //setVisibleModal(ModalType.Error, ModalTitle.ErrorTitle, message);
-            });
-            /*       
-            let data = [
-                {
-                    title: "Nombre",
-                    value: userApp.firstName ?? '',
-                    key: "first_name"
-                },
-                {
-                    title: "Apellidos",
-                    value: userApp.lastName ?? '',
-                    key: "last_name"
-                },
-                {
-                    title: "Email",
-                    value: userApp.email ?? '',
-                    key: "email"
-                },
-                {
-                    title: "Teléfono",
-                    value: userApp.phone ?? '',
-                    key: "phone"
-                },
-                {
-                    title: "Rol",
-                    value: userApp.rol ?? '',
-                    key: "rol_description"
-                }
-            ]
-            if(userApp.rolSlug === 'joven') {
-                let extraData = [
-                    {
-                        title: "Email madre o figura parental 1",
-                        value: userApp.emailParent1 ?? '',
-                        key: "email_parent_1"
-                    },
-                    {
-                        title: "Email padre o figura parental 1",
-                        value: userApp.emailParent2 ?? '',
-                        key: "email_parent_2"
-                    }
-                ];
-                data = [...data, extraData];
-            }
-            //console.log(data);
-            setUserData(data);
-            setIsLoading(false);
-            */
-        }
-
         fetchUserData();
     }, []);
 
@@ -216,7 +227,7 @@ const ProfileScreen = ({navigation}) => {
     }
 
     return (
-        <Container>
+        <>
             <ModalComponent 
                 animationType='slide'
                 setIsVisible={setModalVisible}
@@ -225,16 +236,41 @@ const ProfileScreen = ({navigation}) => {
                 modalType={modalType}
                 message={modalMessage}
             />
-            <View style={{flex:1, backgroundColor: 'white'}}>
+            <View style={{height: 100, flexDirection: 'center', alignItems: 'center', justifyContent: 'center', backgroundColor: '#006E51'}}>
+                <View style={{flex:1, width:'100%', alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: '#024332'}}>
+                    <Text style={{fontSize: 25, color:'white', fontWeight:'bold'}}>
+                        DATOS DEL USUARIO
+                    </Text>
+                </View>
+                {/*
+                <View style={{flex:1, width:'90%', alignItems: 'flex-end' , justifyContent:'center'}}>
+                    <Pressable 
+                        onPress={() => fetchUserData()}
+                    >
+                        <AntDesign 
+                            name={'reload1'} 
+                            size={20} 
+                            color={'white'} 
+                        />
+                    </Pressable>
+                </View>
+                */}
+            </View>
+            <ScrollView 
+                style={{backgroundColor: 'white', borderBottomWidth: 2, borderColor: 'grey'}}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                }
+            >
                 {
                     userData.map((data, index) => {
                             return (
-                                <View key={data.key} style={{flex:1, flexDirection: 'row', borderWidth: 2, borderColor: 'grey'}}>
+                                <View key={data.key} style={{height: 100, flexDirection: 'row', borderWidth: 2, borderColor: 'grey'}}>
                                     {/*console.log(data)*/}
                                     <View key={'title_'+index} style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
-                                        <SivariaText color={'black'} fontSize={15}>{data.title}</SivariaText>
+                                        <SivariaText color={'black'} fontSize={15} isBold={true}>{data.title}</SivariaText>
                                     </View>
-                                    <View key={'value_'+index} style={{flex:2, alignItems: 'flex-start', justifyContent: 'center'}}>
+                                    <View key={'value_'+index} style={{flex:2, alignItems: 'center', justifyContent: 'center', backgroundColor:'#ececec', padding:10}}>
                                         <SivariaText color={'black'} fontSize={15}>
                                             {
                                                 (data.value !== null && data.value !== '') ? data.value : 'Ninguno'
@@ -246,8 +282,9 @@ const ProfileScreen = ({navigation}) => {
                         }
                     )
                 }
-                {/*<Text>PROFILE SCREEN</Text>*/}
-                <View style={{flex:1, flexDirection: 'row'}}>
+            </ScrollView>
+            {/*<Text>PROFILE SCREEN</Text>*/}
+            <View style={{height: 100, flexDirection: 'row', backgroundColor: 'white'}}>
                     <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
                         <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
                             <SivariaButton onPress={(e) => callLogout(e)} message={'CERRAR SESIÓN'}/>
@@ -264,8 +301,7 @@ const ProfileScreen = ({navigation}) => {
                         </View>
                     </View>
                 </View>
-            </View>
-        </Container>
+        </>
     );
 }
 

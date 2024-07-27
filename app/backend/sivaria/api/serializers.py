@@ -19,22 +19,29 @@ class AppUserSerializer(ModelSerializer):
     rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'code', 'rol', 'expo_token')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'phone', 'code', 'rol', 'expo_token', 'birth_date')
 
 class AppUserCompleteSerializer(ModelSerializer):
     rol = RolSerializer(many=False)
     class Meta:
         model = AppUser
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'code','phone', 'rol', 'expo_token')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'code','phone', 'rol', 'expo_token', 'birth_date')
 
 
 class AppUserRegisterSerializer(Serializer):
     
     class Meta:
         model = AppUser
-        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'rol', 'expo_token')
+        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'rol', 'expo_token', 'birth_date')
     
     def create(self, clean_data):
+        first_name = clean_data['first_name']
+        last_name = clean_data['last_name']
+        birth_date = clean_data['birth_date']
+        birth_date_formatted = birth_date.replace('/', '')
+        day, month, year = birth_date.split('/')
+        birth_date_django_format = year + '-' + month + '-' + day
+        code = first_name[0].upper() + last_name[0].upper() + birth_date_formatted
         user_obj = AppUser.objects.create_user(
             email=clean_data['email'],
             password=clean_data['password'],
@@ -43,6 +50,8 @@ class AppUserRegisterSerializer(Serializer):
             phone=clean_data['phone'],
             rol=clean_data['rol'],
             expo_token=clean_data['expo_token'],
+            code=code,
+            birth_date=birth_date_django_format
         )
 
         user_obj.save()
@@ -71,21 +80,23 @@ class AppUserLogoutSerializer(ModelSerializer):
 
 
 class UserHasParentSerializer(ModelSerializer):
-    son = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
+    child = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
+    responsible = PrimaryKeyRelatedField(queryset=AppUser.objects.all(), many=False)
     class Meta:
         model = UserHasParent
-        fields = ('id', 'son', 'email_parent_1', 'email_parent_2')
+        fields = ('id', 'child', 'email_parent_1', 'email_parent_2', 'responsible')
 
 class UserHasParentModificationSerializer(Serializer):
     class Meta:
         model = UserHasParent
-        fields = ('id', 'son', 'email_parent_1', 'email_parent_2')
+        fields = ('id', 'child', 'email_parent_1', 'email_parent_2', 'responsible')
 
     def create(self, clean_data):
         uhp_obj = UserHasParent.objects.create(
-            son=clean_data['son'],
+            child=clean_data['child'],
             email_parent_1=clean_data['email_parent_1'],
             email_parent_2=clean_data['email_parent_2'],
+            responsible=clean_data['responsible'],
         )
 
         uhp_obj.save()

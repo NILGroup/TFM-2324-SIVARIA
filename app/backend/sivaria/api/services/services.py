@@ -138,7 +138,7 @@ class UserService(object):
         return AppUserCompleteSerializer(self.get_user_by_phone(phone)).data
     
     def get_user_by_code_json(self, code):
-        return AppUserCompleteSerializer(self.get_user_by_phone(code)).data
+        return AppUserCompleteSerializer(self.get_user_by_code(code)).data
 
     def hash_password(self, password):
         return make_password(password=password)
@@ -216,9 +216,9 @@ class UserService(object):
 
 class UserHasParentService(object):
 
-    def get_user_has_parent_by_son(self, son_id):
+    def get_user_has_parent_by_son(self, child_id):
         try:
-            return UserHasParent.objects.get(son_id=son_id)
+            return UserHasParent.objects.get(child_id=child_id)
         except UserHasParent.DoesNotExist:
             raise Http404('Registro no encontrado') 
         except UserHasParent.MultipleObjectsReturned:
@@ -231,10 +231,17 @@ class UserHasParentService(object):
             raise Http404('Registro no encontrado')
         except UserHasParent.MultipleObjectsReturned:
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el ID')
+        
+    def get_children_by_email_parent(self, email):
+        list_Children_1 = list(UserHasParent.objects.filter(email_parent_1=email))
+        list_children_2 = list(UserHasParent.objects.filter(email_parent_2=email))
+        return (list_Children_1 + list_children_2)
+    
+    def get_children_by_responsible(self, responsible_id):
+        return list(UserHasParent.objects.filter(responsible=responsible_id))
 
-    def get_user_has_parent_by_son_json(self, son_id):
-        return UserHasParentSerializer(self.get_user_has_parent_by_son(son_id)).data
-
+    def get_user_has_parent_by_son_json(self, child_id):
+        return UserHasParentSerializer(self.get_user_has_parent_by_son(child_id)).data
 
     def insert_user_has_parent(self, data):
         uhpSerializer = UserHasParentModificationSerializer(data=data)
@@ -813,7 +820,7 @@ class ExpertSystemService(object):
         
         family_data_complete.update(step2)
         family_data_complete.update(step3)
-
+        
         family_data = {
             'code': code+'FAMILY'+str(user_id)+versionDateTime,
             'padre_adolescente': family_data_complete.get('family1', None),
@@ -824,9 +831,9 @@ class ExpertSystemService(object):
             'adiccion_padre_madre': family_data_complete.get('family6', None),
             'relaciones_conflictivas_hijo_padre_madre': step3.get('family7', None),
             'familia_reconstruida': family_data_complete.get('family8', None),
-            'familia_reconstruida': family_data_complete.get('family9', None),
-            'familia_reconstruida': family_data_complete.get('family10', None),
-            'familia_reconstruida': family_data_complete.get('family11', None),
+            'supervision_parental_insuficiente': family_data_complete.get('family9', None),
+            'maltrato_al_adolescente': family_data_complete.get('family10', None),
+            'maltrato_a_la_pareja': family_data_complete.get('family11', None),
             'ingreso_familiar_mensual': family_data_complete.get('family12', None),
             'situacion_economica_precaria': family_data_complete.get('family13', None),
             'duelo': family_data_complete.get('family14', None),
@@ -1590,4 +1597,461 @@ class EmailService(object):
         # to_mail must be an array
         send_mail(subject, message, None, to_mail)
         pass
+
+class FormService(object):
+    
+    def __init__(self): 
+        pass
+
+    def get_form_by_code(self, initial_code, code):
+        try:
+            model = None
+            if initial_code == 'Y':
+                model = YoungForm
+            elif initial_code == 'P' or initial_code == 'M':
+                model = FamilyForm
+            elif initial_code == 'PR':
+                model = ProfessionalForm
+                
+            return model.objects.get(code=code)
+        except model.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except model.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
         
+    def get_form_by_code_json(self, initial_code, code):
+        data = None
+        if initial_code == 'Y':
+            data = YoungFormSerializer(self.get_form_by_code(initial_code, code)).data
+        elif initial_code == 'P' or initial_code == 'M':
+            data = FamilyFormSerializer(self.get_form_by_code(initial_code, code)).data
+        elif initial_code == 'PR':
+            data = ProfessionalFormSerializer(self.get_form_by_code(initial_code, code)).data
+
+        return data
+
+    def get_sena_form_by_id(self, sena_id):
+        try:
+            return SenaForm.objects.get(id=sena_id)
+        except SenaForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except SenaForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_sena_form_by_id_json(self, sena_id):
+        return SenaSerializer(self.get_sena_form_by_id(sena_id)).data
+    
+    
+    def get_family_subform_by_id(self, family_id):
+        try:
+            return FamilySubForm.objects.get(id=family_id)
+        except FamilySubForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except FamilySubForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_family_subform_by_id_json(self, family_id):
+        return FamilySerializer(self.get_family_subform_by_id(family_id)).data
+    
+    
+    def get_social_data_by_id(self, social_data_id):
+        try:
+            return SocialDataForm.objects.get(id=social_data_id)
+        except SocialDataForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except SenaForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_social_data_by_id_json(self, social_data_id):
+        return SocialDataSerializer(self.get_social_data_by_id(social_data_id)).data
+    
+    
+    def get_sena_family_by_id(self, sena_family_id):
+        try:
+            return SenaFamilyForm.objects.get(id=sena_family_id)
+        except SenaFamilyForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except SenaFamilyForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_sena_family_by_id_json(self, sena_family_id):
+        return SenaFamilySerializer(self.get_sena_family_by_id(sena_family_id)).data
+    
+    
+    def get_parq_by_id(self, parq_id):
+        try:
+            return ParqForm.objects.get(id=parq_id)
+        except ParqForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except ParqForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_parq_by_id_json(self, parq_id):
+        return ParqSerializer(self.get_parq_by_id(parq_id)).data
+    
+    def get_er_by_id(self, er_id):
+        try:
+            return ErForm.objects.get(id=er_id)
+        except ErForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except ErForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_er_by_id_json(self, er_id):
+        return ErSerializer(self.get_er_by_id(er_id)).data
+    
+    def get_ed_by_id(self, ed_id):
+        try:
+            return EdForm.objects.get(id=ed_id)
+        except EdForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except EdForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_ed_by_id_json(self, ed_id):
+        return EdSerializer(self.get_ed_by_id(ed_id)).data
+    
+    def ebipq_ecipq_id(self, ebipq_ecipq_id):
+        try:
+            return EbipqEcipqForm.objects.get(id=ebipq_ecipq_id)
+        except EbipqEcipqForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except EbipqEcipqForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_ebipq_ecipq_by_id_json(self, ebipq_ecipq_id):
+        return EbipqEcipqSerializer(self.ebipq_ecipq_id(ebipq_ecipq_id)).data
+    
+    def get_rrss_by_id(self, rrss_id):
+        try:
+            return RrssForm.objects.get(id=rrss_id)
+        except RrssForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except RrssForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_rrss_by_id_json(self, rrss_id):
+        return RrssSerializer(self.get_rrss_by_id(rrss_id)).data
+    
+    def get_mcad_by_id(self, mcad_id):
+        try:
+            return MulticageCad4Form.objects.get(id=mcad_id)
+        except MulticageCad4Form.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except MulticageCad4Form.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_mcad_by_id_json(self, mcad_id):
+        return MulticageCad4Serializer(self.get_mcad_by_id(mcad_id)).data
+    
+    def get_cerqs_by_id(self, cerqs_id):
+        try:
+            return CerqsForm.objects.get(id=cerqs_id)
+        except CerqsForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except CerqsForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_cerqs_by_id_json(self, cerqs_id):
+        return CerqsSerializer(self.get_cerqs_by_id(cerqs_id)).data
+    
+    def get_ati_by_id(self, ati_id):
+        try:
+            return AtiForm.objects.get(id=ati_id)
+        except AtiForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except AtiForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_ati_by_id_json(self, ati_id):
+        return AtiSerializer(self.get_ati_by_id(ati_id)).data
+    
+    def get_inq_by_id(self, inq_id):
+        try:
+            return InqForm.objects.get(id=inq_id)
+        except InqForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except InqForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_inq_by_id_json(self, inq_id):
+        return InqSerializer(self.get_inq_by_id(inq_id)).data
+    
+    def get_sena_by_id(self, sena_id):
+        try:
+            return SenaForm.objects.get(id=sena_id)
+        except SenaForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except SenaForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_sena_by_id_json(self, sena_id):
+        return SenaSerializer(self.get_sena_by_id(sena_id)).data
+    
+    def get_injury_by_id(self, injury_id):
+        try:
+            return InjuryForm.objects.get(id=injury_id)
+        except InjuryForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except InjuryForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_injury_by_id_json(self, injury_id):
+        return InjurySerializer(self.get_injury_by_id(injury_id)).data
+    
+    
+    
+    def get_ate_by_id(self, ate_id):
+        try:
+            return AteForm.objects.get(id=ate_id)
+        except AteForm.DoesNotExist:
+            raise Http404('Formulario no encontrado')
+        except AteForm.MultipleObjectsReturned:
+            raise HttpResponseBadRequest('Se ha encontrado más de 1 formulario con el mismo código')
+        
+    def get_ate_by_id_json(self, ate_id):
+        return AteSerializer(self.get_ate_by_id(ate_id)).data
+
+        
+    def get_form_info(self, user, code):
+        user_service = UserService()
+
+        initial_code = code[0:2] if code[0:2] == 'PR' else code[0]
+        #print(initial_code)
+        user_id = user.get('id')
+
+        form = self.get_form_by_code(initial_code, code)
+        form_data = {}
+        if initial_code == 'Y':
+            user = user_service.get_user_by_userId(form.participant_young_form.id)
+
+            social_data = self.get_social_data_by_id_json(form.social_data.id)
+            ebipq_ecipq = self.get_ebipq_ecipq_by_id_json(form.ebipq_ecipq.id)
+            rrss = self.get_rrss_by_id_json(form.rrss.id)
+            mcad = self.get_mcad_by_id_json(form.mcad.id)
+            cerqs = self.get_cerqs_by_id_json(form.cerqs.id)
+            ati = self.get_ati_by_id_json(form.ati.id)
+            ate = self.get_ate_by_id_json(form.ate.id)
+            ed = self.get_ed_by_id_json(form.ed.id)
+            er = self.get_er_by_id_json(form.er.id)
+            inq = self.get_inq_by_id_json(form.inq.id)
+            sena = self.get_sena_by_id_json(form.sena.id)
+            injury = self.get_injury_by_id_json(form.injury.id)
+            family = self.get_family_subform_by_id_json(form.family.id)
+
+            form_data = {
+                'form_code': initial_code,
+                'id': form.id,
+                'user': user.first_name + ' ' + user.last_name,
+                'social_data': social_data,
+                'ebipq_ecipq': ebipq_ecipq,
+                'rrss': rrss,
+                'mcad':  mcad,
+                'cerqs': cerqs,
+                'ati': ati,
+                'ate': ate,
+                'ed': ed,
+                'er': er,
+                'inq': inq,
+                'sena': sena,
+                'injury': injury,
+                'family': family,
+                'datetime_str': form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': form.prediction
+            }
+        elif initial_code == 'P' or initial_code == 'M':
+            user = user_service.get_user_by_userId(form.participant_family_form.id)
+            to_user = user_service.get_user_by_userId(form.to_user_family_form.id)
+            
+            social_data = self.get_social_data_by_id_json(form.social_data.id)
+            family = self.get_family_subform_by_id_json(form.family.id)
+            sena_family = self.get_sena_family_by_id_json(form.sena_family.id)
+            parq = self.get_parq_by_id_json(form.parq.id)
+        
+            form_data= {
+                'form_code': initial_code,
+                'id': form.id,
+                'user': user.first_name + ' ' + user.last_name,
+                'to_user': to_user.first_name + ' ' + to_user.last_name,
+                'social_data': social_data,
+                'family': family,
+                'sena_family': sena_family,
+                'parq': parq,
+                'datetime_str': form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': form.prediction
+            }
+        elif initial_code == 'PR':   
+            user = user_service.get_user_by_userId(form.participant_professional_form.id)
+            to_user = user_service.get_user_by_userId(form.to_user_professional_form.id)
+
+            family = self.get_family_subform_by_id_json(form.family.id)
+            social_data = self.get_social_data_by_id_json(form.social_data.id)
+
+            form_data = {
+                'form_code': initial_code,
+                'id': form.id,
+                'code': form.code,
+                'user': user.first_name + ' ' + user.last_name,
+                'to_user': to_user.first_name + ' ' + to_user.last_name,
+                'social_data': social_data,
+                'family': family,
+                'datetime_str': form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': form.prediction
+            }
+        
+        return form_data
+
+    def get_forms_by_user_DT(self, user):
+        user_service = UserService()
+        total_forms = []
+        rol = user.get('rol', None)
+        if rol:
+            rol_slug = rol.get('slug', None)
+            child_forms = []
+            family_forms = []
+            professional_forms = []
+            if rol_slug == 'padre' or rol_slug == 'madre':
+                email_parent = user.get('email')
+                user_has_parents_registers = (UserHasParent.objects.filter(email_parent_1=email_parent) 
+                                              | UserHasParent.objects.filter(email_parent_2=email_parent))
+                
+                for user_has_parent_register in user_has_parents_registers:
+                    child = user_has_parent_register.child
+                    email_parent_1 = user_has_parent_register.email_parent_1
+                    email_parent_2 = user_has_parent_register.email_parent_2
+                    parent_1_id = None
+                    parent_2_id = None
+                    if email_parent_1:
+                        parent_1 = user_service.get_user_by_email_json(email=email_parent_1)
+                        parent_1_id = parent_1.get('id')
+                    
+                    if email_parent_2:
+                        parent_2 = user_service.get_user_by_email_json(email=email_parent_2)
+                        parent_2_id = parent_2.get('id')
+                    
+                    responsible = user_has_parent_register.responsible
+                    professional_id = responsible.id
+
+                    child_id = child.id
+
+                    child_forms = self.__get_child_forms(child_id)
+                    family_forms = self.__get_family_forms(parent_1_id, parent_2_id, child_id)                    
+                    professional_forms = self.__get_professional_forms(professional_id, child_id)
+                    
+                    forms = child_forms + family_forms + professional_forms
+                    total_forms += forms
+
+            elif rol_slug == 'profesional':
+                professional_id = user.get('id')
+                #print(professional_id)
+
+                user_has_parents_registers = UserHasParent.objects.filter(responsible=professional_id)
+                #print(user_has_parents_registers)
+                for user_has_parent_register in user_has_parents_registers:
+                    child = user_has_parent_register.child
+                    email_parent_1 = user_has_parent_register.email_parent_1
+                    email_parent_2 = user_has_parent_register.email_parent_2
+                    parent_1_id = None
+                    parent_2_id = None
+                    if email_parent_1:
+                        parent_1 = user_service.get_user_by_email_json(email=email_parent_1)
+                        parent_1_id = parent_1.get('id')
+                    
+                    if email_parent_2:
+                        parent_2 = user_service.get_user_by_email_json(email=email_parent_2)
+                        parent_2_id = parent_2.get('id')
+
+                    child_id = child.id
+
+                    child_forms = self.__get_child_forms(child_id)
+                    family_forms = self.__get_family_forms(parent_1_id, parent_2_id, child_id)                    
+                    professional_forms = self.__get_professional_forms(professional_id, child_id)
+
+                    forms = child_forms + family_forms + professional_forms
+                    total_forms += forms
+
+            if total_forms:
+                total_forms = sorted(total_forms, key=lambda x: x['datetime'], reverse=True)
+            #print(total_forms)
+            
+            #print(child_forms)
+            #print(family_forms)
+            #print(professional_forms)
+        return total_forms
+    
+    def __get_child_forms(self, child_id):
+        child_forms = list(YoungForm.objects.filter(participant_young_form=child_id))
+        child_form_data = []
+        for child_form in child_forms:
+            complete_name = child_form.participant_young_form.first_name + ' ' + child_form.participant_young_form.last_name 
+            child_data = {
+                'code': child_form.code,
+                'user': complete_name,
+                'to_user': complete_name,
+                'rol': 'joven',
+                'datetime': child_form.date,
+                'datetime_str': child_form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': child_form.prediction,
+            }
+            child_form_data.append(child_data)
+        
+        return child_form_data
+    
+    def __get_family_forms(self, parent_1_id, parent_2_id, child_id):
+        parent_1_forms = []
+        parent_2_forms = []
+        if parent_1_id:
+            parent_1_forms = list(FamilyForm.objects.filter(participant_family_form=parent_1_id,
+                                                            to_user_family_form=child_id))
+
+        if parent_2_id:
+            parent_2_forms = list(FamilyForm.objects.filter(participant_family_form=parent_2_id,
+                                                            to_user_family_form=child_id))
+
+        family_forms = parent_1_forms + parent_2_forms
+        family_form_data = []
+        for family_form in family_forms:
+            complete_name_user = family_form.participant_family_form.first_name + ' ' + family_form.participant_family_form.last_name 
+            complete_name_to_user = family_form.to_user_family_form.first_name + ' ' + family_form.to_user_family_form.last_name
+            
+            rol = family_form.participant_family_form.rol
+            if rol:
+                rol_slug = rol.slug
+
+            family_data = {
+                'code': family_form.code,
+                'user': complete_name_user,
+                'to_user': complete_name_to_user,
+                'rol': rol_slug,
+                'datetime': family_form.date,
+                'datetime_str': family_form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': family_form.prediction,
+            }
+            family_form_data.append(family_data)
+
+        return family_form_data
+
+    def __get_professional_forms(self, professional_id, child_id):
+        professional_forms = list(ProfessionalForm.objects.filter(participant_professional_form=professional_id,
+                                                                  to_user_professional_form=child_id))
+        professional_form_data = []
+        for professional_form in professional_forms:
+            complete_name_user = professional_form.participant_professional_form.first_name + ' ' + professional_form.participant_professional_form.last_name 
+            complete_name_to_user = professional_form.to_user_professional_form.first_name + ' ' + professional_form.to_user_professional_form.last_name
+            
+            rol = professional_form.participant_professional_form.rol
+            if rol:
+                rol_slug = rol.slug
+
+            professional_data = {
+                'code': professional_form.code,
+                'user': complete_name_user,
+                'to_user': complete_name_to_user,
+                'rol': rol_slug,
+                'datetime': professional_form.date,
+                'datetime_str': professional_form.date.strftime('%d/%m/%Y %H:%M:%S'),
+                'result': professional_form.prediction,
+            }
+            professional_form_data.append(professional_data)
+
+        return professional_form_data

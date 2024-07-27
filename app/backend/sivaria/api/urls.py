@@ -21,4 +21,6 @@ urlpatterns = [
     path('v1/email/sendRecoveryPasswordEmail', EmailRecoveryPasswordApiView.as_view()),
     path('v1/expertSystem/predict', ExpertSystem_APIView_Predict.as_view()),
     path('v1/user/<str:email>/changeUserPassword', AppUser_APIView_Modifications_ChangePassword.as_view()),
+    path('v1/forms/getFormsDT', Forms_APIView_GetFormsDT.as_view()),
+    path('v1/forms/getFormInfo', Forms_APIView_GetFormInfo.as_view()),
 ]
