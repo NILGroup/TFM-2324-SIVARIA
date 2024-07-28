@@ -1,6 +1,8 @@
-from exceptions.FormatException import FormatException
-from exceptions.CommandLineException import CommandLineException
-import constants
+from .exceptions.FormatException import FormatException
+from .exceptions.CommandLineException import CommandLineException
+
+#Own created modules
+from ..expert_system import constants
 
 class Checker(object):
     
@@ -109,3 +111,10 @@ class Checker(object):
         if config.getScoreType() is None:
             raise CommandLineException('Score type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.SCORE_OPTIONS) + '\n]')
         '''
+    @staticmethod
+    def checkConfigModelType(config):
+        if not config:
+            raise CommandLineException('System configuration not found.\n')
+
+        if not config.getModelType():
+            raise CommandLineException('Model type not found in the configuration. Possible values: [\n' + ',\n'.join(constants.MODEL_TYPES) + '\n]')

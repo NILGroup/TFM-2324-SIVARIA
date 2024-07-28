@@ -1,8 +1,8 @@
-import constants
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
-from sklearn.preprocessing import LabelEncoder
-import numpy as np
+
+#Own created modules
+from ..expert_system import constants
 
 class Decoder(object):
 
@@ -26,11 +26,11 @@ class Decoder(object):
             
             newDF = Decoder.removeWhiteSpaces(newDF)
 
-            if 'edad' in newDF.columns and is_numeric_dtype(newDF['edad']):
+            if 'edad' in newDF and is_numeric_dtype(newDF['edad']):
                 newDF['edad'] = newDF['edad'].apply(Decoder.newCodeAgeColumn)
-            if 'altura' in newDF.columns and is_numeric_dtype(newDF['altura']):
+            if 'altura' in newDF and is_numeric_dtype(newDF['altura']):
                 newDF['altura'] = newDF['altura'].apply(Decoder.newCodeHeightColumn)
-            if 'peso' in newDF.columns and is_numeric_dtype(newDF['peso']):
+            if 'peso' in newDF and is_numeric_dtype(newDF['peso']):
                 newDF['peso'] = newDF['peso'].apply(Decoder.newCodeWeightColumn)
         
         # Codificamos los valores de todas las columnas a vlores numéricos
@@ -40,6 +40,12 @@ class Decoder(object):
 
     @staticmethod
     def removeWhiteSpaces(df):
+        #df['edad'].apply(lambda x: x.strip())
+        #df['altura'].apply(lambda x: x.strip())
+        #df['peso'].apply(lambda x: x.strip())
+        numeric_age = True
+        numeric_height = True
+        numeric_weight = True
         
         for index, row in df.iterrows():
             for key in row.keys():
@@ -157,46 +163,40 @@ class Decoder(object):
             return "MAS DE 2500"
         else:
             return False
+        
+    @staticmethod
+    def newCodeMonthlyFamiliarIncome(income):
+        if income <= 999:
+            return "X<=999"
+        elif income >= 1000 and income < 1500:
+            return "1000-1499"
+        elif income >= 1500 and income < 1999:
+            return "1500-1999"
+        elif income >= 2000:
+            return "X>=2000"
+        else:
+            return False
     
     @staticmethod   
     def changeValuesToNumeric(df, newFlag = 1):
-        '''
-        label_encoder = LabelEncoder()
-        for column in df.columns:
-            if df[column].dtype == object:
-                df[column] = label_encoder.fit_transform(df[column])
-        '''
-        '''
-        state_names = constants.BAYES_NETWORK_STATE_NAMES_NEW_VERSION_V2 if newFlag == 1 else constants.BAYES_NETWORK_STATE_NAMES
         newData = df.apply(lambda x: x.astype(str).str.upper())
-
-        label_encoder = LabelEncoder()
-        '''
-        '''
-        for column in newData.columns:
-            if column.lower() != 'desenlace' and df[column].dtype == object:
-                print(state_names[column])
-                print(np.unique(newData[column]))
-                tmp1 = label_encoder.fit_transform(state_names[column])
-                print(tmp1)
-                tmp2 = label_encoder.fit_transform(newData[column])
-                print(tmp2)
-                items = constants.BAYES_NETWORK_STATE_NAMES_NEW_VERSION_V2[column]
-                tmp3 = newData[column].apply(lambda x: items.index(x.strip()))
-                #print(tmp1 == tmp2)
-                print(tmp3)
-        '''
-        newData = df.apply(lambda x: x.astype(str).str.upper())
-
+        #print(newData)
+        #print(newData['altura'])
         items = constants.BAYES_NETWORK_STATE_NAMES_NEW_VERSION_V2.items() if newFlag == 1 else constants.BAYES_NETWORK_STATE_NAMES
-        #print(items)
+
         for key, values in items:
-            #print(key)
             if key in newData and key.lower() != 'desenlace':
                 #print(newData[key][0].strip())
-                #print(newData[key])
                 #print(key)
+                #print(values)
+                #print(values.index())
+                '''
+                if key == 'altura':
+                    print(newData['altura'][0])
+                    p = newData['altura'][0]
+                    print(values.index(p.strip()))
+                '''
                 newData[key] = newData[key].apply(lambda x: values.index(x.strip()))
 
-        #print(newData.get('bullying_victima'))
+        
         return newData

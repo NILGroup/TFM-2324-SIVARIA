@@ -2,19 +2,20 @@ import pandas as pd
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import json
+import base64
 # Own created classes and modules
-import constants
-from decoder import Decoder
-from checker import Checker
-from fileManager import FileManager
-from configurator import Configurator
-from expertSystem import ExpertSystem
-from exceptions.ApplicationException import ApplicationException
-from exceptions.CommandLineException import CommandLineException
-from exceptions.ModelNotFoundException import ModelNotFoundException
-from exceptions.PredictionErrorException import PredictionErrorException
-from exceptions.ModelTrainingException import ModelTrainingException
-
+from ..expert_system import constants
+from ..expert_system.decoder import Decoder
+from ..expert_system.checker import Checker
+from ..expert_system.fileManager import FileManager
+from ..expert_system.configurator import Configurator
+from ..expert_system.expertSystem import ExpertSystem
+from .exceptions.ApplicationException import ApplicationException
+from .exceptions.CommandLineException import CommandLineException
+from .exceptions.ModelNotFoundException import ModelNotFoundException
+from .exceptions.PredictionErrorException import PredictionErrorException
+from .exceptions.ModelTrainingException import ModelTrainingException
 
 class Controller():
     
@@ -236,32 +237,40 @@ class Controller():
                 if len(args) <= 2:
                     raise CommandLineException('Dataset not specified.\n\n' + self.getHelpMessage())
                 
-                dataset = args[2]
+                second_parameter = args[2]
+                Checker.checkConfigModelType(config)
                 
-                Checker.checkConfig(config)
-                Checker.checkDatasetParameter(dataset)
-
                 modelType = config.getModelType()
                 print('Model type saved in configuration: ' + modelType + '\n')
 
-                if os.path.exists(dataset) == False:
-                    raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
-                
-                df = pd.read_csv(dataset)
-                newDF = Decoder.codeDataset(df)
+                if second_parameter != '--json':
+                    dataset = second_parameter
+                    Checker.checkDatasetParameter(dataset)
 
+                    if os.path.exists(dataset) == False:
+                        raise FileNotFoundError('Dataset not found. Type the whole path correctly.\n\n' + self.getHelpMessage())
+                    
+                    df = pd.read_csv(dataset)
+                else:
+                    json_encoded = args[3]
+                    json_str = base64.b64decode(json_encoded)
+                    new_data = json.loads(json_str.decode('utf-8'))
+                    print(new_data)
+                    df = pd.json_normalize(new_data)
+
+                newDF = Decoder.codeDataset(df)
                 expertSystem.setModelType(modelType)
                 
                 mostRecentFilename = fileManager.getMostRecentFile(modelType)
                 
-                if mostRecentFilename is not None:
+                if mostRecentFilename:
                     print(fileManager.getFileInfo(mostRecentFilename))
                 else:
                     raise ModelNotFoundException('Save model file of ' + modelType + ' model not found.')
 
                 expertSystem.buildModel(mostRecentFilename)
 
-                if 'Desenlace' or 'desenlace' in newDF.columns:
+                if 'Desenlace' in newDF.columns or 'desenlace' in newDF.columns:
                     str_desenlace = 'Desenlace' if 'Desenlace' in newDF.columns else 'desenlace'
                     newDF = newDF.drop(str_desenlace, axis=1)
 

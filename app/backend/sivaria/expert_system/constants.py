@@ -1,3 +1,7 @@
+from pathlib import Path
+import os
+BASE_DIR = Path(__file__).resolve().parent
+
 # Classifiers
 NAIVE_BAYES = 'naive_bayes'
 
@@ -20,7 +24,7 @@ ACTION_MODES = [
     'train'
 ]
 
-FILEPATH = 'configFiles/'
+FILEPATH = os.path.join(BASE_DIR, 'configFiles/')
 CONFIG_FILENAME = 'configModel'
 CONFIG_FILETYPE = '.sav'
 MODEL_FILETYPE = '.sav'

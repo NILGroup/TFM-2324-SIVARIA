@@ -1,6 +1,8 @@
-import constants
 import os
 import pickle
+
+#Own created modules
+from ..expert_system import constants
 
 class Configurator(object):
     __modelType = None

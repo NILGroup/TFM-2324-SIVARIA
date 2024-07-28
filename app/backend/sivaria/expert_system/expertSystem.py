@@ -1,13 +1,13 @@
 import os
 import pickle
 import numpy as np
-from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import copy
 # Own created modules
-import constants
+from ..expert_system import constants
 
 class ExpertSystem():
     __model = None

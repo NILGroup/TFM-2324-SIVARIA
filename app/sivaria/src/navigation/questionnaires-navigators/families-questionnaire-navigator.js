@@ -1,0 +1,414 @@
+import { useState, useRef, useEffect } from "react";
+import { View, ScrollView, Pressable, StyleSheet, Text, Dimensions } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Step1, Step2, Step3, Step4, Step5,Step6,Step7,Step8,Step9,Step10, Step11, Step12 } from "../../screens/logged-users/forms/family-multi-step-form/steps";
+import axiosInstance from "../../utils/axios-config-web";
+import { useToast } from "react-native-toast-notifications";
+import LoadingScreen from "../../screens/loading-screen";
+import { getItemLocalStorage } from "../../utils/general-local-storage";
+
+const FamiliesStack = createNativeStackNavigator();
+
+const steps = [
+  { name: 'Step1', component: Step1 },
+  { name: 'Step2', component: Step2 },
+  { name: 'Step3', component: Step3 },
+  { name: 'Step4', component: Step4 },
+  { name: 'Step5', component: Step5 },
+];
+
+export const FamiliesStackNavigator = ({navigation}) => {
+
+    const [currentStep, setCurrentStep] = useState(0);
+    const scrollViewRef = useRef(null);
+    
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const toast = useToast();
+    
+    const [stepData, setStepData] = useState({
+        step1: {
+            idChild: '',
+            course: '',
+        },
+        step2: {
+            sena104: '',
+            sena117: '',
+            sena118: '',
+            sena121: '',
+            sena123: '',
+            sena124: '',
+            sena125: '',
+            sena135: '',
+            sena137: '',
+            sena138: '',
+            sena139: '',
+            sena140: '',
+            sena145: '',
+            sena146: '',    
+            sena148: '',
+            sena154: ''
+        },
+        step3: {
+            family12: '',
+            family13: '',
+            jobSituationFather: '', 
+            jobSituationMother: '', 
+            academicLevelFather: '', 
+            academicLevelMother: '',
+            family1: '',
+            family2: '',
+            family3: '',
+            family4: '',
+            family5: '',
+            family6: '',
+            family7: '',
+            family8: '',
+        },
+        step4: {
+            parq1: '',
+            parq2: '',
+            parq3: '',
+            parq4: '',
+            parq5: '',
+            parq6: '',
+            parq7: '',
+            parq8: '',
+            parq9: '',
+            parq10: '',
+            parq11: '',
+            parq12: '',
+            parq13: '',
+            parq14: '',
+        },
+        step5: {
+            parq15: '',
+            parq16: '',
+            parq17: '',
+            parq18: '',
+            parq19: '',
+            parq20: '',
+            parq21: '',
+            parq22: '',
+            parq23: '',
+            parq24: '',
+            parq25: '',
+            parq26: '',
+            parq27: '',
+            parq28: '',
+            parq29: '',
+        }
+    });
+
+    useEffect(() => {
+        scrollViewRef.current?.scrollTo({
+            x: currentStep * (screenWidth / steps.length), // Desplaza el ScrollView al paso actual
+            animated: true
+        });
+    }, [currentStep]);
+
+    const nextStep = () => {
+        if (currentStep < steps.length - 1) {
+            setCurrentStep(currentStep + 1);
+        }
+    };
+
+    const prevStep = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const goToStep = (index) => {
+        setCurrentStep(index);
+    };
+
+    const validateForm = () => {
+        const { step1, step2, 
+            step3, step4, step5 } = stepData;
+
+        let step1Valid = (
+            step1.idChild &&
+            step1.course
+        );
+        let step2Valid = (
+            step2.sena104 &&
+            step2.sena117 &&
+            step2.sena118 &&
+            step2.sena121 &&
+            step2.sena123 &&
+            step2.sena124 &&
+            step2.sena125 &&
+            step2.sena135 &&
+            step2.sena137 &&
+            step2.sena138 &&
+            step2.sena139 &&
+            step2.sena140 &&
+            step2.sena145 &&
+            step2.sena146 &&    
+            step2.sena148 &&
+            step2.sena154
+        );
+        let step3Valid = (
+            step3.family12 &&
+            step3.family13 &&
+            step3.jobSituationFather &&
+            step3.jobSituationMother &&
+            step3.academicLevelFather &&
+            step3.academicLevelMother &&
+            step3.family1 &&
+            step3.family2 &&
+            step3.family3 &&
+            step3.family4 &&
+            step3.family5 &&
+            step3.family6 &&
+            step3.family7 &&
+            step3.family8
+        );
+        let step4Valid = (
+            step4.parq1 &&
+            step4.parq2 &&
+            step4.parq3 &&
+            step4.parq4 &&
+            step4.parq5 &&
+            step4.parq6 &&
+            step4.parq7 &&
+            step4.parq8 &&
+            step4.parq9 &&
+            step4.parq10 &&
+            step4.parq11 &&
+            step4.parq12 &&
+            step4.parq13 &&
+            step4.parq14
+        );
+        let step5Valid = (
+            step5.parq15 &&
+            step5.parq16 &&
+            step5.parq17 &&
+            step5.parq18 &&
+            step5.parq19 &&
+            step5.parq20 &&
+            step5.parq21 &&
+            step5.parq22 &&
+            step5.parq23 &&
+            step5.parq24 &&
+            step5.parq25 &&
+            step5.parq26 &&
+            step5.parq27 &&
+            step5.parq28 &&
+            step5.parq29
+        );
+
+        return {
+            step1Valid: step1Valid,
+            step2Valid: step2Valid, 
+            step3Valid: step3Valid, 
+            step4Valid: step4Valid, 
+            step5Valid: step5Valid,          
+        };
+    }
+
+    async function handleSubmit() {
+        // Maneja el envío del formulario
+        //const errors = validateStep(stepData);
+
+        let { 
+            step1Valid,
+            step2Valid, 
+            step3Valid, 
+            step4Valid, 
+            step5Valid
+        } = validateForm();
+        
+        if (step1Valid &&
+            step2Valid && 
+            step3Valid && 
+            step4Valid && 
+            step5Valid) 
+        {
+
+            setIsLoading(true);
+            let base64_stepData = btoa(JSON.stringify(stepData));
+            console.log(base64_stepData);
+            let data = {
+                email: await getItemLocalStorage('email'),
+                user_data_sivaria: base64_stepData
+            };
+
+            console.log('Formulario enviado', stepData);
+            
+            await axiosInstance.post("/sivaria/v1/expertSystem/predict", data)
+            .then(async function (response) {
+                console.log('Formulario enviado', stepData);
+                let message = 'Cuestionario enviado correctamente.\nLe llegará una notificación con los resultados y se le enviará por correo, tanto a usted como a al profesional a cargo.'
+                toast.show(message,{type: 'success'});
+                navigation.navigate('Dashboard');
+            })
+            .catch(function (error) {
+                toast.show('Error en el envío y procesamiento del cuestionario. ' + error.response.data.data,{type: 'danger'});
+            });
+            setIsLoading(false);
+        }
+        else {
+            let message = 'Hay campos vacíos en las siguientes páginas del formulario:\n';
+            
+            if(!step1Valid) {
+                message += 'Página 1\n';
+            }
+            if(!step2Valid) {
+                message += 'Página 2\n';
+            }
+            if(!step3Valid) {
+                message += 'Página 3\n';
+            }
+            if(!step4Valid) {
+                message += 'Página 4\n';
+            }
+            if(!step5Valid) {
+                message += 'Página 5';
+            }
+
+            toast.show(
+                message,
+                {
+                    type: 'danger'
+                }
+            );
+        }
+      };
+
+    const CurrentStepComponent = steps[currentStep].component;
+
+    if (isLoading) {
+        return (
+            <LoadingScreen />
+        );
+    }
+
+    return (
+        <View style={{ flex: 1 }}>
+            <View style={styles.progressBarContainer}>
+                <ScrollView             
+                    ref={scrollViewRef}
+                    horizontal 
+                    showsHorizontalScrollIndicator={false} 
+                    contentContainerStyle={styles.progressBar}
+                >
+                    {steps.map((step, index) => (
+                        /*
+                        <View key={index} style={[styles.step, currentStep === index && styles.currentStep]}>
+                            <Text>{step.name}</Text>
+                        </View>*/
+                        <Pressable key={index} onPress={() => goToStep(index)} style={[styles.step, currentStep === index && styles.currentStep]}>
+                            <Text style={styles.stepText}>{step.name}</Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            </View>
+            <ScrollView style={{ flex: 1 }}>
+                {/*<YoungstersStack.Navigator screenOptions={ { headerShown:false}}>*/}
+                    {/*
+                        <YoungstersStack.Screen name={steps[currentStep].name} component={steps[currentStep].component} />
+                    */}
+                    {/*steps.map((step, index) => (
+                        <YoungstersStack.Screen key={index} name={step.name}>
+                            {() => <step.component stepData={stepData} setStepData={setStepData} />}
+                        </YoungstersStack.Screen>
+                    ))*/}
+                {/*</YoungstersStack.Navigator>*/}
+                <CurrentStepComponent stepData={stepData} setStepData={setStepData} />
+            </ScrollView>
+            <View style={styles.navigationButtons}>
+                {/*
+                <Pressable onPress={prevStep} disabled={currentStep === 0} >
+                    <Text>VOLVER</Text>
+                </Pressable>
+                <Pressable onPress={nextStep} disabled={currentStep === steps.length - 1}>
+                    <Text>CONTINUAR</Text>    
+                </Pressable>
+                */}
+                {currentStep > 0 ? 
+                    (
+                        <Pressable onPress={prevStep} style={styles.button}>
+                            <Text style={styles.buttonText}>VOLVER</Text>
+                        </Pressable>
+                    ) : <View style={styles.placeholder} />
+                } 
+                {currentStep < steps.length - 1 ? 
+                    (
+                        <Pressable onPress={nextStep} style={styles.button}>
+                            <Text style={styles.buttonText}>CONTINUAR</Text>
+                        </Pressable>
+                    ) : 
+                    (
+                        <Pressable onPress={handleSubmit} style={styles.button}>
+                            <Text style={styles.buttonText}>ENVIAR</Text>
+                        </Pressable> 
+                    )
+                }
+            </View>
+        </View>
+    );
+};
+
+const screenWidth = Dimensions.get('window').width;
+
+const styles = StyleSheet.create({
+    progressBarContainer: {
+        alignItems: 'center', // Centra el contenedor de la barra de progreso
+        marginVertical: 20
+    },
+
+
+
+    progressBar: {
+      flexDirection: 'row',
+      padding: 10,
+      backgroundColor: '#eee',
+
+
+
+      minWidth: screenWidth,
+      justifyContent: 'center', // Asegura que el contenido esté centrado horizontalmente
+    },
+    step: {
+      padding: 10,
+      marginHorizontal: 5,
+      borderRadius: 5,
+      backgroundColor: '#ccc',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    currentStep: {
+      backgroundColor: '#6e3b6e'
+    },
+
+
+    stepText: {
+        color: '#000',
+        fontWeight: 'bold'
+    },
+
+    navigationButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      padding: 20
+    },
+
+    button: {
+        padding: 10,
+        backgroundColor: '#007bff',
+        borderRadius: 5,
+
+        width: 125,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlign:'center',
+    },
+    placeholder: {
+        width: 100, // Ajusta según sea necesario para que coincida con el tamaño de los botones
+    }
+  });
+  
