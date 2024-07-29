@@ -374,7 +374,7 @@ const Step3 = ({ stepData, setStepData }) => {
                 <Text style={{fontWeight:'bold'}}>
                     ¿Considera que poseen una situación económica familiar precaria?
                 </Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step3.femaleSelfPerception} onSelect={text => handleInputChange('family13', text)}/>
+                <SivariaRadioButton data={yesNoData} option={stepData.step3.family13} onSelect={text => handleInputChange('family13', text)}/>
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu padre:</Text>
