@@ -1,5 +1,4 @@
 asgiref==3.8.1
-asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1698341106958/work
 async-generator==1.10
 autocommand==2.2.1
 backports.csv==1.0.7
@@ -9,94 +8,63 @@ charset-normalizer==3.3.2
 cheroot==8.6.0
 CherryPy==18.8.0
 click==8.1.7
-colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1666700638685/work
-comm @ file:///home/conda/feedstock_root/build_artifacts/comm_1710320294760/work
 contourpy==1.2.1
 cryptography==38.0.1
 cycler==0.12.1
-debugpy @ file:///D:/bld/debugpy_1719378790940/work
-decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_1641555617451/work
 Django==4.2.14
 django-cors-headers==4.4.0
 django-environ==0.11.2
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 dnspython==2.2.1
-exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1720869315914/work
-executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1698579936712/work
 exponent_server_sdk==2.1.0
 feedparser==6.0.10
 fonttools==4.53.1
 future==1.0.0
 h11==0.13.0
 idna==3.7
-importlib_metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1721856510709/work
 importlib_resources==6.4.0
 inflect==6.0.0
-ipykernel @ file:///D:/bld/ipykernel_1719845595208/work
-ipython @ file:///D:/bld/ipython_1701831845989/work
 jaraco.classes==3.2.3
 jaraco.collections==3.5.2
 jaraco.context==4.1.2
 jaraco.functools==3.5.2
 jaraco.text==3.9.1
-jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1696326070614/work
 joblib==1.4.2
-jupyter_client @ file:///home/conda/feedstock_root/build_artifacts/jupyter_client_1716472197302/work
-jupyter_core @ file:///D:/bld/jupyter_core_1710257377578/work
 kiwisolver==1.4.5
 lxml==5.2.2
 matplotlib==3.9.1
-matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1713250518406/work
 more-itertools==8.14.0
 mysqlclient==2.1.1
-nest_asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1705850609492/work
 nltk==3.8.1
 numpy==2.0.1
 outcome==1.2.0
-packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1718189413536/work
 pandas==2.2.2
-parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1712320355065/work
 Pattern==3.6
 pdfminer.six==20220524
-pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1602536217715/work
 pillow==10.4.0
-platformdirs @ file:///home/conda/feedstock_root/build_artifacts/platformdirs_1715777629804/work
 portend==3.1.0
-prompt_toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1718047967974/work
-psutil @ file:///D:/bld/psutil_1719274706746/work
-pure_eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1721585709575/work
-Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1714846767233/work
 PyJWT==2.8.0
 pymongo==4.2.0
 pyparsing==3.1.2
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1709299778482/work
 python-docx==0.8.11
 pytz==2024.1
 pywin32==306
-pyzmq @ file:///D:/bld/pyzmq_1715024536945/work
 regex==2024.7.24
 requests==2.32.3
 scikit-learn==1.5.1
 scipy==1.13.1
 selenium==4.4.3
 sgmllib3k==1.0.0
-six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
 soupsieve==2.5
 sqlparse==0.5.1
-stack-data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1669632077133/work
 tempora==5.0.2
 threadpoolctl==3.5.0
-tornado @ file:///D:/bld/tornado_1717722891796/work
 tqdm==4.66.4
-traitlets @ file:///home/conda/feedstock_root/build_artifacts/traitlets_1713535121073/work
 trio==0.21.0
 trio-websocket==0.9.2
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1717802530399/work
 tzdata==2024.1
-urllib3==2.2.2
+urllib3
 vaderSentiment==3.3.2
-wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1704731205417/work
 wsproto==1.2.0
 zc.lockfile==2.0
-zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1718013267051/work
