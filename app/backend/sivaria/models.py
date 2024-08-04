@@ -4,13 +4,6 @@ from .api.managers.managers import AppUserManager
 from .validators.validators import SpanishPhoneValidator
 
 # Create your models here.
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    body = models.TextField()
-
-    def __str__(self) -> str:
-        return f"Post: {self.title}"
-    
 
 class Rol(models.Model):
     slug = models.CharField(max_length=200, unique=True)
