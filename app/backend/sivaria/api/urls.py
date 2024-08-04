@@ -4,8 +4,6 @@ from .views import *
 app_name = 'sivaria'
 
 urlpatterns = [
-    path('v1/post', Post_APIView.as_view()),
-    path('v1/post/<int:postId>', Post_APIView_Detail.as_view()),
     path('v1/rol', Rol_APIView.as_view()),
     path('v1/rol/<str:slug>', Rol_APIView_Detail_Slug.as_view()),
     path('v1/rol/<int:rolId>', Rol_APIView_Detail_RolId.as_view()),

@@ -1,0 +1,201 @@
+id,curso,situacion_laboral_madre,situacion_laboral_padre,nivel_profesional_madre,nivel_profesional_padre,situacion_economica_precaria,ingreso_familiar_mensual,tratamiento_psiquiatrico_previo,problemas_interiorizados,problemas_exteriorizados,problemas_contexto,problemas_recursos_psicologicos,madre_adolescente,padre_adolescente,padres_divorciados,familia_monoparental,tratamiento_psicologico_padre_madre,adiccion_padre_madre,relaciones_conflictivas_hijo_padre_madre,familia_reconstruida,supervision_parental_insuficiente,maltrato_al_adolescente,maltrato_a_la_pareja,duelo,desenlace
+1,Universidad,Pensionado,No trabaja,Formacion Profesional,Otro,No,x>=2000,Si,Si,No,No,Si,No,No,Si,Si,No,No,Si,No,Si,Si,Si,No,Intencion
+2,Bachillerato,No trabaja,No trabaja,Otro,Formacion Profesional,No,x>=2000,Si,No,Si,No,No,No,No,No,No,Si,No,No,Si,Si,No,No,No,Ninguno
+3,Ninguno,Trabaja,No trabaja,Bachillerato,Ninguno,No,x<=999,No,No,No,No,Si,Si,Si,Si,Si,Si,Si,No,No,No,No,No,Si,Ninguno
+4,Universidad,No trabaja,Pensionado,Formacion Profesional,Universidad,Si,1000-1499,No,Si,Si,Si,Si,No,Si,No,Si,No,No,Si,No,Si,No,No,No,Planificacion
+5,Universidad,Trabaja,No trabaja,Otro,Otro,Si,x>=2000,No,No,Si,No,No,Si,No,No,Si,Si,Si,Si,Si,No,Si,Si,Si,Autolesion
+6,ESO,Pensionado,No trabaja,Formacion Profesional,Otro,No,1500-1999,Si,No,Si,No,No,Si,No,Si,No,Si,No,No,No,No,Si,Si,Si,Autolesion
+7,Bachillerato,Pensionado,No trabaja,Ninguno,Formacion Profesional,No,1000-1499,Si,No,Si,Si,Si,Si,No,No,No,No,No,Si,Si,Si,Si,Si,Si,Ideacion
+8,ESO,No trabaja,Pensionado,Ninguno,Universidad,Si,x>=2000,Si,No,Si,No,No,Si,No,No,No,No,Si,No,Si,No,No,Si,No,Ninguno
+9,Bachillerato,Pensionado,Pensionado,Otro,Bachillerato,Si,x>=2000,Si,No,Si,No,No,No,No,No,Si,Si,No,Si,Si,Si,No,No,Si,Ninguno
+10,Otro,Pensionado,Pensionado,Universidad,Otro,Si,x<=999,No,No,Si,No,No,Si,No,Si,Si,No,Si,No,Si,No,Si,Si,Si,Ideacion
+11,Universidad,No trabaja,No trabaja,Formacion Profesional,Bachillerato,No,1500-1999,Si,Si,Si,No,Si,No,Si,Si,No,No,No,No,Si,Si,Si,Si,Si,Ideacion
+12,Primaria,Pensionado,Pensionado,Otro,Formacion Profesional,No,x>=2000,Si,No,No,No,Si,No,No,No,No,No,No,No,Si,No,No,No,Si,Ideacion
+13,Otro,Trabaja,Pensionado,Ninguno,Bachillerato,Si,1000-1499,Si,No,No,Si,No,Si,Si,No,No,Si,Si,Si,No,No,Si,No,Si,Ninguno
+14,Universidad,Trabaja,Trabaja,Universidad,Formacion Profesional,Si,x>=2000,Si,Si,No,No,No,Si,Si,Si,No,No,Si,Si,No,No,No,No,Si,Planificacion
+15,Ninguno,No trabaja,Trabaja,Otro,Bachillerato,Si,1000-1499,Si,No,No,Si,No,No,Si,No,Si,No,No,No,No,Si,No,No,No,Intencion
+16,Universidad,No trabaja,Pensionado,Formacion Profesional,Otro,No,1000-1499,Si,No,No,No,No,No,Si,No,No,Si,No,Si,Si,Si,No,No,Si,Ideacion
+17,Ninguno,Pensionado,No trabaja,Otro,Universidad,Si,1000-1499,Si,Si,No,Si,No,Si,No,Si,No,Si,No,No,Si,No,No,No,No,Planificacion
+18,Ninguno,No trabaja,Trabaja,Otro,Universidad,Si,1000-1499,No,No,No,Si,No,Si,Si,Si,Si,No,Si,No,Si,Si,Si,No,No,Ninguno
+19,Ninguno,No trabaja,No trabaja,Bachillerato,Otro,No,1500-1999,No,No,Si,No,No,Si,Si,Si,No,No,No,No,Si,No,No,Si,No,Ideacion
+20,ESO,No trabaja,Trabaja,Otro,Otro,No,1500-1999,Si,Si,No,Si,Si,No,Si,No,No,Si,No,No,Si,Si,No,No,Si,Ninguno
+21,Ninguno,Pensionado,Pensionado,Otro,Bachillerato,Si,1500-1999,Si,Si,No,Si,Si,No,No,No,Si,Si,Si,Si,Si,Si,Si,Si,No,Ideacion
+22,Bachillerato,Trabaja,Pensionado,Bachillerato,Ninguno,No,1500-1999,Si,Si,No,No,No,Si,Si,Si,Si,No,No,No,No,Si,No,Si,No,Ninguno
+23,Ninguno,Pensionado,No trabaja,Universidad,Universidad,Si,x<=999,No,No,Si,Si,No,No,Si,No,No,Si,Si,No,No,Si,Si,Si,Si,Ideacion
+24,ESO,No trabaja,Pensionado,Bachillerato,Bachillerato,No,x<=999,Si,No,No,No,No,No,Si,No,No,No,Si,No,No,Si,Si,Si,No,Ideacion
+25,Primaria,No trabaja,Trabaja,Otro,Bachillerato,Si,1000-1499,Si,Si,No,No,No,No,No,Si,Si,Si,No,No,Si,Si,Si,No,Si,Intencion
+26,Primaria,Pensionado,No trabaja,Otro,Bachillerato,No,1500-1999,Si,Si,No,Si,Si,No,Si,Si,No,Si,Si,Si,Si,Si,Si,Si,No,Planificacion
+27,ESO,No trabaja,Trabaja,Otro,Otro,No,x<=999,No,No,No,Si,No,Si,No,Si,Si,Si,Si,No,Si,Si,Si,Si,No,Autolesion
+28,Ninguno,Trabaja,Pensionado,Bachillerato,Ninguno,Si,1000-1499,Si,Si,No,No,No,No,No,Si,No,No,Si,Si,No,Si,Si,Si,No,Ideacion
+29,Ninguno,No trabaja,Pensionado,Ninguno,Ninguno,No,x<=999,Si,Si,Si,Si,Si,Si,No,No,Si,No,Si,Si,Si,No,No,Si,Si,Ninguno
+30,Ninguno,No trabaja,Pensionado,Universidad,Bachillerato,Si,1000-1499,No,Si,Si,No,No,Si,Si,Si,Si,No,No,Si,No,No,Si,No,No,Intencion
+31,ESO,No trabaja,No trabaja,Bachillerato,Ninguno,Si,x<=999,No,No,Si,No,Si,Si,No,Si,Si,Si,No,Si,No,No,Si,Si,No,Planificacion
+32,Universidad,Pensionado,No trabaja,Universidad,Otro,Si,1500-1999,No,Si,No,No,Si,Si,No,No,No,Si,Si,Si,No,No,Si,Si,Si,Autolesion
+33,Bachillerato,Trabaja,No trabaja,Ninguno,Otro,Si,1000-1499,No,No,No,Si,No,No,Si,No,Si,No,Si,No,No,No,No,No,No,Ninguno
+34,Otro,Trabaja,No trabaja,Otro,Ninguno,No,1000-1499,No,Si,No,No,No,No,Si,Si,No,No,No,No,Si,Si,No,No,No,Intencion
+35,Bachillerato,Pensionado,Trabaja,Otro,Otro,No,x<=999,Si,No,Si,Si,Si,No,No,Si,No,No,Si,Si,No,No,Si,Si,Si,Intencion
+36,Bachillerato,No trabaja,Pensionado,Formacion Profesional,Ninguno,No,1500-1999,No,No,No,No,Si,Si,No,Si,No,No,Si,No,Si,No,No,Si,No,Autolesion
+37,Universidad,No trabaja,Pensionado,Formacion Profesional,Universidad,Si,1000-1499,No,No,Si,Si,No,No,No,No,Si,Si,No,Si,Si,Si,No,No,No,Ninguno
+38,Primaria,No trabaja,Pensionado,Universidad,Ninguno,No,1000-1499,No,Si,No,Si,Si,Si,No,Si,No,No,No,Si,No,No,Si,Si,Si,Ninguno
+39,ESO,Pensionado,Pensionado,Universidad,Ninguno,Si,1500-1999,No,No,No,Si,No,Si,No,Si,No,No,Si,Si,No,Si,No,Si,No,Intencion
+40,Primaria,Pensionado,No trabaja,Formacion Profesional,Bachillerato,Si,1500-1999,No,Si,Si,No,No,Si,Si,No,Si,Si,Si,No,Si,No,Si,No,Si,Planificacion
+41,Universidad,Pensionado,Trabaja,Bachillerato,Formacion Profesional,No,x>=2000,No,No,Si,No,Si,Si,Si,No,No,No,Si,No,No,Si,No,Si,No,Intencion
+42,Bachillerato,Pensionado,No trabaja,Otro,Bachillerato,Si,x<=999,No,No,Si,Si,No,No,Si,No,Si,No,Si,Si,No,No,Si,Si,Si,Ninguno
+43,Universidad,No trabaja,Pensionado,Formacion Profesional,Formacion Profesional,Si,x<=999,No,Si,Si,Si,Si,No,No,Si,Si,No,Si,Si,No,No,Si,No,Si,Ideacion
+44,Primaria,No trabaja,Pensionado,Universidad,Bachillerato,No,1000-1499,No,No,No,Si,No,Si,Si,Si,Si,Si,Si,No,Si,No,Si,No,Si,Ninguno
+45,Otro,No trabaja,No trabaja,Universidad,Otro,Si,1500-1999,Si,No,Si,No,No,Si,No,Si,No,Si,Si,No,Si,Si,Si,No,Si,Autolesion
+46,Universidad,Trabaja,Trabaja,Formacion Profesional,Otro,Si,x>=2000,Si,No,No,No,No,No,No,No,No,Si,Si,Si,Si,No,Si,Si,Si,Ideacion
+47,Otro,No trabaja,Trabaja,Ninguno,Universidad,No,1500-1999,Si,Si,No,Si,No,No,Si,No,Si,No,No,No,Si,No,Si,Si,Si,Planificacion
+48,Bachillerato,Trabaja,Pensionado,Formacion Profesional,Ninguno,No,1500-1999,Si,Si,Si,No,No,No,Si,Si,Si,Si,Si,Si,No,Si,No,No,No,Intencion
+49,ESO,No trabaja,Pensionado,Formacion Profesional,Ninguno,Si,1000-1499,No,Si,No,No,Si,Si,Si,Si,No,No,Si,No,No,Si,Si,No,No,Autolesion
+50,Otro,Trabaja,Trabaja,Ninguno,Bachillerato,No,x<=999,Si,No,Si,No,Si,Si,No,No,No,Si,No,Si,No,Si,No,Si,No,Intencion
+51,ESO,Pensionado,Pensionado,Ninguno,Otro,No,x<=999,No,No,Si,Si,No,Si,No,No,Si,Si,No,Si,No,No,No,Si,Si,Intencion
+52,Universidad,Trabaja,No trabaja,Formacion Profesional,Bachillerato,No,1500-1999,Si,Si,Si,No,Si,No,No,No,No,Si,Si,No,Si,Si,Si,No,No,Intencion
+53,Primaria,Pensionado,No trabaja,Universidad,Otro,Si,1500-1999,Si,Si,No,Si,No,No,Si,No,No,Si,No,Si,No,No,Si,Si,Si,Planificacion
+54,Universidad,No trabaja,No trabaja,Formacion Profesional,Otro,Si,1500-1999,No,Si,No,Si,Si,Si,Si,No,No,Si,Si,Si,Si,No,No,No,No,Planificacion
+55,Bachillerato,Pensionado,No trabaja,Universidad,Universidad,Si,1000-1499,Si,No,Si,No,Si,Si,No,No,Si,Si,No,No,No,No,Si,Si,No,Autolesion
+56,Ninguno,Pensionado,Trabaja,Bachillerato,Bachillerato,Si,x>=2000,Si,No,No,No,No,No,No,No,Si,No,No,Si,Si,Si,Si,No,No,Ideacion
+57,Bachillerato,Trabaja,Trabaja,Universidad,Ninguno,Si,1000-1499,No,No,Si,No,No,No,Si,Si,No,Si,No,No,Si,Si,No,Si,Si,Ideacion
+58,ESO,Trabaja,Trabaja,Bachillerato,Formacion Profesional,No,1500-1999,No,Si,Si,Si,Si,Si,Si,Si,Si,Si,No,Si,No,Si,Si,Si,Si,Autolesion
+59,ESO,Trabaja,Pensionado,Formacion Profesional,Formacion Profesional,No,1500-1999,Si,Si,No,No,Si,Si,No,Si,Si,Si,Si,Si,Si,No,Si,No,No,Planificacion
+60,Bachillerato,Pensionado,Pensionado,Universidad,Bachillerato,Si,1000-1499,Si,Si,Si,Si,No,No,Si,No,No,No,No,Si,No,Si,Si,No,No,Ideacion
+61,Universidad,Pensionado,No trabaja,Ninguno,Ninguno,No,x<=999,Si,No,No,No,Si,Si,No,No,No,Si,Si,No,No,No,No,Si,Si,Autolesion
+62,Primaria,No trabaja,No trabaja,Ninguno,Bachillerato,Si,x<=999,Si,No,Si,Si,No,Si,Si,No,Si,Si,No,Si,Si,No,Si,No,Si,Ninguno
+63,Bachillerato,Pensionado,No trabaja,Bachillerato,Ninguno,No,1500-1999,No,No,No,No,No,Si,Si,No,Si,No,Si,No,No,Si,Si,Si,No,Ninguno
+64,Bachillerato,Pensionado,No trabaja,Ninguno,Otro,No,x>=2000,No,Si,Si,Si,No,No,No,Si,No,Si,No,No,Si,Si,No,Si,Si,Ideacion
+65,Bachillerato,Trabaja,Trabaja,Bachillerato,Ninguno,Si,1000-1499,Si,Si,No,Si,Si,Si,No,No,No,Si,No,Si,Si,Si,Si,No,Si,Ideacion
+66,Otro,Trabaja,No trabaja,Bachillerato,Formacion Profesional,Si,x<=999,Si,No,Si,No,No,No,No,Si,Si,Si,No,Si,No,No,Si,Si,No,Intencion
+67,Bachillerato,Trabaja,No trabaja,Bachillerato,Otro,Si,x>=2000,No,No,No,Si,Si,Si,Si,Si,No,No,Si,Si,No,No,No,Si,No,Ideacion
+68,ESO,No trabaja,Trabaja,Universidad,Ninguno,Si,x<=999,Si,No,No,No,Si,No,Si,No,Si,Si,Si,Si,No,No,Si,Si,Si,Autolesion
+69,Primaria,No trabaja,No trabaja,Otro,Bachillerato,No,1000-1499,Si,No,Si,No,No,Si,No,No,Si,Si,Si,Si,Si,Si,No,Si,Si,Planificacion
+70,Primaria,Trabaja,Trabaja,Otro,Otro,No,1000-1499,Si,Si,No,No,Si,No,Si,No,No,No,No,Si,Si,Si,Si,Si,Si,Autolesion
+71,Primaria,No trabaja,No trabaja,Formacion Profesional,Formacion Profesional,Si,1500-1999,No,No,Si,Si,No,No,No,Si,Si,No,No,Si,No,Si,Si,Si,No,Ninguno
+72,ESO,Pensionado,Pensionado,Formacion Profesional,Universidad,Si,x<=999,No,No,No,Si,No,Si,Si,Si,No,No,Si,No,Si,No,No,No,Si,Planificacion
+73,ESO,Pensionado,No trabaja,Ninguno,Bachillerato,Si,x<=999,Si,Si,No,No,No,No,Si,Si,Si,No,No,No,No,Si,Si,No,No,Ideacion
+74,ESO,Pensionado,Trabaja,Formacion Profesional,Otro,Si,x>=2000,No,Si,Si,Si,No,No,Si,No,Si,No,Si,No,Si,No,No,Si,No,Planificacion
+75,Otro,Pensionado,Trabaja,Ninguno,Otro,No,x>=2000,No,No,Si,No,No,No,No,Si,No,No,Si,Si,No,No,No,Si,Si,Planificacion
+76,ESO,Trabaja,Trabaja,Universidad,Formacion Profesional,Si,x<=999,Si,Si,No,No,Si,No,No,No,No,No,No,No,No,Si,Si,No,No,Intencion
+77,Universidad,Trabaja,Trabaja,Formacion Profesional,Bachillerato,Si,x>=2000,Si,Si,Si,No,No,Si,No,No,No,Si,Si,Si,No,No,Si,Si,Si,Ninguno
+78,Ninguno,Trabaja,No trabaja,Otro,Ninguno,No,x>=2000,No,Si,No,No,Si,Si,No,Si,No,Si,Si,No,No,No,Si,Si,No,Ideacion
+79,Bachillerato,Pensionado,No trabaja,Bachillerato,Otro,No,1000-1499,No,No,Si,No,No,Si,No,Si,Si,No,Si,No,Si,No,Si,Si,Si,Planificacion
+80,Ninguno,Trabaja,No trabaja,Universidad,Otro,No,1000-1499,No,Si,Si,No,No,Si,Si,No,Si,Si,No,No,No,No,No,Si,No,Planificacion
+81,Primaria,Pensionado,Pensionado,Bachillerato,Ninguno,No,x>=2000,No,No,Si,No,No,Si,No,No,Si,No,No,No,No,Si,No,No,No,Ideacion
+82,Universidad,Pensionado,No trabaja,Ninguno,Bachillerato,Si,1000-1499,No,Si,Si,No,Si,No,Si,Si,Si,No,Si,No,Si,No,Si,Si,Si,Ideacion
+83,ESO,Pensionado,Trabaja,Ninguno,Universidad,Si,x>=2000,No,No,No,Si,No,Si,Si,No,Si,No,No,Si,No,No,Si,No,Si,Planificacion
+84,ESO,Trabaja,Pensionado,Ninguno,Otro,Si,x>=2000,Si,No,Si,Si,No,Si,Si,Si,Si,No,Si,No,No,Si,No,No,No,Ideacion
+85,ESO,Trabaja,Trabaja,Otro,Formacion Profesional,Si,1500-1999,No,Si,Si,Si,No,Si,Si,Si,Si,No,No,No,Si,Si,Si,Si,Si,Autolesion
+86,ESO,Pensionado,No trabaja,Otro,Otro,No,x>=2000,Si,No,Si,Si,Si,Si,Si,Si,No,No,Si,No,Si,No,No,Si,No,Planificacion
+87,Universidad,No trabaja,Trabaja,Formacion Profesional,Bachillerato,Si,x>=2000,Si,No,Si,Si,No,Si,No,No,No,No,No,Si,Si,Si,Si,No,Si,Autolesion
+88,Universidad,No trabaja,Pensionado,Universidad,Universidad,No,x<=999,Si,Si,Si,Si,No,Si,Si,No,No,No,No,Si,No,Si,No,No,No,Ninguno
+89,ESO,Trabaja,Trabaja,Bachillerato,Otro,Si,1500-1999,No,Si,Si,Si,No,No,Si,No,Si,No,Si,No,Si,Si,No,Si,No,Planificacion
+90,Otro,Trabaja,Pensionado,Otro,Universidad,No,1500-1999,Si,Si,Si,Si,Si,No,Si,Si,No,Si,No,Si,No,No,Si,Si,No,Autolesion
+91,Ninguno,Trabaja,Pensionado,Ninguno,Universidad,Si,x<=999,No,Si,No,No,No,Si,Si,No,Si,Si,No,No,No,Si,Si,Si,Si,Ninguno
+92,Bachillerato,No trabaja,Pensionado,Formacion Profesional,Universidad,No,1000-1499,No,Si,No,Si,No,Si,No,Si,No,Si,Si,No,Si,Si,No,No,No,Intencion
+93,Ninguno,Pensionado,Trabaja,Bachillerato,Formacion Profesional,Si,x>=2000,Si,Si,Si,Si,Si,No,No,Si,No,No,Si,No,Si,No,Si,Si,Si,Planificacion
+94,Primaria,Pensionado,No trabaja,Universidad,Universidad,Si,1000-1499,No,Si,No,No,Si,Si,No,Si,Si,No,No,No,Si,Si,Si,Si,No,Intencion
+95,Universidad,Pensionado,No trabaja,Otro,Bachillerato,Si,x<=999,No,Si,Si,No,No,No,Si,No,Si,No,No,Si,No,No,Si,Si,Si,Intencion
+96,Primaria,No trabaja,Pensionado,Formacion Profesional,Universidad,Si,x<=999,Si,Si,Si,Si,Si,No,No,Si,Si,No,No,Si,No,Si,Si,Si,Si,Planificacion
+97,Otro,Trabaja,Pensionado,Universidad,Bachillerato,No,1000-1499,Si,No,No,Si,Si,No,Si,Si,No,Si,Si,Si,Si,Si,No,Si,No,Autolesion
+98,Bachillerato,No trabaja,Pensionado,Formacion Profesional,Bachillerato,No,1500-1999,Si,Si,Si,No,Si,Si,No,Si,Si,No,No,Si,Si,Si,Si,Si,Si,Intencion
+99,Bachillerato,No trabaja,No trabaja,Ninguno,Ninguno,Si,x>=2000,Si,Si,Si,No,No,Si,No,Si,No,No,No,Si,Si,Si,Si,Si,No,Ideacion
+100,Bachillerato,Pensionado,No trabaja,Ninguno,Bachillerato,No,1000-1499,Si,Si,Si,No,Si,No,Si,No,Si,No,Si,Si,Si,No,No,Si,No,Planificacion
+101,Otro,Pensionado,No trabaja,Ninguno,Universidad,No,1000-1499,No,Si,No,No,No,No,No,No,Si,No,Si,No,No,Si,No,No,No,Intencion
+102,ESO,Trabaja,Pensionado,Otro,Otro,No,1500-1999,No,Si,No,Si,Si,Si,Si,No,Si,No,Si,No,Si,Si,Si,No,No,Planificacion
+103,Ninguno,No trabaja,Pensionado,Bachillerato,Formacion Profesional,Si,x<=999,No,Si,No,No,No,Si,No,Si,Si,Si,No,Si,No,No,Si,No,Si,Ideacion
+104,Universidad,Trabaja,Pensionado,Bachillerato,Ninguno,No,x>=2000,Si,No,No,Si,Si,No,No,Si,No,Si,Si,No,No,Si,Si,Si,Si,Ideacion
+105,Universidad,No trabaja,Trabaja,Otro,Formacion Profesional,No,x<=999,No,No,No,Si,No,No,No,Si,Si,Si,Si,Si,No,No,No,Si,Si,Planificacion
+106,Otro,Pensionado,Trabaja,Ninguno,Universidad,Si,x>=2000,Si,Si,No,Si,Si,No,Si,Si,Si,No,No,No,Si,No,No,No,Si,Autolesion
+107,Primaria,Pensionado,Trabaja,Bachillerato,Ninguno,No,1000-1499,Si,No,No,Si,Si,No,No,No,Si,No,Si,No,No,Si,Si,Si,No,Planificacion
+108,ESO,No trabaja,Pensionado,Bachillerato,Formacion Profesional,Si,x<=999,No,No,Si,No,Si,No,No,Si,No,Si,Si,No,Si,No,Si,No,Si,Ninguno
+109,Primaria,Pensionado,Pensionado,Bachillerato,Formacion Profesional,Si,x<=999,Si,Si,No,No,Si,No,No,No,No,Si,Si,Si,Si,No,Si,No,Si,Intencion
+110,ESO,Trabaja,Pensionado,Ninguno,Ninguno,Si,1000-1499,No,Si,Si,No,No,No,No,Si,No,Si,No,No,No,Si,Si,No,No,Ideacion
+111,Otro,Pensionado,No trabaja,Otro,Universidad,Si,1000-1499,No,Si,Si,No,Si,No,Si,Si,No,Si,No,No,No,Si,No,Si,Si,Autolesion
+112,ESO,Pensionado,Pensionado,Otro,Bachillerato,No,x>=2000,No,No,Si,Si,Si,No,No,No,Si,Si,No,Si,Si,No,Si,Si,Si,Autolesion
+113,ESO,Pensionado,No trabaja,Bachillerato,Bachillerato,No,1000-1499,No,No,Si,No,No,No,Si,No,Si,No,No,Si,No,Si,No,No,Si,Intencion
+114,Bachillerato,Pensionado,No trabaja,Formacion Profesional,Otro,No,x<=999,No,Si,No,No,No,No,No,Si,Si,No,No,Si,No,Si,Si,Si,No,Planificacion
+115,Universidad,Pensionado,Pensionado,Universidad,Formacion Profesional,Si,x<=999,Si,No,Si,Si,Si,Si,Si,Si,No,No,Si,No,No,Si,Si,Si,No,Planificacion
+116,Primaria,Pensionado,Trabaja,Ninguno,Bachillerato,No,1500-1999,Si,Si,No,No,Si,Si,No,No,No,No,Si,Si,Si,Si,Si,No,No,Ideacion
+117,Primaria,Pensionado,Trabaja,Bachillerato,Formacion Profesional,Si,1000-1499,Si,No,No,Si,Si,Si,No,Si,No,No,Si,No,Si,Si,No,Si,No,Ideacion
+118,Otro,Trabaja,No trabaja,Formacion Profesional,Formacion Profesional,No,x<=999,Si,Si,Si,No,No,Si,No,Si,No,Si,No,No,Si,Si,No,No,No,Autolesion
+119,Bachillerato,No trabaja,No trabaja,Otro,Otro,Si,x>=2000,Si,Si,No,Si,No,No,No,No,No,No,Si,Si,Si,Si,No,Si,No,Planificacion
+120,Universidad,Pensionado,No trabaja,Universidad,Formacion Profesional,Si,1500-1999,No,Si,No,No,No,Si,Si,No,Si,No,No,Si,No,Si,No,Si,Si,Planificacion
+121,Otro,Trabaja,Trabaja,Ninguno,Otro,Si,x<=999,Si,No,Si,Si,Si,Si,Si,No,Si,Si,No,Si,No,No,No,Si,Si,Ninguno
+122,Primaria,Trabaja,No trabaja,Universidad,Formacion Profesional,Si,1500-1999,No,Si,No,No,Si,Si,No,Si,No,No,Si,No,Si,Si,No,No,Si,Ninguno
+123,Universidad,Pensionado,No trabaja,Bachillerato,Universidad,No,x>=2000,No,Si,Si,Si,Si,No,Si,No,Si,No,No,No,No,No,Si,Si,Si,Planificacion
+124,Ninguno,Pensionado,Trabaja,Ninguno,Formacion Profesional,No,1000-1499,Si,Si,No,No,Si,No,Si,No,No,No,Si,No,No,Si,Si,Si,No,Ideacion
+125,Universidad,Pensionado,Trabaja,Ninguno,Formacion Profesional,Si,x>=2000,Si,Si,No,No,Si,Si,Si,No,No,Si,Si,No,No,No,No,No,No,Planificacion
+126,Bachillerato,No trabaja,Pensionado,Universidad,Otro,No,1000-1499,No,Si,Si,Si,Si,No,Si,No,Si,No,Si,Si,Si,Si,No,Si,Si,Ninguno
+127,Primaria,Trabaja,Trabaja,Universidad,Bachillerato,Si,x<=999,Si,No,Si,No,Si,No,No,Si,No,Si,Si,Si,No,No,Si,No,No,Ideacion
+128,Bachillerato,Trabaja,Trabaja,Ninguno,Ninguno,No,x>=2000,Si,No,No,No,No,Si,Si,No,No,Si,No,Si,No,Si,Si,No,Si,Ninguno
+129,ESO,No trabaja,Trabaja,Ninguno,Ninguno,No,x<=999,Si,No,No,No,Si,No,No,Si,No,No,No,Si,Si,Si,No,No,No,Intencion
+130,Ninguno,Pensionado,No trabaja,Ninguno,Formacion Profesional,Si,1000-1499,Si,No,No,Si,No,Si,Si,No,No,No,No,Si,Si,Si,Si,Si,No,Planificacion
+131,Otro,Trabaja,Pensionado,Universidad,Ninguno,Si,1500-1999,No,Si,Si,No,Si,No,No,Si,No,Si,No,Si,Si,Si,No,Si,Si,Ideacion
+132,Primaria,Trabaja,Pensionado,Otro,Formacion Profesional,Si,x>=2000,No,No,No,Si,Si,No,No,No,Si,Si,No,Si,No,No,No,Si,Si,Intencion
+133,ESO,Trabaja,Pensionado,Ninguno,Formacion Profesional,Si,x>=2000,Si,Si,Si,No,No,No,Si,No,No,No,No,Si,No,Si,Si,No,No,Autolesion
+134,Ninguno,Trabaja,Pensionado,Ninguno,Bachillerato,No,x>=2000,Si,No,No,No,No,Si,Si,Si,Si,Si,No,No,Si,No,Si,No,No,Autolesion
+135,Otro,No trabaja,No trabaja,Bachillerato,Universidad,No,x>=2000,No,No,No,Si,Si,No,Si,No,Si,Si,No,Si,Si,No,Si,No,No,Ninguno
+136,Ninguno,Trabaja,Trabaja,Universidad,Otro,Si,1000-1499,Si,Si,Si,Si,Si,Si,No,No,Si,No,No,Si,Si,No,Si,No,No,Autolesion
+137,Ninguno,Pensionado,Pensionado,Ninguno,Otro,Si,1000-1499,Si,No,Si,No,Si,No,Si,Si,No,No,Si,Si,No,No,No,No,No,Autolesion
+138,Bachillerato,No trabaja,No trabaja,Universidad,Ninguno,Si,1500-1999,Si,Si,Si,No,No,Si,No,No,Si,No,Si,Si,Si,Si,Si,No,Si,Autolesion
+139,Primaria,Trabaja,Trabaja,Universidad,Otro,Si,1500-1999,Si,No,No,Si,No,Si,No,No,Si,No,No,No,No,No,Si,Si,No,Intencion
+140,Primaria,Pensionado,No trabaja,Otro,Formacion Profesional,No,1500-1999,No,No,No,Si,No,No,Si,Si,No,Si,No,No,No,Si,Si,No,Si,Ninguno
+141,Universidad,Pensionado,Trabaja,Formacion Profesional,Universidad,Si,1500-1999,Si,No,No,Si,Si,Si,No,Si,No,Si,No,No,No,No,No,No,No,Ideacion
+142,Bachillerato,Trabaja,No trabaja,Universidad,Ninguno,No,x<=999,Si,No,No,Si,Si,No,Si,Si,No,Si,No,Si,Si,Si,No,Si,No,Ideacion
+143,Ninguno,Trabaja,Trabaja,Bachillerato,Universidad,Si,1000-1499,No,Si,Si,No,No,No,Si,No,Si,Si,Si,Si,No,Si,No,No,No,Autolesion
+144,ESO,Trabaja,Trabaja,Formacion Profesional,Ninguno,No,1500-1999,No,No,Si,No,Si,No,Si,No,Si,No,No,No,Si,No,Si,No,No,Ideacion
+145,Bachillerato,Trabaja,Trabaja,Otro,Otro,Si,1500-1999,Si,No,No,Si,No,Si,Si,No,Si,Si,Si,Si,Si,No,No,No,No,Intencion
+146,Otro,No trabaja,Trabaja,Bachillerato,Ninguno,Si,x>=2000,Si,Si,No,No,Si,No,Si,No,No,No,Si,Si,Si,No,No,No,Si,Ninguno
+147,Primaria,Pensionado,Trabaja,Otro,Formacion Profesional,Si,1000-1499,Si,Si,No,Si,No,Si,No,No,No,Si,Si,No,Si,No,Si,Si,No,Intencion
+148,Primaria,Trabaja,Pensionado,Ninguno,Otro,No,1000-1499,Si,No,No,Si,No,No,Si,Si,No,Si,No,No,Si,No,Si,Si,No,Intencion
+149,Primaria,No trabaja,No trabaja,Otro,Formacion Profesional,Si,x<=999,Si,No,Si,Si,Si,No,No,Si,Si,Si,No,Si,No,Si,Si,Si,Si,Intencion
+150,Primaria,Trabaja,No trabaja,Bachillerato,Formacion Profesional,Si,1500-1999,Si,Si,Si,Si,No,Si,Si,No,Si,Si,No,No,No,No,No,No,Si,Ideacion
+151,Universidad,Pensionado,Trabaja,Otro,Ninguno,No,1000-1499,No,No,No,Si,No,No,No,No,No,Si,Si,Si,No,Si,Si,Si,Si,Planificacion
+152,Bachillerato,No trabaja,No trabaja,Universidad,Universidad,Si,x<=999,No,Si,Si,Si,No,Si,No,No,Si,No,Si,No,No,Si,Si,No,Si,Planificacion
+153,Primaria,Trabaja,Trabaja,Ninguno,Universidad,No,x<=999,Si,No,No,Si,No,No,Si,No,No,No,No,No,No,No,No,Si,Si,Planificacion
+154,Bachillerato,No trabaja,No trabaja,Bachillerato,Bachillerato,Si,x>=2000,Si,Si,Si,Si,No,No,No,No,Si,Si,Si,No,Si,Si,Si,No,No,Ninguno
+155,Ninguno,Pensionado,Trabaja,Ninguno,Universidad,No,1000-1499,Si,Si,Si,No,Si,Si,No,No,Si,Si,Si,Si,No,No,No,No,Si,Autolesion
+156,Bachillerato,Trabaja,Pensionado,Ninguno,Formacion Profesional,No,x<=999,No,No,Si,Si,No,Si,Si,No,No,No,No,Si,No,No,Si,No,Si,Intencion
+157,ESO,Trabaja,No trabaja,Formacion Profesional,Universidad,Si,1500-1999,Si,No,Si,No,Si,No,Si,Si,Si,Si,No,Si,No,No,No,Si,Si,Ideacion
+158,Ninguno,Trabaja,Pensionado,Bachillerato,Otro,Si,x<=999,Si,Si,Si,No,No,Si,Si,Si,Si,No,No,Si,Si,Si,Si,Si,No,Intencion
+159,Primaria,Trabaja,Trabaja,Otro,Universidad,No,x<=999,Si,Si,Si,Si,Si,Si,Si,Si,No,Si,Si,No,Si,Si,No,No,No,Intencion
+160,Bachillerato,Pensionado,Pensionado,Bachillerato,Universidad,Si,x>=2000,No,Si,Si,No,Si,Si,Si,No,Si,Si,Si,Si,No,Si,Si,No,Si,Planificacion
+161,Ninguno,No trabaja,Pensionado,Otro,Formacion Profesional,No,1500-1999,Si,Si,Si,Si,Si,No,No,No,No,Si,No,No,Si,No,No,Si,No,Intencion
+162,Otro,Pensionado,No trabaja,Otro,Universidad,No,x<=999,Si,Si,No,Si,Si,Si,No,No,No,Si,Si,No,No,No,No,Si,No,Ninguno
+163,Bachillerato,Trabaja,Trabaja,Universidad,Ninguno,No,1500-1999,Si,No,Si,No,No,No,Si,No,Si,No,Si,No,No,No,No,Si,Si,Ninguno
+164,Primaria,Pensionado,Trabaja,Universidad,Bachillerato,Si,1000-1499,No,Si,Si,Si,No,Si,No,No,No,No,Si,No,Si,Si,Si,Si,No,Intencion
+165,Universidad,Trabaja,No trabaja,Bachillerato,Universidad,No,x>=2000,No,No,No,No,No,Si,Si,No,Si,Si,Si,Si,Si,Si,No,Si,Si,Planificacion
+166,ESO,No trabaja,No trabaja,Ninguno,Universidad,No,x>=2000,Si,No,No,No,No,Si,Si,No,No,No,Si,Si,Si,Si,No,No,No,Planificacion
+167,Primaria,Trabaja,Trabaja,Bachillerato,Formacion Profesional,Si,x>=2000,No,Si,Si,Si,Si,Si,Si,No,Si,Si,Si,Si,Si,Si,Si,Si,No,Ninguno
+168,Otro,No trabaja,No trabaja,Bachillerato,Otro,No,1000-1499,Si,Si,Si,Si,Si,Si,Si,Si,No,No,Si,Si,Si,No,Si,Si,No,Ninguno
+169,Universidad,Pensionado,Trabaja,Universidad,Otro,No,x<=999,Si,No,Si,Si,No,No,Si,Si,Si,Si,Si,No,Si,No,No,Si,Si,Ninguno
+170,Universidad,Pensionado,Trabaja,Ninguno,Universidad,Si,x<=999,Si,No,Si,No,Si,Si,Si,Si,No,No,No,No,No,No,No,No,Si,Autolesion
+171,Primaria,Pensionado,No trabaja,Universidad,Formacion Profesional,Si,1500-1999,Si,Si,No,No,Si,Si,Si,No,Si,No,Si,No,Si,No,No,No,Si,Ninguno
+172,Bachillerato,No trabaja,No trabaja,Otro,Universidad,Si,1500-1999,Si,No,No,Si,Si,Si,Si,No,Si,No,Si,No,No,Si,No,Si,Si,Autolesion
+173,Bachillerato,Trabaja,Trabaja,Formacion Profesional,Formacion Profesional,No,x>=2000,Si,No,No,No,No,No,No,No,No,No,Si,No,Si,No,No,Si,Si,Ninguno
+174,Otro,Trabaja,Pensionado,Formacion Profesional,Otro,No,x>=2000,No,Si,Si,No,Si,No,No,Si,Si,No,No,Si,No,Si,No,No,No,Autolesion
+175,Primaria,No trabaja,Pensionado,Ninguno,Universidad,No,x<=999,Si,No,No,Si,No,No,Si,Si,No,Si,No,Si,No,Si,No,Si,No,Planificacion
+176,Universidad,Pensionado,Pensionado,Ninguno,Universidad,No,1000-1499,Si,No,Si,Si,No,No,Si,No,No,Si,No,No,No,Si,Si,Si,Si,Planificacion
+177,Otro,No trabaja,No trabaja,Formacion Profesional,Universidad,Si,1000-1499,No,Si,Si,No,No,Si,No,Si,No,Si,Si,No,Si,No,No,No,Si,Ideacion
+178,Ninguno,Pensionado,Pensionado,Formacion Profesional,Ninguno,No,1500-1999,Si,Si,Si,Si,Si,Si,No,Si,Si,No,No,Si,No,No,Si,Si,No,Autolesion
+179,ESO,No trabaja,Trabaja,Bachillerato,Formacion Profesional,No,x<=999,Si,No,No,No,Si,No,No,No,Si,Si,No,Si,Si,No,Si,Si,Si,Autolesion
+180,Universidad,Pensionado,Pensionado,Bachillerato,Ninguno,Si,1500-1999,Si,No,No,Si,Si,No,Si,Si,No,No,No,Si,No,No,Si,No,No,Autolesion
+181,Otro,Trabaja,Trabaja,Bachillerato,Universidad,Si,1000-1499,Si,No,Si,Si,Si,Si,No,No,Si,Si,Si,Si,Si,Si,No,Si,No,Planificacion
+182,Bachillerato,No trabaja,No trabaja,Otro,Formacion Profesional,No,1000-1499,Si,No,Si,Si,Si,No,No,No,No,No,No,Si,No,Si,No,Si,No,Autolesion
+183,Universidad,Trabaja,Trabaja,Otro,Otro,Si,x>=2000,Si,No,Si,No,Si,No,Si,No,No,No,Si,Si,No,Si,No,No,Si,Planificacion
+184,ESO,Pensionado,Trabaja,Universidad,Ninguno,No,x<=999,Si,Si,No,No,No,Si,No,No,No,Si,No,No,No,Si,Si,Si,Si,Ninguno
+185,ESO,Trabaja,Trabaja,Otro,Ninguno,Si,x>=2000,Si,Si,No,No,Si,No,No,No,Si,No,No,Si,Si,No,No,No,Si,Intencion
+186,ESO,No trabaja,No trabaja,Formacion Profesional,Universidad,Si,1000-1499,Si,No,No,No,Si,Si,No,No,No,Si,No,Si,No,Si,No,No,Si,Planificacion
+187,Ninguno,Trabaja,Pensionado,Universidad,Bachillerato,Si,1000-1499,Si,No,No,Si,No,Si,No,Si,Si,Si,Si,Si,Si,Si,Si,Si,Si,Ideacion
+188,Otro,No trabaja,Pensionado,Formacion Profesional,Universidad,Si,x>=2000,No,No,Si,No,No,Si,Si,No,Si,Si,No,Si,Si,Si,Si,Si,No,Planificacion
+189,Otro,Pensionado,Trabaja,Formacion Profesional,Bachillerato,No,x>=2000,No,No,Si,Si,No,Si,Si,No,No,No,Si,No,Si,Si,Si,No,No,Ideacion
+190,Primaria,No trabaja,No trabaja,Bachillerato,Otro,No,x<=999,No,No,Si,No,No,No,No,No,No,Si,Si,Si,Si,Si,No,No,No,Ideacion
+191,Primaria,Trabaja,Trabaja,Otro,Bachillerato,No,x<=999,Si,No,No,Si,Si,No,Si,Si,No,Si,Si,No,No,Si,Si,Si,No,Intencion
+192,Otro,No trabaja,Trabaja,Formacion Profesional,Formacion Profesional,No,x>=2000,No,Si,No,Si,Si,No,Si,No,No,No,No,Si,No,Si,No,Si,No,Ninguno
+193,Otro,No trabaja,Trabaja,Universidad,Otro,Si,x<=999,Si,No,Si,No,Si,Si,No,No,Si,No,Si,Si,Si,No,No,Si,No,Ninguno
+194,Bachillerato,Pensionado,Trabaja,Formacion Profesional,Otro,Si,x>=2000,Si,No,Si,No,Si,Si,Si,Si,No,Si,No,No,Si,No,No,Si,No,Autolesion
+195,ESO,Trabaja,Trabaja,Ninguno,Otro,Si,x>=2000,Si,No,Si,Si,Si,Si,No,Si,Si,Si,Si,Si,Si,No,No,No,No,Autolesion
+196,Bachillerato,No trabaja,No trabaja,Formacion Profesional,Otro,No,x<=999,No,No,Si,Si,Si,Si,Si,No,No,No,Si,No,No,Si,No,Si,No,Autolesion
+197,Otro,No trabaja,No trabaja,Ninguno,Bachillerato,No,x>=2000,No,No,No,Si,Si,No,Si,Si,No,No,No,Si,Si,No,No,No,No,Ninguno
+198,Bachillerato,Pensionado,Pensionado,Otro,Formacion Profesional,Si,x>=2000,Si,No,No,Si,No,Si,No,Si,Si,No,No,Si,No,Si,No,Si,Si,Intencion
+199,ESO,Pensionado,Trabaja,Otro,Ninguno,No,x>=2000,Si,No,Si,No,Si,No,Si,No,No,No,No,No,Si,No,Si,No,Si,Planificacion
+200,Bachillerato,Trabaja,Pensionado,Universidad,Universidad,No,x>=2000,Si,Si,No,No,Si,Si,No,No,Si,Si,No,Si,No,No,No,Si,No,Autolesion
