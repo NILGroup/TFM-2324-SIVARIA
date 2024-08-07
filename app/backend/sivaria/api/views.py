@@ -40,11 +40,17 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 '''
 
 http://127.0.0.1:8000/sivaria/v1/rol
-
+GET: none
+POST:
+{
+    "slug": <string>,
+    "description": <string>,
+    "code": <string>
+}
 '''
 class Rol_APIView(APIView):
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = RolSerializer
 
     def get(self, request, format=None, *args, **kwargs):
@@ -78,6 +84,17 @@ class Rol_APIView(APIView):
 
 '''
 http://127.0.0.1:8000/sivaria/v1/rol/{slug}
+GET: 
+{
+    "slug": <string>
+}
+
+PUT:
+{
+    "slug": <string>,
+    "description": <string>,
+    "code": <string>
+}
 
 '''
 class Rol_APIView_Detail_Slug(APIView):
@@ -121,7 +138,18 @@ class Rol_APIView_Detail_Slug(APIView):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)   
 
 '''
-http://127.0.0.1:8000/sivaria/v1/rol/{rolId}
+http://127.0.0.1:8000/sivaria/v1/rol/id/{rolId}
+GET: 
+{
+    "id": <int>
+}
+
+PUT:
+{
+    "slug": <string>,
+    "description": <string>,
+    "code": <string>
+}
 
 '''
 class Rol_APIView_Detail_RolId(APIView):
@@ -164,6 +192,44 @@ class Rol_APIView_Detail_RolId(APIView):
 '''
 http://127.0.0.1:8000/sivaria/v1/user/register
 
+JOVEN
+
+{
+    "first_name": <string>, 
+    "last_name": <string>, 
+    "email": <string>, 
+    "password": <string>, 
+    "phone": <string>,
+    "birth_date": <string>, 
+    "rol_slug": <string>, 
+    //"expo_token": <string>, (opcional)
+    "email_parent_1": <string>,
+    "email_parent_2": <string>,
+    "email_responsible": <string>
+}
+PADRE/MADRE:
+{
+    "first_name": <string>, 
+    "last_name": <string>, 
+    "email": <string>, 
+    "password": <string>, 
+    "phone": <string>,
+    "birth_date": <string>, 
+    "rol_slug": <string>,
+    //"expo_token": <string>, (opcional)
+    "email_child": <string>
+}
+PROFESIONAL:
+{
+    "first_name": <string>, 
+    "last_name": <string>, 
+    "email": <string>, 
+    "password": <string>, 
+    "phone": <string>,
+    "birth_date": <string>, 
+    "rol_slug": <string>
+    //"expo_token": <string>, (opcional)
+}
 '''
 #@method_decorator(csrf_protect, name='dispatch')
 class AppUser_APIView_Register(APIView):
@@ -345,6 +411,10 @@ class AppUser_APIView_Register(APIView):
       
 '''
 http://127.0.0.1:8000/sivaria/v1/user/login
+{
+    "email": <string>,
+    "password": <string>
+}
 
 '''
 class AppUser_APIView_Login(APIView):
@@ -473,8 +543,10 @@ class GetCSRFToken(APIView):
         return Response({'status': 'ok', 'message': 'Token creado correctamente'}, status=status.HTTP_200_OK)
 
 '''
+SIN USAR
 http://127.0.0.1:8000/sivaria/v1/user/deleteAccount
 
+'''
 '''
 class DeleteAccountView(APIView):
 
@@ -496,7 +568,7 @@ class DeleteAccountView(APIView):
             user_service.delete_user(email=email_clean)
         except:
             return Response({'status': 'error', 'message': 'Error eliminando al usuario'}, status=status.HTTP_400_BAD_REQUEST)
-
+'''
 
 '''
 http://127.0.0.1:8000/sivaria/v1/user/logout
@@ -576,7 +648,7 @@ class AppUser_APIView_Detail_UserId(APIView):
 '''
 Get user data by user email
 
-http://127.0.0.1:8000/sivaria/v1/getUserByEmail
+http://127.0.0.1:8000/sivaria/v1/getUserByEmail/{email}
 
 '''
 class AppUser_APIView_Detail_Email(APIView):
@@ -689,10 +761,12 @@ class AppUser_APIView_Detail_Email(APIView):
 
 
 '''
+SIN USAR 
 Get user data by user email
 
 http://127.0.0.1:8000/sivaria/v1/user/getUserByEmail/{email}
 
+'''
 '''
 class AppUser_APIView_Detail_Email_Api(APIView):
 
@@ -717,7 +791,7 @@ class AppUser_APIView_Detail_Email_Api(APIView):
             'data': user
         }
         return Response(response, status=status.HTTP_200_OK) 
-
+'''
 '''
 Update user data or delete user
 

@@ -1,0 +1,753 @@
+{
+	"info": {
+		"_postman_id": "780e75b1-6481-42ec-8e22-c4e0c3c2f8c9",
+		"name": "SIVARIA endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36527140"
+	},
+	"item": [
+		{
+			"name": "No Token Authorization Endpoints",
+			"item": [
+				{
+					"name": "RegisterEndpoint",
+					"item": [
+						{
+							"name": "RegisterJovenToken",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"first_name\": \"trun\", \r\n    \"last_name\": \"er\", \r\n    \"email\": \"prueba.joven1@hotmail.es\", \r\n    \"password\": \"test\", \r\n    \"phone\": \"611111111\",\r\n    \"birth_date\": \"24/05/2009\", \r\n    \"rol_slug\": \"joven\", \r\n    //\"expo_token\": \"ExponentPushToken[expo_token_ejemplo]\",\r\n    \"email_parent_1\": \"rrr@gmail.com\",\r\n    \"email_parent_2\": \"\",\r\n    \"email_responsible\": \"prueba.profesional1@hotmail.es\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/register",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RegisterPadreMadreToken",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"first_name\": \"trun\", \r\n    \"last_name\": \"er\", \r\n    \"email\": \"prueba.padre1@hotmail.es\", \r\n    \"password\": \"test\", \r\n    \"phone\": \"611111111\",\r\n    \"birth_date\": \"24/05/1988\", \r\n    \"rol_slug\": \"padre\", \r\n    //\"expo_token\": \"ExponentPushToken[expo_token_ejemplo]\",\r\n    \"email_child\": \"marcos.ejemplo@hotmail.es\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/register",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RegisterProfesionalToken",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"first_name\": \"trun\", \r\n    \"last_name\": \"er\", \r\n    \"email\": \"prueba.profesional3@hotmail.es\", \r\n    \"password\": \"test\", \r\n    \"phone\": \"611111111\",\r\n    \"birth_date\": \"24/05/1980\", \r\n    \"rol_slug\": \"profesional\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/register",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "LoginEndpoint",
+					"item": [
+						{
+							"name": "LoginToken",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ranking123@hotmail.es\",\r\n    \"password\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Carpeta con los endpoints del API que **no** necesitan de un token de autorización en los headers para poder ejecutarse correctamente.\n\nSe ejecuta el endpoint tal y cómo aparece."
+		},
+		{
+			"name": "Token Authorization Endpoints",
+			"item": [
+				{
+					"name": "SendEmailPrueba",
+					"item": [
+						{
+							"name": "SendEmail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 989698cbef34c19b935d27ec917e5a3316db258b",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"to_mail\": [\"aldairfmh2004@hotmail.com\"],\r\n    \"subject\": \"Mensaje de prueba\",\r\n    \"message\": \"Este es un mensaje de Prueba desde DRF\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/email/sendEmail",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"email",
+										"sendEmail"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "SendPushPrueba",
+					"item": [
+						{
+							"name": "SendExpoPushNotification",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token a0b173aceb9ac15cc6ca3471bb2bdcd345b515b6",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"aldairfmh2004@hotmail.com\",\r\n    \"notification_type\": \"ejemplo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/external/sendNotification",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"external",
+										"sendNotification"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PredictEndpoint",
+					"item": [
+						{
+							"name": "PredictExpertSystem",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token b7d8da4d9f2285b5f7708781963807c39ead405b",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"email\": \"ranking123@hotmail.es\",\r\n\t\"user_data_sivaria\": \"eyJzdGVwMSI6eyJpZFBhdGllbnQiOiJUUjI0MDcyMDA5IiwiY291cnNlIjoiZXNvIiwicHJldmlvdXNQc3ljaGlhdHJpY1RyZWF0bWVudCI6Im5vIn0sInN0ZXAyIjp7ImZhbWlseTEyIjoiMTUwMCIsImZhbWlseTEzIjoibm8iLCJqb2JTaXR1YXRpb25GYXRoZXIiOiJ0cmFiYWphIiwiam9iU2l0dWF0aW9uTW90aGVyIjoidHJhYmFqYSIsImFjYWRlbWljTGV2ZWxGYXRoZXIiOiJ1bml2ZXJzaWRhZCIsImFjYWRlbWljTGV2ZWxNb3RoZXIiOiJ1bml2ZXJzaWRhZCIsImZhbWlseTEiOiIzMyIsImZhbWlseTIiOiIzMyIsImZhbWlseTMiOiJubyJ9LCJzdGVwMyI6eyJmYW1pbHk0Ijoibm8iLCJmYW1pbHk1Ijoibm8iLCJmYW1pbHk2Ijoibm8iLCJmYW1pbHk3Ijoibm8iLCJmYW1pbHk4Ijoibm8iLCJmYW1pbHk5Ijoibm8iLCJmYW1pbHkxMCI6Im5vIiwiZmFtaWx5MTEiOiJubyIsImZhbWlseTE0Ijoibm8ifX0=\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/expertSystem/predict",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"expertSystem",
+										"predict"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UserEndpoints",
+					"item": [
+						{
+							"name": "DeleteUserAccount",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token f2980fbb48842f15f574e0d4b85584f21382c42d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/email/nuevo55@hotmail.es",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"email",
+										"nuevo55@hotmail.es"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUserDataByEmail",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7519056c2b204162a4abd7d23c31472779bb22d4",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/getUserByEmail/nuevo55@hotmail.es",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"getUserByEmail",
+										"nuevo55@hotmail.es"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateUserData",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token f2980fbb48842f15f574e0d4b85584f21382c42d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"first_name\": \"Ernesto\",\r\n    \"last_name\": \"Jiménez\",\r\n    \"phone\": \"645532196\",\r\n    \"rol\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/email/nuevo55@hotmail.es",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"email",
+										"nuevo55@hotmail.es"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SendRecoveryPasswordEmail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token b7409e7396ec4611137fa70f626b33533183690f",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ranking123@hotmail.es\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/email/sendRecoveryPasswordEmail",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"email",
+										"sendRecoveryPasswordEmail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ChangeUserPasswordRecovery",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7966536095d875378475d00bd47d3ce81e9fcb3a",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"test\",\r\n    \"confirm_password\": \"test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/ranking123@hotmail.es/changeUserPassword",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"ranking123@hotmail.es",
+										"changeUserPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LogoutToken",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/logout",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Forms Endpoints",
+					"item": [
+						{
+							"name": "GetFormsDT",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 651d41358cf61337b632368affcb8d7dfda69b57",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ranking123@hotmail.es\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/forms/getFormsDT",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"forms",
+										"getFormsDT"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetFormInfo",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 651d41358cf61337b632368affcb8d7dfda69b57",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ranking123@hotmail.es\",\r\n    \"code\": \"P2620240725211632\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/forms/getFormInfo",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"forms",
+										"getFormInfo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Rol Endpoints",
+					"item": [
+						{
+							"name": "GetAllRols",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AddNewRol",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"slug\": \"ejemplo\",\r\n    \"description\": \"Ejemplo\",\r\n    \"code\": \"EJ\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRolInfoBySlug",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol/joven",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol",
+										"joven"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateRolBySlug",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"slug\": \"jovenEjemplo\",\r\n    \"description\": \"Joven Ejemplo\",\r\n    \"code\": \"JEJ\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol/joven",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol",
+										"joven"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetRolInfoByRolID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol/id/1",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol",
+										"id",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UpdateRolByRolID",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 7a5e1a9e2937bec22c5a5411e1a4fa8ca2882008",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"slug\": \"jovenEjemplo\",\r\n    \"description\": \"Joven Ejemplo\",\r\n    \"code\": \"JEJ\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/rol/id/1",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"rol",
+										"id",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Carpeta con los endpoints del API que necesitan de un token de autorización en los headers para poder ejecutarse correctamente.\n\nEl token de autorización se obtiene del endpoint del Login, que se encuentra en la carpeta de _No Token Authorization Endpoints_.\n\nCuando se ejecuta dicho endpoint, se obtiene el campo del token en la respuesta.\n\n```\n{\n    \"status\": [\n        \"ok\"\n    ],\n    \"message\": [\n        \"Usuario logeado correctamente\"\n    ],\n    \"data\": {\n        \"id\": 15,\n        \"first_name\": \"Usuario\",\n        \"last_name\": \"Prueba\",\n        \"email\": \"prueba.profesional1@hotmail.es\",\n        \"code\": \"UP01011998\",\n        \"phone\": \"711111111\",\n        \"rol\": {\n            \"id\": 4,\n            \"slug\": \"profesional\",\n            \"description\": \"Profesional\",\n            \"code\": \"Pr\"\n        },\n        \"birth_date\": \"01/01/1998\"\n    },\n    \"token\": \"33a1292294c88a22d26afa63fa7afe66e5a741b7\"\n}\n\n ```\n\nEste token se debe insertar en los headers de las peticiones de esta carpeta. Para hacerlo se debe ir al apartado de Headers, y añadir un parámetro llamado _Authorization._\n\n<img src=\"https://content.pstmn.io/8cfad2bd-dea1-4f6f-b335-9c6b84d1b33e/aW1hZ2UucG5n\" alt=\"Parámetro%20Authorization%20con%20el%20valor%20del%20token%20en%20los%20headers%20de%20la%20petición\" height=\"183\" width=\"1234\">"
+		}
+	]
+}
