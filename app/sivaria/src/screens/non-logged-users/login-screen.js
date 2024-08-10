@@ -1,4 +1,4 @@
-import { View, Platform, Text, useWindowDimensions } from 'react-native';
+import { View, Platform, Text, useWindowDimensions, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import ShowHidePasswordInput from '../../components/show-hide-password-input';
 
@@ -155,7 +155,7 @@ const LoginScreen = ({navigation}) => {
         );
     }
     return (
-        <Container>
+        <ScrollView>
             <ModalComponent 
                 animationType='slide'
                 setIsVisible={setModalVisible}
@@ -164,11 +164,11 @@ const LoginScreen = ({navigation}) => {
                 modalType={modalType}
                 message={modalMessage}
             />
-            <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
+            <View style={{height: 200, alignItems: 'center', justifyContent: 'center', backgroundColor: '#006E51'}}>
                 <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
             </View>
 
-            <View style={{flex:3, backgroundColor: '#006E51', alignItems: 'center', justifyContent: 'center'}} >
+            <View style={{height: 500, backgroundColor: '#006E51', alignItems: 'center', justifyContent: 'center'}} >
 
                 <View style={stylesSivaria.whiteBoxContainer}>
 
@@ -210,10 +210,10 @@ const LoginScreen = ({navigation}) => {
                 </View>
             </View>
 
-            <View style={{height:80, alignItems:'center', justifyContent: 'center'}} >
+            <View style={{height:80, alignItems:'center', justifyContent: 'center', backgroundColor: '#006E51'}} >
                 <SivariaText color={'white'} isBold={false}>Hecho por Aldair Maldonado</SivariaText>   
             </View>
-        </Container>
+        </ScrollView>
     );
     /*
         Meter para probar si se crea un Expo Token
