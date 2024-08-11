@@ -54,6 +54,7 @@ export const config = {
                 Home: "dashboard/home",
                 History: "dashboard/history",
                 Profile: "dashboard/profile",
+                Contact: "dashboard/contact",
             }
         },
         EditData: "edit-data",

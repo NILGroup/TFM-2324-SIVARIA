@@ -155,7 +155,7 @@ const LoginScreen = ({navigation}) => {
         );
     }
     return (
-        <ScrollView>
+        <ScrollView style={{backgroundColor:'#006E51'}}>
             <ModalComponent 
                 animationType='slide'
                 setIsVisible={setModalVisible}

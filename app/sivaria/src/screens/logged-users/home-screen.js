@@ -89,8 +89,6 @@ const HomeScreen = ({navigation}) => {
         );
     }
 
-    //<AntDesign name="infocirlce" size={24} color="black" />
-
     return (
       <ScrollView>
         {/*
