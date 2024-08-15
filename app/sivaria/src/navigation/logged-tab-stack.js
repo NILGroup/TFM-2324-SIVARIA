@@ -7,6 +7,7 @@ import stylesSivaria from "../styles/styles-sivaria";
 import { useContext } from "react";
 import { UserContext } from "../context/user-context";
 import HistoryScreen from "../screens/logged-users/history-screen";
+import ContactScreen from "../screens/logged-users/contact-screen";
 //import { createAppContainer } from "react-navigation"; 
 
 /*
@@ -57,6 +58,8 @@ export const DashboardTabsScreen = ({navigation}) => {
                   return <Text style={{color: color}}>Historial</Text>;
               case 'Profile':
                 return <Text style={{color: color}}>Perfil</Text>
+                case 'Contact':
+                return <Text style={{color: color}}>Contacto</Text>
             }
           },
           tabBarStyle: {
@@ -79,6 +82,9 @@ export const DashboardTabsScreen = ({navigation}) => {
                     break;
                 case 'Profile':
                   iconName = 'user'
+                  break;
+                case 'Contact':
+                  iconName = 'phone'
                   break;
               }
               return <AntDesign 
@@ -103,6 +109,10 @@ export const DashboardTabsScreen = ({navigation}) => {
         <Tab.Screen 
             name="Profile" 
             component={ProfileScreen}
+        />
+        <Tab.Screen 
+            name="Contact" 
+            component={ContactScreen}
         />
     </Tab.Navigator>
   );

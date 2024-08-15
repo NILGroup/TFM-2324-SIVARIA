@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Alert, SafeAreaView, Pressable, Modal } from 'react-native';
+import { ScrollView, View, Text, Alert, SafeAreaView, Pressable, Modal } from 'react-native';
 import axiosInstance from '../../utils/axios-config-web';
 //import { useNavigation } from '@react-navigation/native';
 import { getItemLocalStorage, removeItemLocalStorage } from '../../utils/general-local-storage';
@@ -89,10 +89,8 @@ const HomeScreen = ({navigation}) => {
         );
     }
 
-    //<AntDesign name="infocirlce" size={24} color="black" />
-
     return (
-      <>
+      <ScrollView>
         {/*
         <ModalComponent 
                 animationType='slide'
@@ -228,7 +226,7 @@ const HomeScreen = ({navigation}) => {
                 <SivariaButton onPress={(e) => goToQuestionnaire(e)} message={'COMENZAR CUESTIONARIO'} />
             </View>
         </View>
-      </>
+      </ScrollView>
   );
 }
   
