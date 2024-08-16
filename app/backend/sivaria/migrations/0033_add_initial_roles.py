@@ -3,7 +3,7 @@
 from django.db import migrations
 
 def add_initial_roles(apps, schema_editor):
-    Rol = apps.get_model('your_app_name', 'Rol')
+    Rol = apps.get_model('sivaria', 'Rol')
     Rol.objects.create(slug='joven', description='Joven', code='J')
     Rol.objects.create(slug='padre', description='Padre', code='P')
     Rol.objects.create(slug='madre', description='Madre', code='M')
@@ -12,7 +12,7 @@ def add_initial_roles(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('your_app_name', 'previous_migration_name'),
+        ('sivaria', '0001_initial'),
     ]
 
     operations = [

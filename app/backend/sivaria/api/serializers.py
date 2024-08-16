@@ -4,11 +4,6 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework.serializers import ValidationError
 
 
-class PostSerializer(ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ('id', 'title', 'body')
-
 class RolSerializer(ModelSerializer):
     class Meta:
         model = Rol

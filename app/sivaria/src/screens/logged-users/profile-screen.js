@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert, RefreshControl } from 'react-native';
+import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { StyleSheet, ActivityIndicator, ScrollView, SafeAreaView, View, Text, TextInput, Pressable, Alert, RefreshControl, Animated } from 'react-native';
 import Dropdown from '../../components/dropdown';
 import ShowHidePasswordInput from '../../components/show-hide-password-input';
 import stylesSivaria from '../../styles/styles-sivaria';
@@ -24,6 +24,7 @@ import { UserContext } from '../../context/user-context';
 
 import useUserData from '../../utils/user-user-data-hook';
 import { AntDesign } from '@expo/vector-icons';
+import DynamicHeader from '../../components/dynamic-header';
 
 
 const ProfileScreen = ({navigation}) => {
@@ -41,6 +42,9 @@ const ProfileScreen = ({navigation}) => {
     const { updateUserStateVariables, removeUserStateVariables } = useUserData();
 
     const [refreshing, setRefreshing] = useState(false);
+
+    /* DynamicHeader variables */
+    const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
     async function fetchUserData() {
         //console.log(userApp);
@@ -236,27 +240,41 @@ const ProfileScreen = ({navigation}) => {
                 modalType={modalType}
                 message={modalMessage}
             />
+            
+            {/*
+            <View style={{flex:1, width:'90%', alignItems: 'flex-end' , justifyContent:'center'}}>
+                <Pressable 
+                    onPress={() => fetchUserData()}
+                >
+                    <AntDesign 
+                        name={'reload1'} 
+                        size={20} 
+                        color={'white'} 
+                    />
+                </Pressable>
+            </View>
+            */}
+            {/*
             <View style={{height: 100, flexDirection: 'center', alignItems: 'center', justifyContent: 'center', backgroundColor: '#006E51'}}>
                 <View style={{flex:1, width:'100%', alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: '#024332'}}>
                     <Text style={{fontSize: 25, color:'white', fontWeight:'bold'}}>
                         DATOS DEL USUARIO
                     </Text>
                 </View>
-                {/*
-                <View style={{flex:1, width:'90%', alignItems: 'flex-end' , justifyContent:'center'}}>
-                    <Pressable 
-                        onPress={() => fetchUserData()}
-                    >
-                        <AntDesign 
-                            name={'reload1'} 
-                            size={20} 
-                            color={'white'} 
-                        />
-                    </Pressable>
-                </View>
-                */}
             </View>
-            <ScrollView 
+            */}
+            {/*<DynamicHeader animHeaderValue={scrollOffsetY}>
+                <Text style={{fontSize: 25, color:'white', fontWeight: 'bold'}}>
+                    DATOS DEL USUARIO
+                </Text>
+            </DynamicHeader>
+            */}
+            <ScrollView
+                scrollEventThrottle={16}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollOffsetY}}}],
+                    {useNativeDriver: false}
+                )} 
                 style={{backgroundColor: 'white', borderBottomWidth: 2, borderColor: 'grey'}}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
