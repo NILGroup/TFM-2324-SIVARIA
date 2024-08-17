@@ -4,15 +4,22 @@ from django.db import migrations
 
 def add_initial_roles(apps, schema_editor):
     Rol = apps.get_model('sivaria', 'Rol')
-    Rol.objects.create(slug='joven', description='Joven', code='J')
-    Rol.objects.create(slug='padre', description='Padre', code='P')
-    Rol.objects.create(slug='madre', description='Madre', code='M')
-    Rol.objects.create(slug='profesional', description='Profesional', code='Pr')
+
+    roles = [
+        {"slug": "joven", "description": "Joven", "code": "J"},
+        {"slug": "padre", "description": "Padre", "code": "P"},
+        {"slug": "madre", "description": "Madre", "code": "M"},
+        {"slug": "profesional", "description": "Profesional", "code": "Pr"},
+    ]
+
+    for role in roles:
+        if not Rol.objects.filter(slug=role['slug']).exists():
+            Rol.objects.create(**role)
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sivaria', '0001_initial'),
+        ('sivaria', '0032_rename_son_userhasparent_child'),
     ]
 
     operations = [
