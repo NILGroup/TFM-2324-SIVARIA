@@ -4,19 +4,25 @@ from django.db import migrations
 
 def add_initial_email_templates(apps, schema_editor):
     MyModel = apps.get_model('sivaria', 'EmailTemplate')
-    MyModel.objects.create(code="emergencia_padres", subject="Notificación de nivel de riesgo EMERGENCIA - Sivaria", message="El usuario ha sido analizado y hay un riesgo elevado en adoptar conductas autolesivas suicidas.")
-    MyModel.objects.create(code="recovery_password", subject="Recuperación de contraseña - Sivaria", message="Buenas tardes, Le enviamos este correo para restablecer su contraseña del usuario de SIVARIA correspondiente a este email.")
-    MyModel.objects.create(code="riesgo_moderado_padres", subject="Notificación de nivel de riesgo MODERADO - Sivaria", message="El usuario ha sido analizado y se ha determinado que existe un riesgo moderado de que pueda adoptar conductas autolesivas suicidas.")
-    MyModel.objects.create(code="riesgo_grave_padres", subject="Notificación de nivel de riesgo GRAVE - Sivaria", message="El usuario ha sido analizado y se ha determinado que existe un riesgo grave de que pueda adoptar conductas autolesivas suicidas.")
-    MyModel.objects.create(code="riesgo_ausente_padres", subject="Notificación de nivel de riesgo AUSENTE - Sivaria", message="El usuario ha sido analizado y no se han encontrado riesgos de que pueda adoptar conductas autolesivas suicidas o no suicidas.")
-    MyModel.objects.create(code="riesgo_leve_padres", subject="Notificación de nivel de riesgo LEVE - Sivaria", message="El usuario ha sido analizado y se ha determinado que existe un riesgo leve de que pueda adoptar conductas autolesivas suicidas.")
-    MyModel.objects.create(code="emergencia_profesional", subject="Notificación de nivel de EMERGENCIA para profesionales - Sivaria", message="El usuario ha sido analizado y ha recibido la calificación de EMERGENCIA en el riesgo de adoptar conductas autolesivas suicidas. Se deben aplicar medidas inmediatas al usuario. El resultado de la predicción es el siguiente: {{desenlace}}.")
-    MyModel.objects.create(code="riesgo_grave_profesional", subject="Notificación de nivel de riesgo GRAVE - Sivaria", message="El usuario ha sido analizado y hay un riesgo grave en adoptar conductas autolesivas suicidas. El resultado de la predicción es el siguiente: {{desenlace}}.")
-    MyModel.objects.create(code="riesgo_moderado_profesional", subject="Notificación de nivel de riesgo MODERADO - Sivaria", message="El usuario ha sido analizado y hay un riesgo moderado en adoptar conductas autolesivas suicidas. El resultado de la predicción es el siguiente: {{desenlace}}.")
-    MyModel.objects.create(code="riesgo_leve_profesional", subject="Notificación de nivel de riesgo LEVE - Sivaria", message="El usuario ha sido analizado y hay un riesgo leve en adoptar conductas autolesivas no suicidas o suicidas. El resultado de la predicción es el siguiente: {{desenlace}}.")
-    MyModel.objects.create(code="riesgo_ausente_profesional", subject="Notificación de nivel de riesgo AUSENTE - Sivaria", message="El usuario ha sido analizado y hay un riesgo ausente en adoptar conductas autolesivas no suicidas o suicidas. El resultado de la predicción es el siguiente: {{desenlace}}.")
-    MyModel.objects.create(code="example", subject="Título de ejemplo", message="Texto de ejemplo")
 
+    templates = [
+        {"code": "emergencia_padres", "subject": "Notificación de nivel de riesgo EMERGENCIA - Sivaria", "message": "El usuario ha sido analizado y hay un riesgo elevado en adoptar conductas autolesivas suicidas."},
+        {"code": "recovery_password", "subject": "Recuperación de contraseña - Sivaria", "message": "Buenas tardes, \n\nLe enviamos este correo para restablecer su contraseña del usuario de SIVARIA correspondiente a este email."},
+        {"code": "riesgo_moderado_padres", "subject": "Notificación de nivel de riesgo MODERADO - Sivaria", "message": "El usuario ha sido analizado y se ha determinado que existe un riesgo moderado de que pueda adoptar conductas autolesivas suicidas."},
+        {"code": "riesgo_grave_padres", "subject": "Notificación de nivel de riesgo GRAVE - Sivaria", "message": "El usuario ha sido analizado y se ha determinado que existe un riesgo grave de que pueda adoptar conductas autolesivas suicidas."},
+        {"code": "riesgo_ausente_padres", "subject": "Notificación de nivel de riesgo AUSENTE - Sivaria", "message": "El usuario ha sido analizado y no se han encontrado riesgos de que pueda adoptar conductas autolesivas suicidas o no suicidas."},
+        {"code": "riesgo_leve_padres", "subject": "Notificación de nivel de riesgo LEVE - Sivaria", "message": "El usuario ha sido analizado y se ha determinado que existe un riesgo leve de que pueda adoptar conductas autolesivas suicidas."},
+        {"code": "emergencia_profesional", "subject": "Notificación de nivel de EMERGENCIA para profesionales - Sivaria", "message": "El usuario ha sido analizado y ha recibido la calificación de EMERGENCIA en el riesgo de adoptar conductas autolesivas suicidas. Se deben aplicar medidas inmediatas al usuario. El resultado de la predicción es el siguiente: {{desenlace}}."},
+        {"code": "riesgo_grave_profesional", "subject": "Notificación de nivel de riesgo GRAVE - Sivaria", "message": "El usuario ha sido analizado y hay un riesgo grave en adoptar conductas autolesivas suicidas. El resultado de la predicción es el siguiente: {{desenlace}}."},
+        {"code": "riesgo_moderado_profesional", "subject": "Notificación de nivel de riesgo MODERADO - Sivaria", "message": "El usuario ha sido analizado y hay un riesgo moderado en adoptar conductas autolesivas suicidas. El resultado de la predicción es el siguiente: {{desenlace}}."},
+        {"code": "riesgo_leve_profesional", "subject": "Notificación de nivel de riesgo LEVE - Sivaria", "message": "El usuario ha sido analizado y hay un riesgo leve en adoptar conductas autolesivas no suicidas o suicidas. El resultado de la predicción es el siguiente: {{desenlace}}."},
+        {"code": "riesgo_ausente_profesional", "subject": "Notificación de nivel de riesgo AUSENTE - Sivaria", "message": "El usuario ha sido analizado y hay un riesgo ausente en adoptar conductas autolesivas no suicidas o suicidas. El resultado de la predicción es el siguiente: {{desenlace}}."},
+        {"code": "example", "subject": "Título de ejemplo", "message": "Texto de ejemplo"},
+    ]
+
+    for template in templates:
+        if not MyModel.objects.filter(code=template['code']).exists():
+            MyModel.objects.create(**template)
 
 class Migration(migrations.Migration):
 
