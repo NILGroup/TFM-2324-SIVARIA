@@ -169,7 +169,7 @@ class UserService(object):
         return (serializer.errors, False)
     
     def update_user(self, user, data, partial):
-        serializer = AppUserSerializer(user, data=data, partial=partial)
+        serializer = AppUserUpdateSerializer(user, data=data, partial=partial)
         if serializer.is_valid():
             serializer.save()
             return (serializer.data, True)
@@ -788,7 +788,8 @@ class ExpertSystemService(object):
         #print('CODIGO DEL NIÑO: ' + str(child_code))
         
         step1 = sivaria_data.get('step1', None)
-        print(step1)
+        #print('STEP1:\n')
+        #print(step1)
         patient_code = step1.get('idPatient', None)
         patient = user_service.get_user_by_code(code=patient_code)
 
@@ -1457,7 +1458,7 @@ class ExpertSystemService(object):
                 denuncia_autolesion_internet)
 
     def __get_parq(self, data):
-        print(data)
+        #print(data)
         parq1_reversed = self.__reverse_scale(5, int(data.get('parq1', 0)))
         parq3_reversed = self.__reverse_scale(5, int(data.get('parq3', 0)))
         parq7_reversed = self.__reverse_scale(5, int(data.get('parq7', 0)))

@@ -10,6 +10,11 @@ class RolSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class AppUserUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = AppUser
+        fields = '__all__'
+
 class AppUserSerializer(ModelSerializer):
     rol = PrimaryKeyRelatedField(queryset=Rol.objects.all(), many=False)
     class Meta:
