@@ -31,6 +31,8 @@ from pathlib import Path
 import environ
 import os
 
+from datetime import datetime
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -464,6 +466,9 @@ class AppUser_APIView_Login(APIView):
             if expo_token is not None or expo_token == '':
                 user_service.update_user(user=user, data={'expo_token': expo_token}, partial=True)
             
+            last_login = datetime.now()
+            user_service.update_user(user=user, data={'last_login': last_login}, partial=True)
+
             user_data = user_service.get_user_by_email_json(email=data['email'])
             rol = user_data.get('rol', None)
             if rol:
