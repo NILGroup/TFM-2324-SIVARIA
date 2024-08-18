@@ -9,7 +9,7 @@ def add_initial_roles(apps, schema_editor):
         {"slug": "joven", "description": "Joven", "code": "J"},
         {"slug": "padre", "description": "Padre", "code": "P"},
         {"slug": "madre", "description": "Madre", "code": "M"},
-        {"slug": "profesional", "description": "Profesional", "code": "Pr"},
+        {"slug": "profesional", "description": "Profesional", "code": "PR"},
     ]
 
     for role in roles:
