@@ -57,6 +57,36 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
         },
     });
 
+    const [validations, setValidations] = useState({
+        step1: {
+            idPatient: false,
+            course: false,
+            previousPsychiatricTreatment: false,
+        },
+        step2: {
+            family12: false,
+            family13: false,
+            jobSituationFather: false,
+            jobSituationMother: false,
+            academicLevelFather: false,
+            academicLevelMother: false,
+            family1: false,
+            family2: false,
+            family3: false,
+        },
+        step3: {
+            family4: false,
+            family5: false,
+            family6: false,
+            family7: false,
+            family8: false,
+            family9: false,
+            family10: false,
+            family11: false,
+            family14: false,
+        },
+    });
+
     useEffect(() => {
         scrollViewRef.current?.scrollTo({
             x: currentStep * (screenWidth / steps.length), // Desplaza el ScrollView al paso actual
@@ -80,36 +110,84 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
         setCurrentStep(index);
     };
 
+    const validateFormByStep = () => {
+        const { idPatient, course, previousPsychiatricTreatment } = stepData.step1;
+        const { family12, family13, jobSituationFather, jobSituationMother, 
+            academicLevelFather, academicLevelMother, family1, family2, family3 } = stepData.step2;
+        const { family4, family5, family6, family7, 
+            family8, family9, family10, family11, family14 } = stepData.step3;
+
+        const newValidationsStep1 = {
+            idPatient: idPatient === '',
+            course: course === '',
+            previousPsychiatricTreatment: previousPsychiatricTreatment === '',
+        };
+        const newValidationsStep2 = {
+            family12: family12 === '',
+            family13: family13 === '',
+            jobSituationFather: jobSituationFather === '',
+            jobSituationMother: jobSituationMother === '',
+            academicLevelFather: academicLevelFather === '',
+            academicLevelMother: academicLevelMother === '',
+            family1: family1 === '',
+            family2: family2 === '',
+            family3: family3 === '',
+        };
+        const newValidationsStep3 = {
+            family4: family4 === '',
+            family5: family5 === '',
+            family6: family6 === '',
+            family7: family7 === '',
+            family8: family8 === '',
+            family9: family9 === '',
+            family10: family10 === '',
+            family11: family11 === '',
+            family14: family14 === '',
+        };
+
+        const newValidations = {
+            step1: newValidationsStep1,
+            step2: newValidationsStep2,
+            step3: newValidationsStep3,
+        }
+
+        setValidations(newValidations);
+
+        return newValidations;
+    }
+
     const validateForm = () => {
-        const { step1, step2, 
-            step3 } = stepData;
+
+        const newValidations = validateFormByStep();
+
+        const { step1, step2, step3 } = newValidations;
 
         let step1Valid = (
-            step1.idPatient &&
-            step1.course &&
-            step1.previousPsychiatricTreatment
+            !step1.idPatient &&
+            !step1.course &&
+            !step1.previousPsychiatricTreatment
         );
         let step2Valid = (
-            step2.family12 &&
-            step2.family13 &&
-            step2.jobSituationFather &&
-            step2.jobSituationMother &&
-            step2.academicLevelFather &&
-            step2.academicLevelMother &&
-            step2.family1 &&
-            step2.family2 &&
-            step2.family3
+            !step2.family12 &&
+            !step2.family13 &&
+            !step2.jobSituationFather &&
+            !step2.jobSituationMother &&
+            !step2.academicLevelFather &&
+            !step2.academicLevelMother &&
+            !step2.family1 &&
+            !step2.family2 &&
+            !step2.family3
         );
         let step3Valid = (
-            step3.family4 &&
-            step3.family5 &&
-            step3.family6 &&
-            step3.family7 &&
-            step3.family8 &&
-            step3.family9 &&
-            step3.family10 &&
-            step3.family11 &&
-            step3.family14
+            !step3.family4 &&
+            !step3.family5 &&
+            !step3.family6 &&
+            !step3.family7 &&
+            !step3.family8 &&
+            !step3.family9 &&
+            !step3.family10 &&
+            !step3.family11 &&
+            !step3.family14
         );
 
         return {
@@ -148,9 +226,11 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
                 
                 let message = 'Cuestionario enviado correctamente.\nLe llegará una notificación con los resultados y se le enviará por correo, tanto a usted como a los padres.'
                 toast.show('Cuestionario enviado correctamente',{type: 'success'});
+                setIsLoading(false);
                 navigation.navigate('Dashboard');
             })
             .catch(function (error) {
+                setIsLoading(false);
                 toast.show('Error en el envío y procesamiento del cuestionario. ' + error.response.data.data,{type: 'danger'});
             });
            
@@ -176,36 +256,7 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
                     type: 'danger'
                 }
             );
-            //console.log('Hay campos vacíos en el formulario. Por favor, vuelve a revisarlo.');
         }
-        /*
-        setIsLoading(true);
-            email = await getItemLocalStorage('email');
-            let data = {};
-            if (firstName) {
-                data['first_name'] = firstName;
-            }
-            if (lastName) {
-                data['last_name'] = lastName;
-            }
-            if (phoneNumber) {
-                data['phone'] = phoneNumber;
-            }
-            //console.log(data);
-            await axiosInstance.post("/sivaria/v1/user/email/" + email, data)
-            .then(async function (response) {
-                //console.log(response);
-                //console.log('Cuenta eliminada correctamente');
-                //let rolDescription = (userData.rol) ? userData.rol.description : null;
-                //await setItemLocalStorage('rol', rolDescription);  
-                //let rolSlug = (userData.rol) ? userData.rol.slug : null;
-                //await setItemLocalStorage('rolSlug', rolSlug); 
-                //if(rolSlug === 'joven') {
-                    //await setItemLocalStorage('emailParent1', userData.email_parent_1); 
-                    //await setItemLocalStorage('emailParent2', userData.email_parent_2); 
-                //}
-            };
-        */
        
       };
 
@@ -248,7 +299,7 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
                         </YoungstersStack.Screen>
                     ))*/}
                 {/*</YoungstersStack.Navigator>*/}
-                <CurrentStepComponent stepData={stepData} setStepData={setStepData} />
+                <CurrentStepComponent stepData={stepData} setStepData={setStepData} validations={validations}/>
             </ScrollView>
             <View style={styles.navigationButtons}>
                 {/*
@@ -274,7 +325,7 @@ export const ProfessionalsStackNavigator = ({navigation}) => {
                     ) : 
                     (
                         <Pressable onPress={handleSubmit} style={styles.button}>
-                            <Text style={styles.buttonText}>SUBMIT</Text>
+                            <Text style={styles.buttonText}>ENVIAR</Text>
                         </Pressable> 
                     )
                 }
