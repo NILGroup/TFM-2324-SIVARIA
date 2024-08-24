@@ -89,7 +89,7 @@ const oneToSevenOptions = [
     { label:'7', value: '7' },
 ];
 
-const Step1 = ({ stepData, setStepData }) => {
+const Step1 = ({ stepData, setStepData, validations }) => {
     //const [localState, setLocalState] = useState(stepData.step1 || '');
     const [localState, setLocalState] = useState({
         course: stepData.step1.course || '',
@@ -142,6 +142,8 @@ const Step1 = ({ stepData, setStepData }) => {
                         option={stepData.step1.course} 
                         onSelect={text => handleInputChange('course', text)}
                     />
+                    {validations.step1.course && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
                 </View>
                 <View style={{padding:5}}>
                     <Text style={{fontWeight:'bold'}}>Edad (en años):</Text>
@@ -153,6 +155,8 @@ const Step1 = ({ stepData, setStepData }) => {
                         autoCapitalize={'none'} 
                         inputMode={'numeric'}
                     />
+                    {validations.step1.age && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
                 </View>
                 <View style={{padding:5}}>
                     <Text style={{fontWeight:'bold'}}>Sexo:</Text>
@@ -161,6 +165,8 @@ const Step1 = ({ stepData, setStepData }) => {
                         option={stepData.step1.gender} 
                         onSelect={text => handleInputChange('gender', text)}
                     />
+                    {validations.step1.gender && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
                 </View>
                 <View style={{padding:5}}>
                     <Text style={{fontWeight:'bold'}}>¿Te consideras una persona trans?:</Text>
@@ -169,13 +175,15 @@ const Step1 = ({ stepData, setStepData }) => {
                         option={stepData.step1.trans} 
                         onSelect={text => handleInputChange('trans', text)}
                     />
+                    {validations.step1.trans && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
                 </View>
             </View>
         </>
     );
 };
 
-const Step2 = ({ stepData, setStepData }) => {
+const Step2 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         jobSituationFather: stepData.step2.jobSituationFather || '',
         jobSituationMother: stepData.step2.jobSituationMother || '',
@@ -212,22 +220,32 @@ const Step2 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu padre:</Text>
                 <SivariaRadioButton option={stepData.step2.jobSituationFather} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationFather', text)}/>
+                {validations.step2.jobSituationFather && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica la situación laboral actual de tu madre:</Text>
                 <SivariaRadioButton option={stepData.step2.jobSituationMother} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationMother', text)}/>
+                {validations.step2.jobSituationMother && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica los estudios de tu padre o figura parental 1:</Text>
                 <SivariaRadioButton option={stepData.step2.academicLevelFather} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelFather', text)}/>
+                {validations.step2.academicLevelFather && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica los estudios de tu madre o figura parental 2:</Text>
                 <SivariaRadioButton option={stepData.step2.academicLevelMother} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelMother', text)}/>
+                {validations.step2.academicLevelMother && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Señala cuál crees que es tu rendimiento académico en los dos últimos años:</Text>
                 <SivariaRadioButton option={stepData.step2.academicPerformance} data={academicPerformanceData} onSelect={text => handleInputChange('academicPerformance', text)}/>
+                {validations.step2.academicPerformance && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
@@ -235,6 +253,8 @@ const Step2 = ({ stepData, setStepData }) => {
                     (por ejemplo, me han diagnosticado depresión o ansiedad):
                 </Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step2.previousPsychiatricTreatment} onSelect={text => handleInputChange('previousPsychiatricTreatment', text)}/>
+                {validations.step2.previousPsychiatricTreatment && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
@@ -242,12 +262,14 @@ const Step2 = ({ stepData, setStepData }) => {
                     (por ejemplo: me han diagnosticado, diabetes, epilepsia...):
                 </Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step2.chronicDisease} onSelect={text => handleInputChange('chronicDisease', text)}/>
+                {validations.step2.chronicDisease && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step3 = ({ stepData, setStepData }) => {
+const Step3 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         femaleSelfPerception: stepData.step3.femaleSelfPerception || '',
         maleSelfPerception: stepData.step3.maleSelfPerception || '',
@@ -286,16 +308,22 @@ const Step3 = ({ stepData, setStepData }) => {
                 donde 0 significa Nada en absoluto y 6 completamente:</Text>
                 <Text>Femenina</Text>
                 <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.femaleSelfPerception} onSelect={text => handleInputChange('femaleSelfPerception', text)}/>
+                {validations.step3.femaleSelfPerception && <Text style={styles.errorText}>El campo está vacío.</Text>}
                 <Text>Masculino</Text>
                 <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.maleSelfPerception} onSelect={text => handleInputChange('maleSelfPerception', text)}/>
+                {validations.step3.maleSelfPerception && <Text style={styles.errorText}>El campo está vacío.</Text>}
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>En general, ¿cómo crees que te ve la mayoría de la gente? (responde a ambas escalas: masculino y femenina). Evalúe de 0 a 6,
                 donde 0 significa Nada en absoluto y 6 completamente:</Text>
                 <Text>Femenina</Text>
                 <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.femaleOthersPerception} onSelect={text => handleInputChange('femaleOthersPerception', text)}/>
+                {validations.step3.femaleOthersPerception && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
                 <Text>Masculino</Text>
                 <SivariaRadioButton data={selfPerceptionData} option={stepData.step3.maleOthersPerception} onSelect={text => handleInputChange('maleOthersPerception', text)}/>
+                {validations.step3.maleOthersPerception && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Cuánto pesas? (poner valor aproximado en kg):</Text>
@@ -306,7 +334,9 @@ const Step3 = ({ stepData, setStepData }) => {
                     autoCorrect={false}
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
-                />                             
+                />
+                {validations.step3.weight && <Text style={styles.errorText}>El campo está vacío.</Text>}
+                             
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Cuánto mides? (poner valor aproximado en cm):</Text>
@@ -317,7 +347,9 @@ const Step3 = ({ stepData, setStepData }) => {
                     autoCorrect={false}
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
-                />                        
+                />
+                {validations.step3.height && <Text style={styles.errorText}>El campo está vacío.</Text>}
+                        
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica el tipo de discriminación sufrido. Si no has sufrido ninguno, pon Ninguno:</Text>
@@ -328,12 +360,14 @@ const Step3 = ({ stepData, setStepData }) => {
                     onValueChange={text => handleInputChange('discriminationType', text )}
                 /> */}
                 <SivariaRadioButton data={discriminationTypes} option={stepData.step3.discriminationType} onSelect={text => handleInputChange('discriminationType', text)}/>
+                {validations.step3.discriminationType && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step4 = ({ stepData, setStepData }) => {
+const Step4 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         vb1: stepData.step4.vb1 || '', 
         vb2: stepData.step4.vb2 || '',
@@ -389,55 +423,80 @@ const Step4 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>VB1. Alguien me ha golpeado, me ha pateado o me ha empujado</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb1} onSelect={text => handleInputChange('vb1', text)}/>
+                {validations.step4.vb1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>VB2. Alguien me ha insultado</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb2} onSelect={text => handleInputChange('vb2', text)}/>
+                {validations.step4.vb2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>VB4. Alguien me ha amenazado</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.vb4} onSelect={text => handleInputChange('vb4', text)}/>
+                {validations.step4.vb4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>AB1. He golpeado, pateado o empujado a alguien</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab1} onSelect={text => handleInputChange('ab1', text)}/>
+                {validations.step4.ab1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>AB2. He insultado he dicho palabras malsonantes a alguien porque quería hacerle daño</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab2} onSelect={text => handleInputChange('ab2', text)}/>                
+                {validations.step4.ab2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>AB4. He amenazado a alguien</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.ab4} onSelect={text => handleInputChange('ab4', text)}/>                
+                {validations.step4.ab4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybV1. Alguien me ha dicho palabras malsonantes o me ha insultado usando el email o SMS</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv1} onSelect={text => handleInputChange('cybv1', text)}/>                
+                {validations.step4.cybv1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybV2. Alguien le ha dicho a otros palabras malsonantes sobre mí usando Internet o SMS</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv2} onSelect={text => handleInputChange('cybv2', text)}/>                
+                {validations.step4.cybv2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybV3. Alguien me ha amenazado a través de mensajes en Interne o SMS</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybv3} onSelect={text => handleInputChange('cybv3', text)}/>                
+                {validations.step4.cybv3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybB1. He dicho palabras malsonantes a alguien o le he insultado usando SMS o mensajes en Internet</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb1} onSelect={text => handleInputChange('cybb1', text)}/>                
+                {validations.step4.cybb1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybB2. He dicho palabras malsonantes sobre alguien a otras personas en mensajes por Internet o por SMS</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb2} onSelect={text => handleInputChange('cybb2', text)}/>                
+                {validations.step4.cybb2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>CybB3. He amenazado a alguien a través de SMS o mensajes en Internet</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step4.cybb3} onSelect={text => handleInputChange('cybb3', text)}/>                
+                {validations.step4.cybb3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
-const Step5 = ({ stepData, setStepData }) => {
+
+const Step5 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         rrss1: stepData.step5.rrss1 || '', 
         rrss2: stepData.step5.rrss2 || '', 
@@ -481,35 +540,50 @@ const Step5 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. ¿Has visto imágenes o leído últimamente sobre autolesión o suicidio en algún medio audiovisual?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss1} onSelect={text => handleInputChange('rrss1', text)}/>
+                {validations.step5.rrss1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. ¿Has buscado alguna vez información o te has metido en un foro sobre el suicidio y/o autolesión en Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss2} onSelect={text => handleInputChange('rrss2', text)}/>
+                {validations.step5.rrss2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. ¿Alguna vez has sentido la necesidad de hacerte daño y has compartido tu pensamiento a través de alguna red social o Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss3} onSelect={text => handleInputChange('rrss3', text)}/>
+                {validations.step5.rrss3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. ¿Alguna vez has sentido angustia, tristeza, desesperación, o te has sentido solo, lo has compartido o has buscado ayuda en Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss4} onSelect={text => handleInputChange('rrss4', text)}/>
+                {validations.step5.rrss4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. ¿Alguna vez has sentido la tentación de hacerte daño después de ver algún tipo de contenido en Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss5} onSelect={text => handleInputChange('rrss5', text)}/>                
+                {validations.step5.rrss5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. ¿Alguna vez has sentido la tentación de hacerte daño y has buscado ayuda en Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss6} onSelect={text => handleInputChange('rrss6', text)}/>                
+                {validations.step5.rrss6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. ¿Conoces a alguien que haya compartido alguna foto, pensamiento o comportamiento autolesivo en Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step5.rrss7} onSelect={text => handleInputChange('rrss7', text)}/>                
+                {validations.step5.rrss7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
-const Step6 = ({ stepData, setStepData }) => {
+
+const Step6 = ({ stepData, setStepData, validations }) => {
     
     const [localState, setLocalState] = useState({
         mcad1: stepData.step6.mcad1 || '', 
@@ -563,55 +637,80 @@ const Step6 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. ¿Has pensado alguna vez que deberías beber menos alcohol?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad1} onSelect={text => handleInputChange('mcad1', text)}/>
+                {validations.step6.mcad1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. ¿Te has sentido molesto/a cuando alguna persona te ha criticado tu manera o forma de beber alcohol?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad2} onSelect={text => handleInputChange('mcad2', text)}/>
+                {validations.step6.mcad2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. ¿Te has sentido culpable alguna vez por tu manera o forma de beber alcohol?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad3} onSelect={text => handleInputChange('mcad3', text)}/>
+                {validations.step6.mcad3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. ¿Alguna vez lo primero que has hecho por la mañana es beber alguna bebida alcohólica para relajarte o para eliminar la resaca?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad4} onSelect={text => handleInputChange('mcad4', text)}/>
+                {validations.step6.mcad4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. ¿Has pensado alguna vez que deberías consumir menos drogas?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad5} onSelect={text => handleInputChange('mcad5', text)}/>
+                {validations.step6.mcad5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. ¿Niegas el consumo de drogas a familiares, amigos o compañeros para evitar que te critiquen?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad6} onSelect={text => handleInputChange('mcad6', text)}/>
+                {validations.step6.mcad6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. ¿Has tenido problemas psicológicos, económicos, laborales o familiares a causa del consumo de drogas?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad7} onSelect={text => handleInputChange('mcad7', text)}/>
+                {validations.step6.mcad7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. ¿Te sientes a veces impulsado a consumir drogas aunque hayas decidido no hacerlo?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad8} onSelect={text => handleInputChange('mcad8', text)}/>
+                {validations.step6.mcad8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. ¿Dedicas más tiempo del que crees que deberías a estar conectado a Internet con objetivos distintos a los de tu trabajo?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad9} onSelect={text => handleInputChange('mcad9', text)}/>
+                {validations.step6.mcad9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. ¿Se han quejado tus familiares de las horas que dedicas a Internet?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad10} onSelect={text => handleInputChange('mcad10', text)}/>
+                {validations.step6.mcad10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>11. ¿Te resulta duro permanecer alejado/a de Internet varios días seguidos?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad11} onSelect={text => handleInputChange('mcad11', text)}/>
+                {validations.step6.mcad11 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>12. ¿Tienes problemas para controlar el impulso de conectarte a Internet o has intentado sin éxito reducir el tiempo que dedicas a estar conectado/a?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step6.mcad12} onSelect={text => handleInputChange('mcad12', text)}/>
+                {validations.step6.mcad12 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
-const Step7 = ({ stepData, setStepData }) => {
+
+const Step7 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         cerqs1: stepData.step7.cerqs1 || '', 
         cerqs2: stepData.step7.cerqs2 || '',
@@ -681,79 +780,116 @@ const Step7 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Siento que soy el único culpable de lo que ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs1} onSelect={text => handleInputChange('cerqs1', text)}/>
+                {validations.step7.cerqs1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Creo que tengo que acpear lo que ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs2} onSelect={text => handleInputChange('cerqs2', text)}/>
+                {validations.step7.cerqs2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Pienso a menudo en cómo me siento en relación con lo que me ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs3} onSelect={text => handleInputChange('cerqs3', text)}/>
+                {validations.step7.cerqs3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Me parece que otros son culpables de lo ocurrido</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs4} onSelect={text => handleInputChange('cerqs4', text)}/>
+                {validations.step7.cerqs4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Me siento único/a responsable de lo ocurrido</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs5} onSelect={text => handleInputChange('cerqs5', text)}/>                
+                {validations.step7.cerqs5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Creo que tengo que aceptar la situación</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs6} onSelect={text => handleInputChange('cerqs6', text)}/>                
+                {validations.step7.cerqs6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. Me preocupa lo que piense y sienta sobre lo que me ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs7} onSelect={text => handleInputChange('cerqs7', text)}/>                
+                {validations.step7.cerqs7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Pienso en cosas agradables que nada tienen que ver con lo que me ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs8} onSelect={text => handleInputChange('cerqs8', text)}/>                
+                {validations.step7.cerqs8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. Pienso en cuál sería la mejor forma de enfrentarme a la situación</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs9} onSelect={text => handleInputChange('cerqs9', text)}/>                
+                {validations.step7.cerqs9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. Sigo pensando en lo terrible que ha sido lo que me ha pasado</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs10} onSelect={text => handleInputChange('cerqs10', text)}/>                
+                {validations.step7.cerqs10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>11. Me parece que otros son responsables de lo que ha ocurrido</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs11} onSelect={text => handleInputChange('cerqs11', text)}/>                
+                {validations.step7.cerqs11 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>12. Pienso en algo agradable en vez de pensar en lo ocurrido</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs12} onSelect={text => handleInputChange('cerqs12', text)}/>                
+                {validations.step7.cerqs12 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>13. Creo que la situación tiene también su lado positivo</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs13} onSelect={text => handleInputChange('cerqs13', text)}/>                
+                {validations.step7.cerqs13 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>14. Creo que no ha sido tan malo en comparación a otras cosas</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs14} onSelect={text => handleInputChange('cerqs14', text)}/>                
+                {validations.step7.cerqs14 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>15. Pienso en un plan acerca de lo mejor que podría hacer</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs15} onSelect={text => handleInputChange('cerqs15', text)}/>                
+                {validations.step7.cerqs15 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>16. Busco los aspectos positivos de la cuestión</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs16} onSelect={text => handleInputChange('cerqs16', text)}/>                
+                {validations.step7.cerqs16 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>17. Me digo que hay cosas peores en la vida</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs17} onSelect={text => handleInputChange('cerqs17', text)}/>                
+                {validations.step7.cerqs17 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>18. Pienso continuamente en lo horrible que ha sido la situación</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step7.cerqs18} onSelect={text => handleInputChange('cerqs18', text)}/>                
+                {validations.step7.cerqs18 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
-const Step8 = ({ stepData, setStepData }) => {
+
+const Step8 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         ati1: stepData.step8.ati1 || '',
         ati2: stepData.step8.ati2 || '',
@@ -831,26 +967,38 @@ const Step8 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Quiero escapar de mí mismo/a</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati1} onSelect={text => handleInputChange('ati1', text)}/>
+                {validations.step8.ati1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Me siento impotente para cambiarme a mí mismo/a</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati2} onSelect={text => handleInputChange('ati2', text)}/>
+                {validations.step8.ati2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Me gustaría escapar de mis pensamientos y sentimientos</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati3} onSelect={text => handleInputChange('ati3', text)}/>
+                {validations.step8.ati3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Me siento atrapado dentro de mí mismo/a</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati4} onSelect={text => handleInputChange('ati4', text)}/>
+                {validations.step8.ati4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Me gustaría huir de lo que soy y empezar de nuevo</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati5} onSelect={text => handleInputChange('ati5', text)}/>
+                {validations.step8.ati5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Siento que estoy en un pozo del que no puedo salir</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ati6} onSelect={text => handleInputChange('ati6', text)}/>
+                {validations.step8.ati6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <Text style={{fontWeight:'bold'}}>
                 ATE
@@ -858,48 +1006,68 @@ const Step8 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Estoy en una situación en la que me siento atrapado/a</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate1} onSelect={text => handleInputChange('ate1', text)}/>
+                {validations.step8.ate1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Deseo con todas mis fuerzas escapar de mi vida</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate2} onSelect={text => handleInputChange('ate2', text)}/>
+                {validations.step8.ate2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Estoy en una relación de la que no puedo salir/ Mantengo un tipo de relaciones en mi vida de las que no puedo salir</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate3} onSelect={text => handleInputChange('ate3', text)}/>
+                {validations.step8.ate3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. A menudo tengo la sensación de que me gustaría huir</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate4} onSelect={text => handleInputChange('ate4', text)}/>
+                {validations.step8.ate4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Me siento importante para cambiar las cosas</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate5} onSelect={text => handleInputChange('ate5', text)}/>
+                {validations.step8.ate5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Me siento atrapado por mis obligaciones</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate6} onSelect={text => handleInputChange('ate6', text)}/>
+                {validations.step8.ate6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. No veo forma de salir de mi situación actual</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate7} onSelect={text => handleInputChange('ate7', text)}/>
+                {validations.step8.ate7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Me gustaría alejarme de las personas más importantes de mi vida</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate8} onSelect={text => handleInputChange('ate8', text)}/>
+                {validations.step8.ate8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. Tengo un fuerte deseo de alejarme y mantenerme alejado de donde estoy</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate9} onSelect={text => handleInputChange('ate9', text)}/>
+                {validations.step8.ate9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. Me siento atrapado por otras personas</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step8.ate10} onSelect={text => handleInputChange('ate10', text)}/>
+                {validations.step8.ate10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step9 = ({ stepData, setStepData }) => {
+const Step9 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         ed1: stepData.step9.ed1 || '',
         ed2: stepData.step9.ed2 || '',
@@ -995,66 +1163,98 @@ const Step9 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Siento que he fracasado en la vida:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed1} onSelect={text => handleInputChange('ed1', text)}/>
+                {validations.step9.ed1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Siento que soy una persona exitosa:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed2} onSelect={text => handleInputChange('ed2', text)}/>
+                {validations.step9.ed2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Me siento derrotado por la vida:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed3} onSelect={text => handleInputChange('ed3', text)}/>
+                {validations.step9.ed3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Siento que básicamente soy un/a ganador/a:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed4} onSelect={text => handleInputChange('ed4', text)}/>
+                {validations.step9.ed4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Siento que he perdido mi lugar en el mundo:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed5} onSelect={text => handleInputChange('ed5', text)}/>
+                {validations.step9.ed5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Siento que la vida me ha tratado como un saco de boxeo:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed6} onSelect={text => handleInputChange('ed6', text)}/>
+                {validations.step9.ed6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. Me siento impotente:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed7} onSelect={text => handleInputChange('ed7', text)}/>
+                {validations.step9.ed7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Siento que me han arrebatado la confianza en mí mismo/a:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed8} onSelect={text => handleInputChange('ed8', text)}/>
+                {validations.step9.ed8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. Me siento capaz de afrontar lo que la vida me depare:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed9} onSelect={text => handleInputChange('ed9', text)}/>
+                {validations.step9.ed9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. Siento que he tocado fondo:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed10} onSelect={text => handleInputChange('ed10', text)}/>
+                {validations.step9.ed10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>11. Me siento completamente anulado/a:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed11} onSelect={text => handleInputChange('ed11', text)}/>
+                {validations.step9.ed11 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>12. Siento que soy un/a perdedor/a en la vida:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed12} onSelect={text => handleInputChange('ed12', text)}/>
+                {validations.step9.ed12 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>13. Siento que me he rendido:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed13} onSelect={text => handleInputChange('ed13', text)}/>
+                {validations.step9.ed13 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>14. Me siento acabado/a:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed14} onSelect={text => handleInputChange('ed14', text)}/>
+                {validations.step9.ed14 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>15. Siento que he perdido batallas importantes en la vida:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed15} onSelect={text => handleInputChange('ed15', text)}/>
+                {validations.step9.ed15 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>16. Siento que no hay nada por lo que luchar en la vida:</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.ed16} onSelect={text => handleInputChange('ed16', text)}/>
+                {validations.step9.ed16 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <Text style={{fontWeight: 'bold'}}>
                 ER
@@ -1067,48 +1267,68 @@ const Step9 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Sé adaptarme a los cambios</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er1} onSelect={text => handleInputChange('er1', text)}/>
+                {validations.step9.er1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Puedo manejar cualquier situación</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er2} onSelect={text => handleInputChange('er2', text)}/>
+                {validations.step9.er2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Veo el lado positivo de las cosas</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er3} onSelect={text => handleInputChange('er3', text)}/>
+                {validations.step9.er3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Me puedo manejar bien a pesar de la presión o el estrés</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er4} onSelect={text => handleInputChange('er4', text)}/>
+                {validations.step9.er4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Después de un grave contratiempo</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er5} onSelect={text => handleInputChange('er5', text)}/>
+                {validations.step9.er5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Consigo alcanzar mis metas a pesar de las dificultades</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er6} onSelect={text => handleInputChange('er6', text)}/>
+                {validations.step9.er6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. Puedo mantener la concentración bajo presión</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er7} onSelect={text => handleInputChange('er7', text)}/>
+                {validations.step9.er7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Dificílmente me desanimo por los fracasos</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er8} onSelect={text => handleInputChange('er8', text)}/>
+                {validations.step9.er8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. Me defino como una persona fuerte</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er9} onSelect={text => handleInputChange('er9', text)}/>
+                {validations.step9.er9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. Puedo manejar los sentimientos desagradables</Text>
                 <SivariaRadioButton data={zeroToFourOptions} option={stepData.step9.er10} onSelect={text => handleInputChange('er10', text)}/>
+                {validations.step9.er10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step10 = ({ stepData, setStepData }) => {
+const Step10 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         inq1: stepData.step10.inq1 || '',
         inq2: stepData.step10.inq2 || '',
@@ -1191,68 +1411,98 @@ const Step10 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. Los que me rodean estarían mejor si me fuera</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq1} onSelect={text => handleInputChange('inq1', text)}/>
+                {validations.step10.inq1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Los que me rodean serían más felices sin mí</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq2} onSelect={text => handleInputChange('inq2', text)}/>
+                {validations.step10.inq2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Creo que soy una carga para la sociedad</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq3} onSelect={text => handleInputChange('inq3', text)}/>
+                {validations.step10.inq3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Creo que mi muerte sería un alivio para los demás</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq4} onSelect={text => handleInputChange('inq4', text)}/>
+                {validations.step10.inq4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Creo que los que me rodean, desearían deshacerse de mí</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq5} onSelect={text => handleInputChange('inq5', text)}/>
+                {validations.step10.inq5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Creo que empeoro las cosas para los que me rodean</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq6} onSelect={text => handleInputChange('inq6', text)}/>
+                {validations.step10.inq6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. Los demás se preocupan por mí</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq7} onSelect={text => handleInputChange('inq7', text)}/>
+                {validations.step10.inq7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Siento que encajo, que he encontrado mi lugar en el mundo</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq8} onSelect={text => handleInputChange('inq8', text)}/>
+                {validations.step10.inq8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>9. Me relaciono muy poco con mis seres queridos</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq9} onSelect={text => handleInputChange('inq9', text)}/>
+                {validations.step10.inq9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>10. Tengo la suerte de tener muchos/as amigos/as que me cuidan y apoyan</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq10} onSelect={text => handleInputChange('inq10', text)}/>
+                {validations.step10.inq10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>11. Me siento desconectado de los demás</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq11} onSelect={text => handleInputChange('inq11', text)}/>
+                {validations.step10.inq11 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>12. A menudo me siento como un extraño cuando quedo con gente</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq12} onSelect={text => handleInputChange('inq12', text)}/>
+                {validations.step10.inq12 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>13. Siento que hay personas a las que puedo recurrir en momentos de necesidad</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq13} onSelect={text => handleInputChange('inq13', text)}/>
+                {validations.step10.inq13 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>14. Me siento cerca de otras personas</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq14} onSelect={text => handleInputChange('inq14', text)}/>
+                {validations.step10.inq14 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>15. Cada día tengo al menos una interacción (con alguien) que puede considerarse satisfactoria</Text>
                 <SivariaRadioButton data={oneToSevenOptions} option={stepData.step10.inq15} onSelect={text => handleInputChange('inq15', text)}/>
+                {validations.step10.inq15 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step11 = ({ stepData, setStepData }) => {
+const Step11 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         sena19: stepData.step11.sena19 || '',
         sena23: stepData.step11.sena23 || '',
@@ -1332,66 +1582,98 @@ const Step11 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>19. Mis padres me pegan</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena19} onSelect={text => handleInputChange('sena19', text)}/>
+                {validations.step11.sena19 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>23. Grito cuando me enfado o enojo</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena23} onSelect={text => handleInputChange('sena23', text)}/>
+                {validations.step11.sena23 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>69. Me cuesta controlar mis emociones</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena69} onSelect={text => handleInputChange('sena69', text)}/>
+                {validations.step11.sena69 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>99. Tengo problemas en casa</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena99} onSelect={text => handleInputChange('sena99', text)}/>
+                {validations.step11.sena99 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>103. Amenazo a otros para conseguir lo que quiero</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena103} onSelect={text => handleInputChange('sena103', text)}/>
+                {validations.step11.sena103 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>111. Tengo ganas de llorar</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena111} onSelect={text => handleInputChange('sena111', text)}/>
+                {validations.step11.sena111 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>112. Tengo ataques de nervios o de ansiedad</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena112} onSelect={text => handleInputChange('sena112', text)}/>
+                {validations.step11.sena112 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>115. Me insultan en el colegio, instituto o universidad</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena115} onSelect={text => handleInputChange('sena115', text)}/>
+                {validations.step11.sena115 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>117. Me cuesta concentrarme</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena117} onSelect={text => handleInputChange('sena117', text)}/>
+                {validations.step11.sena117 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>129. Me angustian o agobian mis problemas</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena129} onSelect={text => handleInputChange('sena129', text)}/>
+                {validations.step11.sena129 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>137. Me siento solo/a</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena137} onSelect={text => handleInputChange('sena137', text)}/>
+                {validations.step11.sena137 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>139. Pego a otros cuando me enfado o enojo</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena139} onSelect={text => handleInputChange('sena139', text)}/>
+                {validations.step11.sena139 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>141. Pienso que mi vida no tiene sentido</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena141} onSelect={text => handleInputChange('sena141', text)}/>
+                {validations.step11.sena141 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>146. Hago locuras para divertirme</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena146} onSelect={text => handleInputChange('sena146', text)}/>
+                {validations.step11.sena146 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>150. Mis profesores dicen que no presto atención en clase</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena150} onSelect={text => handleInputChange('sena150', text)}/>
+                {validations.step11.sena150 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>188. Tengo amigos de verdad</Text>
                 <SivariaRadioButton data={oneToFiveOptions} option={stepData.step11.sena188} onSelect={text => handleInputChange('sena188', text)}/>
+                {validations.step11.sena188 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <Text style={{fontWeight: 'bold'}}>
                 Información sobre autolesión
@@ -1399,12 +1681,14 @@ const Step11 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>1. ¿Durante el último año te has implicado intencionadamente daño (por ejemplo: cortarte o arañarte la piel, golpearte o morderte a ti mismo,...)?:</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step11.injury1} onSelect={text => handleInputChange('injury1', text)}/>
+                {validations.step11.injury1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step12 = ({ stepData, setStepData }) => {
+const Step12 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         family1: stepData.step12.family1 || '',
         family2: stepData.step12.family2 || '',
@@ -1414,16 +1698,6 @@ const Step12 = ({ stepData, setStepData }) => {
         family6: stepData.step12.family6 || '',
         family7: stepData.step12.family7 || '',
         family8: stepData.step12.family8 || '',
-        /*
-        fatherAge: stepData.step12.fatherAge || '',
-        motherAge: stepData.step12.motherAge || '',
-        divorcedParents: stepData.step12.divorcedParents || '',
-        singleParentFamily: stepData.step12.singleParentFamily || '',
-        psiquiatricTreatmentParent: stepData.step12.psiquiatricTreatmentParent || '',
-        addictionParent: stepData.step12.addictionParent || '',
-        conflictingRelationshipsChildParents: stepData.step12.conflictingRelationshipsChildParents || '',
-        reconstructedFamily: stepData.step12.reconstructedFamily || '',
-        */
     });
 
     useEffect(() => {
@@ -1436,23 +1710,11 @@ const Step12 = ({ stepData, setStepData }) => {
             family6: stepData.step12.family6 || '',
             family7: stepData.step12.family7 || '',
             family8: stepData.step12.family8 || '',
-            /*
-            fatherAge: stepData.step12.fatherAge || '',
-            motherAge: stepData.step12.motherAge || '',
-            divorcedParents: stepData.step12.divorcedParents || '',
-            singleParentFamily: stepData.step12.singleParentFamily || '',
-            psiquiatricTreatmentParent: stepData.step12.psiquiatricTreatmentParent || '',
-            addictionParent: stepData.step12.addictionParent || '',
-            conflictingRelationshipsChildParents: stepData.step12.conflictingRelationshipsChildParents || '',
-            reconstructedFamily: stepData.step12.reconstructedFamily || '',
-            */
         });
     }, [stepData.step12]);
 
     const handleInputChange = (field, value) => {
         // Change function to handleInputChange(text)
-        //setLocalState(text);
-        //setStepData((prevData) => ({ ...prevData, step1: text }));
         const updatedState = { ...localState, [field]: value };
         setLocalState(updatedState);
         setStepData((prevData) => ({ ...prevData, step12: updatedState }));
@@ -1473,6 +1735,8 @@ const Step12 = ({ stepData, setStepData }) => {
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
                 />
+                {validations.step12.family1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>2. Indique la edad de tu madre en el momento de tu nacimiento (años):</Text>
@@ -1484,30 +1748,44 @@ const Step12 = ({ stepData, setStepData }) => {
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
                 />
+                {validations.step12.family2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>3. Convives con tus padres en la misma casa habitualmente:</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step7.family3} onSelect={text => handleInputChange('family3', text)}/>
+                <SivariaRadioButton data={yesNoData} option={stepData.step12.family3} onSelect={text => handleInputChange('family3', text)}/>
+                {validations.step12.family3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>4. Indica si tus padres están separados o divorciados:</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step12.family4} onSelect={text => handleInputChange('family4', text)}/>
+                {validations.step12.family4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>5. Indica si alguno de tus padres ha recibido tratamiento psicológico o psiquiátrico:</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step12.family5} onSelect={text => handleInputChange('family5', text)}/>                
+                {validations.step12.family5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>6. Indica si alguno de tus padres ha recibido tratamiento por consumo de drogas o alcohol</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step12.family6} onSelect={text => handleInputChange('family6', text)}/>                
+                {validations.step12.family6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>7. Indica si las relaciones con tus padres son conflictivas o problemáticas (tensión, rechazo, desinterés, peleas frecuentes...):</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step12.family7} onSelect={text => handleInputChange('family7', text)}/>                
+                {validations.step12.family7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>8. Consideras que tu familia está reconstruida:</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step12.family8} onSelect={text => handleInputChange('family8', text)}/>                
+                {validations.step12.family8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
@@ -1524,6 +1802,10 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 24,
         fontWeight: 'bold'
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 5,
     },
 
     

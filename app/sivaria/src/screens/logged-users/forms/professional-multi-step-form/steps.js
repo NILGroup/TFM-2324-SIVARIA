@@ -89,7 +89,7 @@ const oneToSevenOptions = [
     { label:'7', value: '7' },
 ];
 
-const Step1 = ({ stepData, setStepData }) => {
+const Step1 = ({ stepData, setStepData, validations }) => {
     //const [localState, setLocalState] = useState(stepData.step1 || '');
     const [localState, setLocalState] = useState({
         idPatient: stepData.step1.idPatient || '',
@@ -131,6 +131,7 @@ const Step1 = ({ stepData, setStepData }) => {
                         autoCapitalize={'none'} 
                         inputMode={'text'}
                     />
+                    {validations.step1.idPatient && <Text style={styles.errorText}>El campo está vacío.</Text>}
                 </View>
                 <View style={{padding: 5}}>
                     <Text style={{fontWeight:'bold'}}>Curso:</Text>
@@ -139,6 +140,7 @@ const Step1 = ({ stepData, setStepData }) => {
                         option={stepData.step1.course} 
                         onSelect={text => handleInputChange('course', text)}
                     />
+                    {validations.step1.course && <Text style={styles.errorText}>El campo está vacío.</Text>}
                 </View>
                 <View style={{padding: 5}}>
                     <Text style={{fontWeight:'bold'}}>Tratamiento farmacológico:</Text>
@@ -147,13 +149,14 @@ const Step1 = ({ stepData, setStepData }) => {
                         option={stepData.step1.previousPsychiatricTreatment} 
                         onSelect={text => handleInputChange('previousPsychiatricTreatment', text)}
                     />
+                    {validations.step1.previousPsychiatricTreatment && <Text style={styles.errorText}>El campo está vacío.</Text>}
                 </View>
             </View>
         </>
     );
 };
 
-const Step2 = ({ stepData, setStepData }) => {
+const Step2 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         family12: stepData.step2.family12 || '',
         family13: stepData.step2.family13 || '',
@@ -203,28 +206,36 @@ const Step2 = ({ stepData, setStepData }) => {
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
                 />    
+                {validations.step2.family12 && <Text style={styles.errorText}>El campo está vacío.</Text>}
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
                     Ingreso familiar mensual (aproximado)
                 </Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step2.femaleSelfPerception} onSelect={text => handleInputChange('family13', text)}/>
+                <SivariaRadioButton data={yesNoData} option={stepData.step2.family13} onSelect={text => handleInputChange('family13', text)}/>
+                {validations.step2.family13 && <Text style={styles.errorText}>El campo está vacío.</Text>}
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Situación laboral actual del padre:</Text>
                 <SivariaRadioButton option={stepData.step2.jobSituationFather} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationFather', text)}/>
+                {validations.step2.jobSituationFather && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Situación laboral actual de la madre:</Text>
                 <SivariaRadioButton option={stepData.step2.jobSituationMother} data={parentsJobSituationData} onSelect={text => handleInputChange('jobSituationMother', text)}/>
+                {validations.step2.jobSituationMother && <Text style={styles.errorText}>El campo está vacío.</Text>}
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Estudios del padre o figura parental 1:</Text>
                 <SivariaRadioButton option={stepData.step2.academicLevelFather} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelFather', text)}/>
+                {validations.step2.academicLevelFather && <Text style={styles.errorText}>El campo está vacío.</Text>}
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Estudios de la madre o figura parental 2:</Text>
                 <SivariaRadioButton option={stepData.step2.academicLevelMother} data={parentsAcademicLevel} onSelect={text => handleInputChange('academicLevelMother', text)}/>
+                {validations.step2.academicLevelMother && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Edad del padre al momento del nacimiento del hijo/a (en años)</Text>
@@ -236,6 +247,8 @@ const Step2 = ({ stepData, setStepData }) => {
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
                 />
+                {validations.step2.family1 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Edad de la madre al momento del nacimiento del hijo/a (en años)</Text>
@@ -247,16 +260,20 @@ const Step2 = ({ stepData, setStepData }) => {
                     autoCapitalize={'none'} 
                     inputMode={'numeric'}
                 />
+                {validations.step2.family2 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Hogar monoparental</Text>
-                <SivariaRadioButton data={yesNoData} option={stepData.step2.cerqs3} onSelect={text => handleInputChange('family3', text)}/>
+                <SivariaRadioButton data={yesNoData} option={stepData.step2.family3} onSelect={text => handleInputChange('family3', text)}/>
+                {validations.step2.family3 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
 };
 
-const Step3 = ({ stepData, setStepData }) => {
+const Step3 = ({ stepData, setStepData, validations }) => {
     const [localState, setLocalState] = useState({
         family4: stepData.step3.family4 || '',
         family5: stepData.step3.family5 || '',
@@ -297,38 +314,56 @@ const Step3 = ({ stepData, setStepData }) => {
             <View style={{padding:5}}>
                 <Text>Indique si los padres están separados o divorciados</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family4} onSelect={text => handleInputChange('family4', text)}/>
+                {validations.step3.family4 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>¿Existen antecedentes de tratamiento de salud mental en cualquiera de sus figuras parentales?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family5} onSelect={text => handleInputChange('family5', text)}/>                
+                {validations.step3.family5 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>¿Alguno de los padres/madres ha sido tratado por problemas de drogas y alcohol?</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family6} onSelect={text => handleInputChange('family6', text)}/>                
+                {validations.step3.family6 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Hogar reconstruido</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family8} onSelect={text => handleInputChange('family8', text)}/>                
+                {validations.step3.family8 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Supervisión parental insuficiente</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family9} onSelect={text => handleInputChange('family9', text)}/>                
+                {validations.step3.family9 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Relaciones conflictivas o problemáticas con los padres (tensión, negligencia, desinterés, peleas frecuentes)</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family7} onSelect={text => handleInputChange('family7', text)}/>                
+                {validations.step3.family7 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Problemas interparentales (discusiones de pareja, apatía, insatisfacción o mala comunicación entre padres/madres)</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family11} onSelect={text => handleInputChange('family11', text)}/>                
+                {validations.step3.family11 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Existencia de Maltrato (Abuso físico, abuso sexual del niño por parte de un familiar, negligencia o abandono, explotación, ...)</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family10} onSelect={text => handleInputChange('family10', text)}/>                
+                {validations.step3.family10 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
             <View style={{padding:5}}>
                 <Text>Acontecimientos de Pérdida/duelo: p. ej., muerte de un padre, hermano o amigo, separación de los padres</Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step3.family14} onSelect={text => handleInputChange('family14', text)}/>                
+                {validations.step3.family14 && <Text style={styles.errorText}>El campo está vacío.</Text>}
+
             </View>
         </View>
     );
@@ -345,6 +380,10 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 24,
         fontWeight: 'bold'
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 5,
     },
 
     
