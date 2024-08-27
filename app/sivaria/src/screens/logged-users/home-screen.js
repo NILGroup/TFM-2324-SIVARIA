@@ -222,6 +222,20 @@ const HomeScreen = ({navigation}) => {
                 </Pressable>
                 */}
             </View>
+            <View style={{height: 200, alignItems: 'center', padding:10}}>
+                <Text style={{fontWeight:'bold', fontSize:25}}>
+                    ¡Bienvenido a Sivaria!
+                </Text>
+                <Text style={{fontSize:18, textAlign:'center'}}>
+                    Sivaria es una aplicación de gestión, predicción y 
+                    monitorización de potenciales conductas autolesivas.
+                </Text>
+                <Text style={{fontSize:18, textAlign:'center'}}>
+                    Si necesitas saber la potencial conducta de su hijo/a o paciente,
+                    rellene el siguiente cuestionario y la predicción se le enviará al móvil 
+                    y por correo electrónico. 
+                </Text>
+            </View>
             <View style={{height:200, alignItems:'center', justifyContent: 'center'}}>
                 <SivariaButton onPress={(e) => goToQuestionnaire(e)} message={'COMENZAR CUESTIONARIO'} />
             </View>

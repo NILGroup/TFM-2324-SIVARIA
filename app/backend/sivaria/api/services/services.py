@@ -233,9 +233,9 @@ class UserHasParentService(object):
             raise HttpResponseBadRequest('Se ha encontrado más de 1 usuario con el ID')
         
     def get_children_by_email_parent(self, email):
-        list_Children_1 = list(UserHasParent.objects.filter(email_parent_1=email))
+        list_children_1 = list(UserHasParent.objects.filter(email_parent_1=email))
         list_children_2 = list(UserHasParent.objects.filter(email_parent_2=email))
-        return (list_Children_1 + list_children_2)
+        return (list_children_1 + list_children_2)
     
     def get_children_by_responsible(self, responsible_id):
         return list(UserHasParent.objects.filter(responsible=responsible_id))
