@@ -563,12 +563,12 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     currentStep: {
-      backgroundColor: '#6e3b6e'
+      backgroundColor: '#006E51'
     },
 
 
     stepText: {
-        color: '#000',
+        color: '#fff',
         fontWeight: 'bold'
     },
 
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
 
     button: {
         padding: 10,
-        backgroundColor: '#007bff',
+        backgroundColor: '#006E51',
         borderRadius: 5,
 
         width: 125,

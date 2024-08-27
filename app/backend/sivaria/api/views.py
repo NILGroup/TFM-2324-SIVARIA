@@ -1543,3 +1543,99 @@ class Forms_APIView_GetFormInfo(APIView):
             'data': form_info,
         }
         return Response(response, status=status.HTTP_200_OK) 
+
+'''
+http://127.0.0.1:8000/sivaria/v1/user/getFamilies
+{
+    "email": <str:email>
+}
+'''
+class User_APIView_GetFamilies(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        rol_service = RolService()
+        user_service = UserService()
+        form_service = FormService()
+        user_has_parent_service = UserHasParentService()
+        
+        email = request.data.get('email')
+
+        try:
+            user_service.validate_email(email)
+        except:
+            response['data'] = 'Email vacío'
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            email_clean = user_service.clean_email(email)
+        except AttributeError as e:
+            response['data'] = str(e)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+        #rol_data = rol_service.get_rol_by_id_json(rolId)
+        user = user_service.get_user_by_email_json(email=email_clean)
+        print(user)
+        rol = user.get('rol')
+        if rol:
+            print(rol)
+            rol_slug = rol.get('slug')
+            if rol_slug:
+                registers = None
+                if rol_slug == 'padre' or rol_slug == 'madre':
+                    registers = user_has_parent_service.get_children_by_email_parent(email=email_clean)
+                elif rol_slug == 'profesional':
+                    registers = user_has_parent_service.get_children_by_responsible(responsible_id=user.get('id'))
+                
+        data = []
+        for register in registers:
+            register_data = {}
+            register_id = register.id
+            child_id = register.child.id
+            register_patient = user_service.get_user_by_userId(userId=child_id)
+            register_title = str(register_patient.first_name) + ' ' + str(register_patient.last_name) + ' (Código: ' + register_patient.code + ')'
+            email_parent_1 = register.email_parent_1
+            email_parent_2 = register.email_parent_2
+            responsible_id = register.responsible.id
+
+            try:
+                parent_1 = user_service.get_user_by_email(email=email_parent_1)
+                register_parent_1 = str(parent_1.first_name) + ' ' + str(parent_1.last_name) + ' - ' + str(parent_1.email)
+            except:
+                register_parent_1 = email_parent_1 if email_parent_1 else '-'
+                
+            try:
+                parent_2 = user_service.get_user_by_email(email=email_parent_2)
+                register_parent_2 = str(parent_2.first_name) + ' ' + str(parent_2.last_name) + ' - ' + str(parent_2.email)
+            except:
+                register_parent_2 = email_parent_2 if email_parent_2 else '-'
+            
+            try:
+                responsible = user_service.get_user_by_userId(userId=responsible_id)
+                register_responsible = str(responsible.first_name) + ' ' + str(responsible.last_name) + ' - ' + str(responsible.email)
+            except:
+                register_responsible = responsible.id
+
+            register_data = {
+                'id': register_id,
+                'title': register_title,
+                'content': {
+                    'parent_1': register_parent_1,
+                    'parent_2': register_parent_2,
+                    'responsible': register_responsible
+                }
+            }
+
+            data.append(register_data)
+
+        #rol_service.get_rol_by_id_json(rol)
+
+        response = {
+            'status': 'ok',
+            'message': 'Datos devueltos correctamente',
+            'data': data,
+        }
+        return Response(response, status=status.HTTP_200_OK) 
