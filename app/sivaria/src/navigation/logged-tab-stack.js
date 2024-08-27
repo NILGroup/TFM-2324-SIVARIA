@@ -8,6 +8,7 @@ import { useContext } from "react";
 import { UserContext } from "../context/user-context";
 import HistoryScreen from "../screens/logged-users/history-screen";
 import ContactScreen from "../screens/logged-users/contact-screen";
+import PatientsScreen from "../screens/logged-users/patients-screen";
 //import { createAppContainer } from "react-navigation"; 
 
 /*
@@ -56,6 +57,11 @@ export const DashboardTabsScreen = ({navigation}) => {
                 return <Text style={{color: color}}>Home</Text>;
               case 'History':
                   return <Text style={{color: color}}>Historial</Text>;
+              case 'Patients':
+                  let title = userData.rolSlug === 'padre' || userData.rolSlug === 'madre' 
+                    ? 'Familias' 
+                    : 'Pacientes';
+                  return <Text style={{color: color}}>{title}</Text>;
               case 'Profile':
                 return <Text style={{color: color}}>Perfil</Text>
                 case 'Contact':
@@ -80,6 +86,9 @@ export const DashboardTabsScreen = ({navigation}) => {
                 case 'History':
                     iconName = 'solution1';
                     break;
+                case 'Patients':
+                    iconName = 'team';
+                    break;
                 case 'Profile':
                   iconName = 'user'
                   break;
@@ -101,10 +110,18 @@ export const DashboardTabsScreen = ({navigation}) => {
             component={HomeScreen}
         />
         {userData.rolSlug && userData.rolSlug !== 'joven' &&
-          (<Tab.Screen 
+          (
+          <>
+            <Tab.Screen 
               name="History" 
               component={HistoryScreen}
-          />)
+            />
+            <Tab.Screen 
+              name="Patients" 
+              component={PatientsScreen}
+            />
+          </>
+        )
         }
         <Tab.Screen 
             name="Profile" 

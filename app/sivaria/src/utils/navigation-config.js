@@ -53,6 +53,7 @@ export const config = {
             screens: {
                 Home: "dashboard/home",
                 History: "dashboard/history",
+                Patients: "dashboard/patients",
                 Profile: "dashboard/profile",
                 Contact: "dashboard/contact",
             }
