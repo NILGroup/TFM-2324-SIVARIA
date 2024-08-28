@@ -31,6 +31,8 @@ from pathlib import Path
 import environ
 import os
 
+import html
+
 from datetime import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -253,8 +255,20 @@ class AppUser_APIView_Register(APIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         email = request.data.get('email', None)
+        first_name = request.data.get('first_name', None)
+        last_name = request.data.get('last_name', None)
+        password = request.data.get('password', None)
+        phone = request.data.get('phone', None)
+        expo_token = request.data.get('expo_token', None)
+        birth_date = request.data.get('birth_date', None)
         try:
             email_clean = user_service.clean_email(email)
+            sanitized_first_name = None if not first_name else user_service.sanitize_input(first_name)
+            sanitized_last_name = None if not last_name else user_service.sanitize_input(last_name)
+            sanitized_password = None if not password else user_service.sanitize_input(password)
+            sanitized_phone = None if not phone else user_service.sanitize_input(phone)
+            sanitized_expo_token = None if not expo_token else user_service.sanitize_input(expo_token)
+            sanitized_birth_date = None if not birth_date else user_service.sanitize_input(birth_date)
         except AttributeError as e:
             response['message'] = str(e)
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
@@ -267,14 +281,14 @@ class AppUser_APIView_Register(APIView):
         rol_instance = rol_service.get_rol_by_slug(rol_slug)
 
         data = {
-            'first_name': request.data.get('first_name', None),
-            'last_name': request.data.get('last_name', None),
+            'first_name': sanitized_first_name,
+            'last_name': sanitized_last_name,
             'email': email_clean,
-            'password': request.data.get('password', None),
-            'phone': request.data.get('phone', None),
+            'password': sanitized_password,
+            'phone': sanitized_phone,
             'rol': rol_instance,
-            'expo_token': request.data.get('expo_token', None),
-            'birth_date': request.data.get('birth_date', None),
+            'expo_token': sanitized_expo_token,
+            'birth_date': sanitized_birth_date,
         }
 
         try:
@@ -296,9 +310,9 @@ class AppUser_APIView_Register(APIView):
 
         if rol_slug == 'joven':
             #user = userService.get_user_by_email_json(data['email'])
-            email_parent_1 = request.data.get('email_parent_1', None)
-            email_parent_2 = request.data.get('email_parent_2', None)
-            email_responsible = request.data.get('email_responsible', None)
+            email_parent_1 = user_service.sanitize_input(request.data.get('email_parent_1', None))
+            email_parent_2 = user_service.sanitize_input(request.data.get('email_parent_2', None))
+            email_responsible = user_service.sanitize_input(request.data.get('email_responsible', None))
             if not email_parent_1 and not email_parent_2:
                 response = {
                     'status': 'error',
@@ -454,8 +468,8 @@ class AppUser_APIView_Login(APIView):
 
 
         data = {
-            'email': email_clean,
-            'password': password
+            'email': user_service.sanitize_input(email_clean),
+            'password': user_service.sanitize_input(password)
         }
 
         try:

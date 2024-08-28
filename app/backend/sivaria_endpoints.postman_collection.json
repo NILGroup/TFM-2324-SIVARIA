@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "780e75b1-6481-42ec-8e22-c4e0c3c2f8c9",
+		"_postman_id": "045e261a-d601-4c16-965e-e488da7c329c",
 		"name": "SIVARIA endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "36527140"
@@ -464,6 +464,41 @@
 										"v1",
 										"user",
 										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetFamilies",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c1dde2fbb94106b2835a3f9ac7a903ce6e2b61a5",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"ranking123@hotmail.es\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/sivaria/v1/user/getFamilies",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"sivaria",
+										"v1",
+										"user",
+										"getFamilies"
 									]
 								}
 							},

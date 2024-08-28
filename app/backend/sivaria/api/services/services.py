@@ -18,6 +18,8 @@ import os
 import sys
 import re
 
+import html
+
 from datetime import datetime
 
 '''
@@ -185,9 +187,14 @@ class UserService(object):
     def validate_password(self, password):
         return self.validator.validate_password(password)
 
+    def sanitize_input(self, input_str):
+        # Escaping special characters in HTML
+        return html.escape(input_str)
+    
     def clean_email(self, email = ''):
+        sanitized_email = self.sanitize_input(email)
         try:
-            local_part, domain = self.divide_email_address(email)
+            local_part, domain = self.divide_email_address(sanitized_email)
         except ValueError as e:
             raise AttributeError('Formato incorrecto del email')
 
