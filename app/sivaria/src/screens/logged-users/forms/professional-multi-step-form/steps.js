@@ -196,7 +196,7 @@ const Step2 = ({ stepData, setStepData, validations }) => {
         <View style={{padding:20, backgroundColor: 'white'}}>
             <View style={{padding:5}}>
                 <Text>
-                    Situación económica familiar precaria
+                    Ingreso famliar mensual (aproximado)
                 </Text>
                 <SivariaInput 
                     placeholder={'Ingreso familiar mensual'}
@@ -210,7 +210,7 @@ const Step2 = ({ stepData, setStepData, validations }) => {
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>
-                    Ingreso familiar mensual (aproximado)
+                    Situación económica familiar precaria
                 </Text>
                 <SivariaRadioButton data={yesNoData} option={stepData.step2.family13} onSelect={text => handleInputChange('family13', text)}/>
                 {validations.step2.family13 && <Text style={styles.errorText}>El campo está vacío.</Text>}
