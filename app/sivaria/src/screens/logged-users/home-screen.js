@@ -93,7 +93,7 @@ const HomeScreen = ({navigation}) => {
       <ScrollView>
         <PrivacyPolicyModal isVisible={isVisiblePrivacyModal} setModalVisible={setIsVisiblePrivacyModal} />
         <WelcomeMessageModal isVisible={isVisibleWelcomeModal} setModalVisible={setIsVisibleWelcomeModal} />
-        <View style={{height: 1000, backgroundColor: 'white'}}>
+        <View style={{height: 700, backgroundColor: 'white'}}>
             
             <View style={{height: 100, alignItems: 'center', justifyContent: 'center'}}>
                 <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'flex-end',  flexDirection:'row'}}>
@@ -125,7 +125,7 @@ const HomeScreen = ({navigation}) => {
                     </View>
                 </View>
             </View>
-            <View style={{height: 200, alignItems: 'center', padding:10}}>
+            <View style={{height: 300, alignItems: 'center', padding:10}}>
                 <Text style={{fontWeight:'bold', fontSize:25}}>
                     ¡Bienvenido a Sivaria!
                 </Text>
