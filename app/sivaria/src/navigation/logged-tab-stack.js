@@ -3,44 +3,13 @@ import ProfileScreen from "../screens/logged-users/profile-screen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from '@expo/vector-icons';
 import { Platform, Text } from "react-native";
-import stylesSivaria from "../styles/styles-sivaria";
 import { useContext } from "react";
 import { UserContext } from "../context/user-context";
 import HistoryScreen from "../screens/logged-users/history-screen";
 import ContactScreen from "../screens/logged-users/contact-screen";
 import PatientsScreen from "../screens/logged-users/patients-screen";
-//import { createAppContainer } from "react-navigation"; 
-
-/*
-const TabNavigator = createBottomTabNavigator({
-        Home: {
-            screen: HomeScreen,
-            navigationOptions: {
-                tabBarLabel: 'Home',
-                tabBarOptions: {
-                    activeTintColor: '#006E51',
-                },
-                tabBarIcon: (tabInfo) => {
-                    return ( 
-                        <Ionicons 
-                          name="md-home"
-                          size={24} 
-                          color={tabInfo.focused ? "#006E51" : "#8e8e93"} 
-                        /> 
-                    )
-                }
-
-            }
-        }
-    }
-);
-
-export const HomeTabNavigator = createAppContainer(TabNavigator);
-*/
 
 const Tab = createBottomTabNavigator();
-
-//<AntDesign name="solution1" size={24} color="black" />
 
 export const DashboardTabsScreen = ({navigation}) => {
   const userData = useContext(UserContext);
@@ -49,8 +18,6 @@ export const DashboardTabsScreen = ({navigation}) => {
         screenOptions={({ route }) => ({
           tabBarLabel: ({focused}) => {
             let color = focused ? "white" : "#96bf96";
-            //console.log(route.name);
-            //console.log(color);
             let routeName = route.name;
             switch(routeName) {
               case 'Home':
@@ -109,19 +76,21 @@ export const DashboardTabsScreen = ({navigation}) => {
             name="Home" 
             component={HomeScreen}
         />
-        {userData.rolSlug && userData.rolSlug !== 'joven' &&
+        {(userData.rolSlug !== 'joven') &&
           (
-          <>
             <Tab.Screen 
               name="History" 
               component={HistoryScreen}
             />
+          )
+        }
+        {(userData.rolSlug !== 'joven') &&
+          (
             <Tab.Screen 
               name="Patients" 
               component={PatientsScreen}
             />
-          </>
-        )
+          )
         }
         <Tab.Screen 
             name="Profile" 
@@ -134,23 +103,3 @@ export const DashboardTabsScreen = ({navigation}) => {
     </Tab.Navigator>
   );
 }
-
-/*
-export const NonLoggedUserStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
-  );
-}
-
-
-export const LoggedUserStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-    </Stack.Navigator>
-  );
-};
-*/

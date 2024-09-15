@@ -192,11 +192,9 @@ const LoginScreen = ({navigation}) => {
 
                     <View style={{height:40, alignItems:'center', justifyContent: 'center'}}>
                         <View style={{width:'80%', alignItems: 'flex-end', justifyContent: 'center'}}>
-                            {/*<SivariaText color={'#006E51'}>¿Olvidaste tu contraseña?</SivariaText>*/}
                             <Text onPress={(e) => navigation.navigate('ForgotPassword')} style={{color:'#006E51', fontSize:15}}>
                                 ¿Olvidaste tu contraseña?
                             </Text>
-                            {/*<a id='forgot_password_link' onClick={navigation.navigate('ForgotPassword')} href="#">Click here</a>*/}
                         </View>
                     </View>
 

@@ -1,30 +1,21 @@
 import { useEffect, useState, useCallback } from 'react';
-import { View, Text, Alert, SafeAreaView, Pressable, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, Alert, Pressable, ScrollView, RefreshControl } from 'react-native';
 import axiosInstance from '../../utils/axios-config-web';
 //import { useNavigation } from '@react-navigation/native';
 import { getItemLocalStorage, removeItemLocalStorage } from '../../utils/general-local-storage';
-import stylesSivaria from '../../styles/styles-sivaria';
-import SivariaButton from '../../components/sivaria-button';
-import Container from '../../components/component-containers/container';
 
 import SivariaText from '../../components/sivaria-text';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/auth-context';
-import { ModalTitle, ModalType } from '../../utils/enum-types-modal';
 
 import LoadingScreen from '../loading-screen';
 import { useToast } from 'react-native-toast-notifications';
 import { UserContext } from '../../context/user-context';
-import ModalComponent from '../../components/modal-component';
 import { AntDesign } from '@expo/vector-icons';
-import { DataTable } from 'react-native-paper';
 
 import { Modal } from 'react-native';
-//import YoungFormTemplate from './form-templates/young-form-template/young-form-template';
-//import FamilyFormTemplate from './form-templates/family-form-template/family-form-template';
-//import ProfessionalFormTemplate from './form-templates/professional-form-template/professional-form-template';
 import { FormTemplate } from './form-templates/form-template';
-import CollapsibleView, { AccordionList } from '../../components/collapsible-view';
+import { AccordionList } from '../../components/collapsible-view';
 
 const PatientsScreen = ({navigation}) => {
     const user = useContext(AuthContext);
@@ -289,14 +280,14 @@ const PatientsScreen = ({navigation}) => {
             </View>
         </Modal>
         
-        <ScrollView 
+        <View 
             style={{flex:1}}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
         >
             <AccordionList data={families}/>
-        </ScrollView>
+        </View>
       </>
   );
 }
