@@ -154,26 +154,6 @@ const EditDataScreen = ({navigation, props}) => {
       <Container>
         <View style={{flex:2, backgroundColor: '#006E51'}}>
             <View style={{flex:1, width: '100%', alignItems:'center', justifyContent: 'center'}}>
-                {/*
-                <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
-                    <SivariaInput 
-                        placeholder={'Nombre'}
-                        value={firstName}
-                        onChangeText={setFirstName}
-                        autoCorrect={false}
-                        autoCapitalize={'none'} 
-                    />
-                </View>
-                <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
-                    <SivariaInput 
-                        placeholder={'Apellidos'}
-                        value={lastName}
-                        onChangeText={setLastName}
-                        autoCorrect={false}
-                        autoCapitalize={'none'} 
-                    />
-                </View>
-                */}
                 <View style={{flex:1, width: '80%', alignItems:'center', justifyContent: 'center'}}>
                         <ShowHidePasswordInput 
                             placeholder='Contraseña' 

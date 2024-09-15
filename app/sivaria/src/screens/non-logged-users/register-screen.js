@@ -370,14 +370,12 @@ const RegisterScreen = ({navigation}) => {
                 message={modalMessage}
             />
             <PrivacyPolicyModal isVisible={isVisiblePrivacyModal} setModalVisible={setIsVisiblePrivacyModal} />
-            {/* Título */}
             <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
                 <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
                 <SivariaText fontSize={20}>Formulario de registro</SivariaText>
             </View>
             
             <View style={{flex:1, backgroundColor: '#006E51', alignItems: 'center', justifyContent: 'center'}}>
-                {/* Whitebox con inputs */}
                 <View style={stylesSivaria.whiteBoxContainer}>
                     <View style={{height:80, alignItems:'center', justifyContent: 'center'}}>
                         <SivariaInput 

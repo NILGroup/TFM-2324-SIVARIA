@@ -131,16 +131,6 @@ const HistoryScreen = ({navigation}) => {
 
     return (
       <>
-        {/*
-        <ModalComponent 
-            animationType='slide'
-            setIsVisible={setModalVisible}
-            isVisible={isVisible}
-            title={modalTitle}
-            modalType={modalType}
-            message={modalMessage}
-        />
-        */}
         <Modal
             animationType='slide'
             onRequestClose={() => setModalVisible(false)}
