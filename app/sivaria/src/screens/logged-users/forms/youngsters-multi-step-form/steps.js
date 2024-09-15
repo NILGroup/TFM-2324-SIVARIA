@@ -118,25 +118,9 @@ const Step1 = ({ stepData, setStepData, validations }) => {
 
     return (
         <>
-            {/*
-            <View>
-                <Text>Step 1</Text>
-                <TextInput
-                    style={styles.input}
-                    value={localState}
-                    onChangeText={handleInputChange}
-                />
-            </View>
-            */}
             <View style={{padding: 20, backgroundColor: 'white'}}>
                 <View style={{padding: 5}}>
                     <Text style={{fontWeight:'bold'}}>Curso:</Text>
-                    {/*<Dropdown 
-                        items={courses}
-                        placeholder={{ label: 'Selecciona un curso...', value: 'ninguno' }}
-                        value={stepData.step1.course}
-                        onValueChange={text => handleInputChange( 'course', text )}
-                    />*/}
                     <SivariaRadioButton 
                         data={courses} 
                         option={stepData.step1.course} 
@@ -353,12 +337,6 @@ const Step3 = ({ stepData, setStepData, validations }) => {
             </View>
             <View style={{padding:5}}>
                 <Text style={{fontWeight:'bold'}}>Indica el tipo de discriminación sufrido. Si no has sufrido ninguno, pon Ninguno:</Text>
-                {/*<Dropdown 
-                    items={discriminationTypes}
-                    placeholder={{ label: 'Selecciona una opción...', value: 'ninguno' }}
-                    value={stepData.step3.discriminationType}
-                    onValueChange={text => handleInputChange('discriminationType', text )}
-                /> */}
                 <SivariaRadioButton data={discriminationTypes} option={stepData.step3.discriminationType} onSelect={text => handleInputChange('discriminationType', text)}/>
                 {validations.step3.discriminationType && <Text style={styles.errorText}>El campo está vacío.</Text>}
 

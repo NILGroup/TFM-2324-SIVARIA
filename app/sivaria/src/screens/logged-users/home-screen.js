@@ -91,56 +91,6 @@ const HomeScreen = ({navigation}) => {
 
     return (
       <ScrollView>
-        {/*
-        <ModalComponent 
-                animationType='slide'
-                setIsVisible={setModalVisible}
-                isVisible={isVisible}
-                title={modalTitle}
-                modalType={modalType}
-                message={modalMessage}
-        />
-        */}
-        {/*
-        <View style={{flex:1, backgroundColor: 'white'}}>
-            <View style={{flex:1, width: '100%', alignItems:'center', justifyContent: 'center'}}>
-                <View style={{flex:1, width: '80%', alignItems: 'center', justifyContent: 'center'}}>
-                    <SivariaButton onPress={(e) => sendPush(e)} message={'ENVIAR PUSH'} />
-                </View>
-            </View>
-        </View>
-        */}
-        {/*<Modal
-            animationType='slide'
-            onRequestClose={() => setModalVisible(false)}
-            visible={isVisible}
-        >
-            <View style={{alignItems:'center', justifyContent: 'center', flex:1}}>
-                <View style={{height:200, backgroundColor: '#006E51', flexDirection:'row', width: '100%', borderBottomWidth: 2, borderBottomColor: 'grey', alignItems: 'center', justifyContent: 'center'}}>
-                    <AntDesign name={'infocirlceo'} size={35} color="white" style={{paddingRight:10}}/>
-                    <SivariaText fontSize={35}>INFORMACIÓN</SivariaText>
-                </View>             
-                <ScrollView style={{height:500, width:'100%', padding:10}}>
-                    {isLoadingModal 
-                    ? (<LoadingScreen />)
-                    : 
-                    (<>
-                        <View>
-
-                        </View>
-                    </>)
-                    }
-                </ScrollView>
-                <View style={{height:200, width:'100%', alignItems:'center', justifyContent: 'center', borderTopWidth:2, borderTopColor: 'grey'}}>
-                    <SivariaButton onPress={() => setIsVisible(false)}>
-                        <SivariaText isBold={true}>
-                            CERRAR
-                        </SivariaText>
-                    </SivariaButton>
-                </View>
-            </View>
-        </Modal>
-        */}
         <PrivacyPolicyModal isVisible={isVisiblePrivacyModal} setModalVisible={setIsVisiblePrivacyModal} />
         <WelcomeMessageModal isVisible={isVisibleWelcomeModal} setModalVisible={setIsVisibleWelcomeModal} />
         <View style={{height: 1000, backgroundColor: 'white'}}>
@@ -174,53 +124,6 @@ const HomeScreen = ({navigation}) => {
                         />
                     </View>
                 </View>
-                {/*
-                <Pressable   
-                    style={[
-                            ({pressed}) => [
-                                {
-                                    backgroundColor: pressed ? '#7bdcb5' : '#006E51',
-                                    borderColor: pressed ? '#7bdcb5' : '#024332',
-                                },
-                            ],
-                            {
-                                flex:1,
-                                borderRadius: 8,
-                            },
-                        ]}
-                        onPress={() => console.log('INFO POLÍTICA')}
-                    >
-                        <AntDesign
-                            name={'infocircle'} 
-                            size={20} 
-                            color="black" 
-                            //style={{paddingRight:10}}
-                        />
-                </Pressable>
-                */}
-                {/*
-                <Pressable   
-                    style={[
-                            ({pressed}) => [
-                                {
-                                    backgroundColor: pressed ? '#7bdcb5' : '#006E51',
-                                    borderColor: pressed ? '#7bdcb5' : '#024332',
-                                },
-                            ],
-                            {
-                                flex:1,
-                                borderRadius: 8,
-                            },
-                        ]}
-                        onPress={() => console.log('INFO TUTORIAL')}
-                    >
-                        <AntDesign
-                            name={'filetext1'} 
-                            size={20} 
-                            color="black" 
-                        />
-                </Pressable>
-                */}
             </View>
             <View style={{height: 200, alignItems: 'center', padding:10}}>
                 <Text style={{fontWeight:'bold', fontSize:25}}>

@@ -983,27 +983,9 @@ export const YoungstersStackNavigator = ({navigation}) => {
                 </ScrollView>
             </View>
             <ScrollView style={{ flex: 1 }}>
-                {/*<YoungstersStack.Navigator screenOptions={ { headerShown:false}}>*/}
-                    {/*
-                        <YoungstersStack.Screen name={steps[currentStep].name} component={steps[currentStep].component} />
-                    */}
-                    {/*steps.map((step, index) => (
-                        <YoungstersStack.Screen key={index} name={step.name}>
-                            {() => <step.component stepData={stepData} setStepData={setStepData} />}
-                        </YoungstersStack.Screen>
-                    ))*/}
-                {/*</YoungstersStack.Navigator>*/}
                 <CurrentStepComponent stepData={stepData} setStepData={setStepData} validations={validations} />
             </ScrollView>
             <View style={styles.navigationButtons}>
-                {/*
-                <Pressable onPress={prevStep} disabled={currentStep === 0} >
-                    <Text>VOLVER</Text>
-                </Pressable>
-                <Pressable onPress={nextStep} disabled={currentStep === steps.length - 1}>
-                    <Text>CONTINUAR</Text>    
-                </Pressable>
-                */}
                 {currentStep > 0 ? 
                     (
                         <Pressable onPress={prevStep} style={styles.button}>

@@ -129,13 +129,11 @@ const RecoveryPasswordScreen = ({ route, navigation}) => {
             modalType={modalType}
             message={modalMessage}
         />
-        {/* Título */}
         <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
           <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
           <SivariaText fontSize={20}>Recuperación de contraseña</SivariaText>
         </View>
         <View style={{flex:1, backgroundColor: '#006E51', alignItems: 'center', justifyContent: 'center'}}>
-            {/* Whitebox con inputs */}
             <View style={[stylesSivaria.whiteBoxContainer, {alignItems: 'center', justifyContent: 'center'}]}>
               {success ? 
                 (<>

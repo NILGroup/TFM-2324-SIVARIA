@@ -8,12 +8,6 @@ import SpainFlag from "../assets/svg/flag-for-flag-spain-svgrepo-com.svg";
 const SivariaSpanishPhoneInput = ({placeholder, phoneNumber, onChangeText}) => {
     return(
         <View style={styles.hideShowContainer}>
-             {/*<MaterialCommunityIcons 
-                name={showPassword ? 'eye-off' : 'eye'} 
-                size={24} 
-                color="#aaa"
-                style={styles.icon} 
-            />*/} 
             <SpainFlag width={20} height={20} />
             <Text style={styles.prefixNumber}>+34</Text>
             <TextInput

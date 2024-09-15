@@ -104,21 +104,18 @@ const ForgotPasswordScreen = ({navigation}) => {
               modalType={modalType}
               message={modalMessage}
           />
-          {/* Título */}
           <View style={{height: 200, alignItems: 'center', justifyContent: 'center'}}>
               <Text onPress={(e) => navigation.navigate('Login')} style={{color:'white', fontSize: 35, fontWeight: 'bold', textAlign: 'center'}}>SIVARIA</Text>
               <SivariaText fontSize={20}>Recuperación de contraseña</SivariaText>
           </View>
           
           <View style={{flex:1, backgroundColor: '#006E51', alignItems: 'center', justifyContent: 'center'}}>
-              {/* Whitebox con inputs */}
               <View style={[stylesSivaria.whiteBoxContainer]}>
                     <View style={{height:500, width:'100%', alignItems:'center', justifyContent: 'center'}}>
                       <View style={{height:200, width:'100%',alignItems:'center', justifyContent: 'center'}}>
                         <View style={{width:'80%'}}>
                           <SivariaText color={'#006E51'} textAlign={'left'}>
                             Introduzca el email que usaste para registrarte, y te enviaremos un correo con un enlace para recuperar tu contraseña.
-                            {/*Please enter the email address that you used to register, and we will send you a link to reset your password via Email.*/}
                           </SivariaText>
                           <SivariaText color={'#006E51'} textAlign={'left'}>
                             Si el correo no le ha llegado, pruebe a reenviar el correo dando al botón de nuevo.

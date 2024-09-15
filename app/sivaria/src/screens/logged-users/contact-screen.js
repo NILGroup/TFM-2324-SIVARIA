@@ -41,7 +41,7 @@ const ContactScreen = ({navigation}) => {
 
     return (
       <ScrollView>
-        <View style={{height: 700, backgroundColor: 'white', padding: 20, justifyContent: 'space-between'}}>
+        <View style={{height: 1000, backgroundColor: 'white', padding: 20, justifyContent: 'space-between'}}>
             <View style={{padding:5}}>
                 <Text style={{fontWeight: 'bold', fontSize:20}}>
                     ¡No estás sólo!
@@ -185,24 +185,6 @@ const ContactScreen = ({navigation}) => {
                     </Pressable>
                 </View>
             </View>
-            {/*
-            <Text>911385385</Text>        
-            <Text>
-                Teléfono contra el suicidio. Es un teléfono está a cargo de profesionales de la salud mental. Disponible las 24 horas, todos los días de la semana
-            </Text>
-            <Button />
-            
-            <Text>900 20 20 10</Text>        
-            <Text>
-                Fundación ANAR. Es una organización sin ánimo de lucro que ayuda a niños/as y adolescentes en riesgo. Disponible las 24 horas, todos los días de la semana.
-            </Text>
-            <Button />
-            
-            <Text>900 107 917</Text>        
-            <Text>
-                Cruz Roja. No es una línea dedicada al suicidio, pero también puede atender este tipo de llamadas. Disponible de lunes a viernes laborables, de 10:00 a 14:00 y de 16:00 a 20:00.</Text>
-            <Button />
-            */}
         </View>
       </ScrollView>
   );

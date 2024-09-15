@@ -59,11 +59,9 @@ const ModalComponent = ({animationType, setIsVisible, isVisible, modalType, titl
                     <AntDesign name={modalIcon} size={35} color="white" style={{paddingRight:10}}/>
                     <SivariaText fontSize={35}>{title}</SivariaText>
                 </View>
-                {/*<Br />*/}                
                 <ScrollView style={{flex:3, width:'100%', padding:10}}>
                     <SivariaText fontSize={20} color={'black'} >{message}</SivariaText>
                 </ScrollView>
-                {/*<Br />*/}
                 <View style={{flex:0.4, width:'100%', alignItems:'center', justifyContent: 'center', borderTopWidth:2, borderTopColor: 'grey'}}>
                     <SivariaButton onPress={() => setIsVisible(false)}>
                         <SivariaText isBold={true}>

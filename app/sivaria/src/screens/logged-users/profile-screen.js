@@ -240,35 +240,6 @@ const ProfileScreen = ({navigation}) => {
                 modalType={modalType}
                 message={modalMessage}
             />
-            
-            {/*
-            <View style={{flex:1, width:'90%', alignItems: 'flex-end' , justifyContent:'center'}}>
-                <Pressable 
-                    onPress={() => fetchUserData()}
-                >
-                    <AntDesign 
-                        name={'reload1'} 
-                        size={20} 
-                        color={'white'} 
-                    />
-                </Pressable>
-            </View>
-            */}
-            {/*
-            <View style={{height: 100, flexDirection: 'center', alignItems: 'center', justifyContent: 'center', backgroundColor: '#006E51'}}>
-                <View style={{flex:1, width:'100%', alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: '#024332'}}>
-                    <Text style={{fontSize: 25, color:'white', fontWeight:'bold'}}>
-                        DATOS DEL USUARIO
-                    </Text>
-                </View>
-            </View>
-            */}
-            {/*<DynamicHeader animHeaderValue={scrollOffsetY}>
-                <Text style={{fontSize: 25, color:'white', fontWeight: 'bold'}}>
-                    DATOS DEL USUARIO
-                </Text>
-            </DynamicHeader>
-            */}
             <ScrollView
                 scrollEventThrottle={16}
                 onScroll={Animated.event(
@@ -283,9 +254,8 @@ const ProfileScreen = ({navigation}) => {
                 {
                     userData.map((data, index) => {
                             return (
-                                <View key={data.key} style={{height: 100, flexDirection: 'row', borderWidth: 2, borderColor: 'grey'}}>
-                                    {/*console.log(data)*/}
-                                    <View key={'title_'+index} style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+                                <View key={data.key} style={{height: 100, flexDirection: 'row', borderWidth: 2, borderColor: 'grey'}}>                                    
+                                <View key={'title_'+index} style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
                                         <SivariaText color={'black'} fontSize={15} isBold={true}>{data.title}</SivariaText>
                                     </View>
                                     <View key={'value_'+index} style={{flex:2, alignItems: 'center', justifyContent: 'center', backgroundColor:'#ececec', padding:10}}>
@@ -301,24 +271,23 @@ const ProfileScreen = ({navigation}) => {
                     )
                 }
             </ScrollView>
-            {/*<Text>PROFILE SCREEN</Text>*/}
             <View style={{height: 100, flexDirection: 'row', backgroundColor: 'white'}}>
-                    <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
-                        <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
-                            <SivariaButton onPress={(e) => callLogout(e)} message={'CERRAR SESIÓN'}/>
-                        </View>
-                    </View>
-                    <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
-                        <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
-                            <SivariaButton onPress={(e) => navigation.navigate('EditData')} message={'EDITAR DATOS'}/>
-                        </View>
-                    </View>
-                    <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
-                        <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
-                            <SivariaButton onPress={(e) => callDeleteAccount(e)} message={'ELIMINAR CUENTA'}/>
-                        </View>
+                <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
+                        <SivariaButton onPress={(e) => callLogout(e)} message={'CERRAR SESIÓN'}/>
                     </View>
                 </View>
+                <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
+                        <SivariaButton onPress={(e) => navigation.navigate('EditData')} message={'EDITAR DATOS'}/>
+                    </View>
+                </View>
+                <View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{flex:1, width:'80%', alignItems: 'center', justifyContent: 'center'}}>
+                        <SivariaButton onPress={(e) => callDeleteAccount(e)} message={'ELIMINAR CUENTA'}/>
+                    </View>
+                </View>
+            </View>
         </>
     );
 }
